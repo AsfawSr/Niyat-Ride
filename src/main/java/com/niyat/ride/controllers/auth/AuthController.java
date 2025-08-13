@@ -7,7 +7,7 @@ import com.niyat.ride.services.auth.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -50,11 +50,7 @@ public class AuthController {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    @RequestBody(
-            required = true,
-            content = @Content(mediaType = "multipart/form-data",
-                    schema = @Schema(implementation = DriverRegistrationDTO.class))
-    )
+
     public ResponseEntity<ApiResponseDTO<UserResponseDTO>> registerDriver(
             @Valid @ModelAttribute DriverRegistrationDTO registrationDTO) {
         
