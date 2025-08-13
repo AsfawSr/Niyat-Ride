@@ -1,5 +1,9 @@
 package com.niyat.ride.enums;
 
 public enum AccountStatus {
-    ACTIVE, SUSPENDED
+    PENDING,
+    ACTIVE,
+    SUSPENDED,
+    DEACTIVATED,
+    DELETED
 }
