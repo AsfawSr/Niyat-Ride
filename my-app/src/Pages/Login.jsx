@@ -1,16 +1,14 @@
 import { useState } from "react";
-import "./Login.css";
 import key from "../assets/mdkey.png";
 import email from "../assets/email.png";
-import enter from "../assets/enter.png";
+import admin from "../assets/admin.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { authActions } from "../store/authSlice";
+// import { authActions } from "../store/authSlice";
 import Input from "../Components/input"; // two levels up to src
-import google from "../assets/google1.png";
 import Windowresponsiv from "../Components/Windowresponsiv";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import api from "../api/api";
+// import api from "../api/api";
 import { setError } from "../store/errorSlice";
 const Login = () => {
   const location = useLocation();
@@ -59,7 +57,7 @@ const Login = () => {
     //       email,
     //       fullName,
     //       _id,
-    //       adminyName: adminName,
+    //       adminName: adminName,
     //       role,
     //     } = res.data.data.user;
     //     const name = role === "admin" ? adminName : fullName;
@@ -73,14 +71,21 @@ const Login = () => {
   };
 
   return (
-    <div className="registrationContainer">
-      <h2 className="title">
-        <img src={enter} alt="" width={45} height={45} />
+    <>
+      <h2 className="flex items-center justify-center gap-10 text-[32px] font-bold max-[414px]:flex-col max-[414px]:text-[28px] ">
+        <img
+          src={admin}
+          alt=""
+          width={90}
+          height={90}
+          className="dark:invert"
+        />
         Admin Login
       </h2>
-      <GoogleOAuthProvider clientId="664999914369-t8udl75vmjfughnd95here6ak2bd3jf4.apps.googleusercontent.com">
-        <form onSubmit={submitHandler} className="form">
-          <div className="gridContainerForlogin">
+      <GoogleOAuthProvider clientId="">
+        <form onSubmit={submitHandler} className=" mx-1 lg:w-1/3 lg:mx-auto">
+          {/* Grid for Inputs */}
+          <div className="grid grid-cols-1 gap-8 mb-5">
             <Input
               type="email"
               id="email"
@@ -89,14 +94,7 @@ const Login = () => {
               placeholder="abebebekila@gmail.com"
               value={values.email}
               onChange={InputChangeHandler}
-              icon={
-                <img
-                  src={email}
-                  alt=""
-                  width={width > 414 ? 17 : 23}
-                  height={width > 414 ? 16 : 18}
-                />
-              }
+              icon={<img src={email} alt="" width={23} height={12} />}
             />
             <Input
               type="password"
@@ -107,33 +105,40 @@ const Login = () => {
               value={values.password}
               onChange={InputChangeHandler}
               isVisible={true}
-              icon={
-                <img
-                  src={key}
-                  alt=""
-                  width={width > 414 ? 23 : 30}
-                  height={width > 414 ? 12 : 18}
-                />
-              }
+              icon={<img src={key} alt="" width={23} height={12} />}
             />
           </div>
-          <button type="submit" className="registerButton">
+
+          {/* Login Button */}
+          <button
+            type="submit"
+            className="block mx-auto bg-blue-500 text-white text-[20px] font-semibold px-6 py-3 rounded-lg hover:bg-black transition duration-300"
+          >
             Login
           </button>
-
-          <p className="loginOption">
-            <NavLink to="/Resetpassword" className="highlight">
+          {/* Forgot Password + Signup */}
+          <div className="text-center text-[16px] my-5">
+            <NavLink to="/Resetpassword" className="text-blue-500">
               Forgot Password
             </NavLink>
             <br />
-            <p>
-              If you have not an account <NavLink to="/Signup">Signup</NavLink>
-            </p>
-          </p>
+            If you have n't an account{" "}
+            <NavLink to="/Signup" className="text-blue-500">
+              Signup
+            </NavLink>
+          </div>
 
-          <div className="divider">OR CONTINUE WITH</div>
-          <div className="google">
-            <img src={google} alt="" className="icon" />
+          {/* Divider */}
+          <div className="relative text-center text-[14px] font-bold text-gray-500 my-6">
+            <span className="relative z-10 bg-white px-3">
+              OR CONTINUE WITH
+            </span>
+            <div className="absolute top-1/2 left-0 w-[35%] h-[3px] bg-gray-300"></div>
+            <div className="absolute top-1/2 right-0 w-[35%] h-[3px] bg-gray-300"></div>
+          </div>
+
+          {/* Google Login */}
+          <div className="w-3/4 lg:w-1/2 mx-auto ">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleFailure}
@@ -143,7 +148,7 @@ const Login = () => {
           </div>
         </form>
       </GoogleOAuthProvider>
-    </div>
+    </>
   );
 };
 

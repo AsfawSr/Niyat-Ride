@@ -1,24 +1,12 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Global styles */
 html,
 body {
   width: 100vw;
   height: 100vh;
-  overscroll-behavior: none;
   color: #000000;
-  font-weight: 400; /* Regular */
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden; /* Prevents horizontal scrolling */
-}
-#root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* Ensures content covers full viewport */
-}
-@media screen and (max-width: 414px) {
-  body {
-    font-size: 12px;
-  }
+
+  font-weight: 400;
 }
