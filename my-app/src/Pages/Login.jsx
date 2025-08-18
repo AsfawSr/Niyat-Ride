@@ -28,21 +28,24 @@ const Login = () => {
     }));
   };
   const submitHandler = async (event) => {
-    event.preventDefault();
-    // try {
-    //   const res = await api.post("/auth/login", values, {});
-    //   if (res.status === 200) {
-    //     console.log(res);
-    //     const { email, fullName, _id, adminName, role } = res.data.data.user;
-    //     const token = res.data.token;
-    //     const name = role === "admin" ? adminName : fullName;
-    //     dispatch(
-    //       authActions.login({ email, name, fullName, _id, token, role })
-    //     );
-    //     navigate(Redirectpath, { replace: true });
-    //   }
-    // } catch (error) {}
-  };
+  event.preventDefault();
+
+  // TEMP: fake login + go to dashboard
+  dispatch(
+    authActions.login({
+      email: values.email,
+      name: "Admin",
+      fullName: "Admin User",
+      _id: "12345",
+      token: "dummy-token",
+      role: "admin",
+    })
+  );
+
+  navigate("/dashboard", { replace: true });
+};
+
+
   const { width } = Windowresponsiv();
   const handleGoogleSuccess = async (response) => {
     // try {
