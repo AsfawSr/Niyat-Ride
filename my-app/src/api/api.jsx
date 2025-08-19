@@ -2,7 +2,7 @@ import axios from "axios";
 import { setError, clearError } from "../store/errorSlice";
 
 const api = axios.create({
-  baseURL: "http://192.168.137.72:3000/api/v1",
+  // baseURL: "/3000/api/v1",
   withCredentials: true,
 });
 export const setupInterceptors = (store) => {
@@ -54,4 +54,3 @@ export const setupInterceptors = (store) => {
 };
 
 export default api;
-
