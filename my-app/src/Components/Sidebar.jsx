@@ -37,12 +37,11 @@ export default function Sidebar() {
       icon: <MdAssignment />,
     },
   ];
-
   const userSubItems = [
-    { to: "/admin/AllUsers", label: "All Users" },
-    { to: "/admin/ActiveUsers", label: "Active Users" },
-    { to: "/admin/InactiveUsers", label: "Inactive Users" },
-    { to: "/admin/BannedUsers", label: "Banned Users" },
+    { to: "/AllUsers", label: "All Users" },
+    { to: "/ActiveUsers", label: "Active Users" },
+    { to: "/InactiveUsers", label: "Inactive Users" },
+    { to: "/BannedUsers", label: "Banned Users" },
   ];
 
   return (
