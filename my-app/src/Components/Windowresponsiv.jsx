@@ -12,7 +12,6 @@ function Windowresponsiv() {
     };
     window.addEventListener("resize", handleResize);
     handleResize(); // Set initial size
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };

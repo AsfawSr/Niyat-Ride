@@ -6,7 +6,6 @@ import StatCard from "../Components/StatCard";
 import RideLineChart from "../Components/RideLineChart";
 import MonthlyBarChart from "../Components/MonthlyBarChart";
 import RecentRidesTable from "../Components/RecentRidesTable";
-
 // --- mock data (replace with API later) ---
 const kpis = [
   { title: "Total Rides", value: "23,456" },

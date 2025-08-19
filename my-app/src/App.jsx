@@ -1,11 +1,14 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useState } from "react";
 import { FaMoon, FaSun } from "react-icons/fa"; // import icons
-
 import Login from "./Pages/Login";
 import RootLayout from "./Pages/RootLayout";
 import AdminSignup from "./Pages/AdminSignup";
 import Dashboard from "./Pages/Dashboard";
+import AllUsers from "./Pages/userManagement/AllUsers";
+import ActiveUsers from "./Pages/userManagement/ActiveUsers";
+import BannedUsers from "./Pages/userManagement/BannedUsers";
+import InactiveUsers from "./Pages/userManagement/InactiveUsers";
 // import PageNotFound from "./Pages/Layout/PageNotFound";
 
 function App() {
@@ -18,10 +21,15 @@ function App() {
       path: "/",
       element: <RootLayout />,
       children: [
-        { index: true, element: <Login /> }, // default route → Login
-        { path: "signup", element: <AdminSignup /> }, // signup route
-        { path: "dashboard", element: <Dashboard /> }, // ✅ dashboard route
-        // { path: "*", element: <PageNotFound /> }, // optional - handle 404
+        { index: true, element: <Login /> },
+        { path: "signup", element: <AdminSignup /> },
+        { path: "dashboard", element: <Dashboard /> },
+        { path: "AllUsers", element: <AllUsers /> },
+        { path: "ActiveUsers", element: <ActiveUsers /> },
+        { path: "BannedUsers", element: <BannedUsers /> },
+        { path: "InactiveUsers", element: <InactiveUsers /> },
+
+        // { path: "*", element: <PageNotFound /> },
       ],
     },
   ]);

@@ -13,7 +13,7 @@ const RootLayout = () => {
   }, [location.pathname, dispatch]);
   return (
     <div>
-         <Outlet />
+      <Outlet />
     </div>
   );
 };
