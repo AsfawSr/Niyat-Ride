@@ -4,7 +4,7 @@ import email from "../assets/email.png";
 import admin from "../assets/admin.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-// import { authActions } from "../store/authSlice";
+import { authActions } from "../store/authSlice";
 import Input from "../Components/input"; // two levels up to src
 import Windowresponsiv from "../Components/Windowresponsiv";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
@@ -28,23 +28,22 @@ const Login = () => {
     }));
   };
   const submitHandler = async (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  // TEMP: fake login + go to dashboard
-  dispatch(
-    authActions.login({
-      email: values.email,
-      name: "Admin",
-      fullName: "Admin User",
-      _id: "12345",
-      token: "dummy-token",
-      role: "admin",
-    })
-  );
+    // TEMP: fake login + go to dashboard
+    dispatch(
+      authActions.login({
+        email: values.email,
+        name: "Admin",
+        fullName: "Admin User",
+        _id: "12345",
+        token: "dummy-token",
+        role: "admin",
+      })
+    );
 
-  navigate("/dashboard", { replace: true });
-};
-
+    navigate("/dashboard", { replace: true });
+  };
 
   const { width } = Windowresponsiv();
   const handleGoogleSuccess = async (response) => {
