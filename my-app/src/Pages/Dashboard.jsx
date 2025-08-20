@@ -6,7 +6,6 @@ import StatCard from "../Components/StatCard";
 import RideLineChart from "../Components/RideLineChart";
 import MonthlyBarChart from "../Components/MonthlyBarChart";
 import RecentRidesTable from "../Components/RecentRidesTable";
-
 // --- mock data (replace with API later) ---
 const kpis = [
   { title: "Total Rides", value: "23,456" },
@@ -14,7 +13,6 @@ const kpis = [
   { title: "Active Passengers", value: "5,678" },
   { title: "Cancellations", value: "456" },
 ];
-
 const weekly = [
   { label: "W1", rides: 240, prev: 260 },
   { label: "W2", rides: 210, prev: 230 },
@@ -23,7 +21,6 @@ const weekly = [
   { label: "W5", rides: 170, prev: 200 },
   { label: "W6", rides: 175, prev: 180 },
 ];
-
 const monthly = [
   { month: "Jan", value: 320 },
   { month: "Feb", value: 420 },
@@ -34,9 +31,27 @@ const monthly = [
 ];
 
 const recent = [
-  { id: "001", passenger: "John Smith", driver: "Mary Johnson", status: "Completed", date: "2023-10-01" },
-  { id: "002", passenger: "Jane Doe", driver: "Michael Brown", status: "Cancelled", date: "2023-10-01" },
-  { id: "003", passenger: "Anna Lee", driver: "Chris White", status: "Ongoing", date: "2023-10-01" },
+  {
+    id: "001",
+    passenger: "John Smith",
+    driver: "Mary Johnson",
+    status: "Completed",
+    date: "2023-10-01",
+  },
+  {
+    id: "002",
+    passenger: "Jane Doe",
+    driver: "Michael Brown",
+    status: "Cancelled",
+    date: "2023-10-01",
+  },
+  {
+    id: "003",
+    passenger: "Anna Lee",
+    driver: "Chris White",
+    status: "Ongoing",
+    date: "2023-10-01",
+  },
 ];
 
 export default function Dashboard() {
@@ -55,7 +70,6 @@ export default function Dashboard() {
               </Grid>
             ))}
           </Grid>
-
           {/* Charts */}
           <Grid container spacing={6} mb={8}>
             <Grid item xs={12} md={7}>
@@ -67,10 +81,11 @@ export default function Dashboard() {
           </Grid>
 
           {/* Recent table */}
-          <Box sx={{ mr: 5 }}>   {/* ml = margin-left */}
-  <RecentRidesTable rows={recent} />
-</Box>
-
+          <Box sx={{ mr: 5 }}>
+            {" "}
+            {/* ml = margin-left */}
+            <RecentRidesTable rows={recent} />
+          </Box>
         </Box>
       </Box>
     </Box>
