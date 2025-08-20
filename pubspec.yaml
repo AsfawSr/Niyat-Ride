@@ -1,0 +1,47 @@
+name: nyat_ride_system
+description: "A new Flutter project."
+publish_to: "none" # Remove if you want to publish to pub.dev
+version: 1.0.0+1
+environment:
+  sdk: ">=3.7.2 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.6 # add this line (use latest stable version)
+  cupertino_icons: ^1.0.8
+  country_picker: ^2.0.10 # Move to dependencies, not dev_dependencies
+  flutter_otp_text_field: ^1.1.1 # Move to dependencies, not dev_dependencies
+
+  flutter_localizations:
+    sdk: flutter # Correct way to include flutter_localizations
+  flutter_map: ^4.0.0
+  latlong2: ^0.8.2
+  google_maps_flutter: ^2.12.1
+  geolocator: ^14.0.0
+  flutter_polyline_points: ^1.0.0
+  google_places_flutter: ^2.1.0
+  google_maps_webservice: ^0.0.20-nullsafety.5
+  font_awesome_flutter: ^10.9.1
+  flutter_typeahead: ^5.2.0
+  geocoding: ^4.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  intl: ^0.19.0
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+  fonts:
+    - family: NotoSansEthiopic
+      fonts:
+        - asset: assets/fonts/Noto_Sans_Ethiopic/NotoSansEthiopic-VariableFont_wdth,wght.ttf
+    # - assets/images/onboard2.png
+    # - assets/images/onboard3.png
+    # - assets/images/first.png
+    # - assets/images/second.png
+    # - assets/images/final.png
+  # Add your assets or fonts here if any
