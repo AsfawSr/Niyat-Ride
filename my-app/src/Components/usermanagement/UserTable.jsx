@@ -72,7 +72,7 @@ const UserTable = ({ filter }) => {
       {/* User Table */}
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b border-gray-200 dark:border-gray-700 ">
+          <tr className=" bg-[#dfdfdf] border-b border-gray-400 dark:bg-gray-600 dark:border-gray-700 ">
             <th className="p-3">Profile</th>
             <th className="p-3">User ID</th>
             <th className="p-3">Name</th>
