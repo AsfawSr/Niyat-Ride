@@ -1,11 +1,22 @@
 import React from "react";
-import { Card, CardContent, Typography, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from "@mui/material";
 
 export default function RecentRidesTable({ rows }) {
   return (
     <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
       <CardContent>
-        <Typography variant="h6" gutterBottom>Recent Ride Activity</Typography>
+        <Typography variant="h6" gutterBottom>
+          Recent Ride Activity
+        </Typography>
         <Table>
           <TableHead>
             <TableRow>
