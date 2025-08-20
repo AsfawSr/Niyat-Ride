@@ -5,7 +5,6 @@ import Pagination from "./Pagination";
 import UserRow from "./UserRow";
 import ViewUserModal from "./modals/ViewUserModal";
 import EditUserModal from "./modals/EditUserModal";
-
 const UserTable = ({ filter }) => {
   const [allUsers, setAllUsers] = useState(initialUsers);
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,9 +59,9 @@ const UserTable = ({ filter }) => {
     );
     setEditUser(null);
   };
-
   return (
-    <div>
+    <div className="space-y-4">
+      {/* Search Bar */}
       <SearchBar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -70,9 +69,10 @@ const UserTable = ({ filter }) => {
         setRowsPerPage={setRowsPerPage}
       />
 
+      {/* User Table */}
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b">
+          <tr className="border-b border-gray-200 dark:border-gray-700 ">
             <th className="p-3">Profile</th>
             <th className="p-3">User ID</th>
             <th className="p-3">Name</th>
@@ -94,7 +94,10 @@ const UserTable = ({ filter }) => {
           ))}
           {paginatedUsers.length === 0 && (
             <tr>
-              <td className="p-4 text-center text-gray-500" colSpan={7}>
+              <td
+                className="p-4 text-center text-gray-500 dark:text-gray-400"
+                colSpan={7}
+              >
                 No users found.
               </td>
             </tr>
@@ -102,12 +105,14 @@ const UserTable = ({ filter }) => {
         </tbody>
       </table>
 
+      {/* Pagination */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
       />
 
+      {/* Modals */}
       <ViewUserModal
         user={selectedUser}
         onClose={() => setSelectedUser(null)}

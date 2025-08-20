@@ -3,7 +3,7 @@ import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 
 const UserRow = ({ user, onEdit, onDelete, onView }) => {
   return (
-    <tr className="border-b hover:bg-gray-50">
+    <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
       <td className="p-3">
         <img
           src={user.profile}

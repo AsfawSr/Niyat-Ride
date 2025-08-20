@@ -3,8 +3,8 @@ import React from "react";
 const ViewUserModal = ({ user, onClose }) => {
   if (!user) return null;
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg w-96 relative">
+    <div className="fixed inset-0   backdrop-blur-sm flex justify-center items-center z-50">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-96 relative shadow-lg dark:shadow-gray-700">
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
           onClick={onClose}
@@ -20,12 +20,11 @@ const ViewUserModal = ({ user, onClose }) => {
           />
           <h2 className="text-xl font-bold">{user.name}</h2>
           <p className="text-gray-500">{user.role}</p>
-          <span className="inline-block px-2 py-1 mt-2 text-sm bg-gray-200 rounded">
+          <span className="px-3 py-.5 border rounded disabled:opacity-50 bg-white dark:bg-gray-800">
             {user.status}
           </span>
         </div>
-
-        <div className="mt-4 space-y-1">
+        <div className="mt-4 space-y-1" da>
           <p>
             <strong>Email:</strong> {user.email}
           </p>
