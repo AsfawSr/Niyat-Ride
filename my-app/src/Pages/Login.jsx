@@ -52,6 +52,7 @@ const Login = () => {
       navigate("/dashboard", { replace: true });
     } else {
       navigate("/dispatcher", { replace: true });
+
     }
   };
 
