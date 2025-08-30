@@ -2,9 +2,10 @@ import axios from "axios";
 import { setError, clearError } from "../store/errorSlice";
 
 const api = axios.create({
-  // baseURL: "/3000/api/v1",
+  baseURL: import.meta.env.VITE_BASE_URL, // note: import.meta.env
   withCredentials: true,
 });
+const BASE_URL = import.meta.env.VITE_API_URL;
 export const setupInterceptors = (store) => {
   api.interceptors.request.use(
     (config) => {
@@ -14,14 +15,12 @@ export const setupInterceptors = (store) => {
         // Attach the token to the Authorization header
         config.headers["Authorization"] = `Bearer ${token}`;
       }
-
       return config;
     },
     (error) => {
       return Promise.reject(error);
     }
   );
-
   api.interceptors.response.use(
     (response) => {
       // Extract the request URL as the error source

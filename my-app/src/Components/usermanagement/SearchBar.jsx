@@ -15,7 +15,7 @@ const SearchBar = ({ setSearchTerm, filter, rowsPerPage, setRowsPerPage }) => {
       {/* Rows per page Select */}
       {filter === "dispatchers" && (
         <button className="rounded bg-blue-500 text-white p-4">
-          <NavLink to="">Create dispatcher</NavLink>
+          <NavLink to="/signup">Create dispatcher</NavLink>
         </button>
       )}
       <select

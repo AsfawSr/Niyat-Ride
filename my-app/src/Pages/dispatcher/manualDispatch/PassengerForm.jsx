@@ -1,4 +1,4 @@
-import { vehicleTypes } from "./constants";
+// import { vehicleTypes } from "./constants";
 
 export default function PassengerForm({
   formData,
@@ -9,6 +9,7 @@ export default function PassengerForm({
   onDropoffInput,
   handleSelectSuggestion,
   setActiveField,
+  vehicles,
 }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -132,18 +133,17 @@ export default function PassengerForm({
         <select
           name="vehicleType"
           className="w-full border rounded px-3 py-2 dark:text-gray-500"
-          value={formData.vehicleType}
+          value={formData.vehicleTypeId}
           onChange={handleChange}
         >
           <option value="">Select vehicle</option>
-          {vehicleTypes.map((v) => (
-            <option key={v.value} value={v.value}>
-              {v.label}
+          {vehicles.map((v) => (
+            <option key={v.value} value={v.vehicleTypeId}>
+              {v.vehicleTypeName}
             </option>
           ))}
         </select>
       </div>
-
       {/* Passenger Notes */}
       <div className="mb-4">
         <label className="block text-sm  mb-1">Passenger Notes</label>

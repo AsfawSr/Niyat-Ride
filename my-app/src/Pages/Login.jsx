@@ -9,6 +9,8 @@ import Input from "../Components/input";
 import Windowresponsiv from "../Components/Windowresponsiv";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { setError } from "../store/errorSlice";
+import { FiSmartphone } from "react-icons/fi";
+import api from "../api/api";
 
 const Login = () => {
   const location = useLocation();
@@ -30,6 +32,19 @@ const Login = () => {
     }));
   };
 
+  // const submitHandler = async (event) => {
+  //   event.preventDefault();
+  //   try {
+  //     const res = await api.post("/api/auth/login", values);
+  //     if (res.status === 200) {
+  //       console.log(res);
+  //       const { email, firstName, userId, role } = res.data.data.user;
+  //       const token = res.data.token;
+  //       dispatch(authActions.login({ email, firstName, userId, token, role }));
+  //       navigate(Redirectpath, { replace: true });
+  //     }
+  //   } catch (error) {}
+  // };
   const submitHandler = async (event) => {
     event.preventDefault();
 
@@ -40,7 +55,7 @@ const Login = () => {
       authActions.login({
         email: values.email,
         name: role === "admin" ? "Admin" : "Dispatcher",
-        fullName: role === "admin" ? "Admin User" : "Dispatcher User",
+        FirstName: role === "admin" ? "Admin User" : "Dispatcher User",
         _id: "12345",
         token: "dummy-token",
         role,

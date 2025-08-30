@@ -1,25 +1,25 @@
 export default function DriverList({
-  drivers,
+  vehicles,
   formData,
   setFormData,
   calculateDistance,
 }) {
   // Calculate distance for each driver
-  const driversWithDistance = drivers?.map((d) => ({
-    ...d,
+  const vehiclesWithDistance = vehicles?.map((v) => ({
+    ...v,
     distance:
-      formData.pickupAddress && calculateDistance(d.location)
-        ? parseFloat(calculateDistance(d.location))
+      formData.pickupAddress && calculateDistance(v.location)
+        ? parseFloat(calculateDistance(v.location))
         : Infinity, // Infinity if pickupAddress is empty
   }));
   // Sort drivers by distance
-  const sortedDrivers = [...driversWithDistance].sort(
+  const sortedVehicle = [...vehiclesWithDistance].sort(
     (a, b) => a.distance - b.distance
   );
   // Closest driver only if pickupAddress is filled
   const closestDriverId =
-    formData.pickupAddress && sortedDrivers.length > 0
-      ? sortedDrivers[0].id
+    formData.pickupAddress && sortedVehicle.length > 0
+      ? sortedVehicle[0].id
       : null;
   return (
     <>
@@ -32,18 +32,18 @@ export default function DriverList({
         <select
           name="selectedDriverId"
           className="w-full border rounded px-3 py-2"
-          value={formData.selectedDriverName ?? ""}
+          value={formData.driverId ?? ""}
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
-              selectedDriverName: e.target.value,
+              selectedDriverID: e.target.value,
             }))
           }
         >
           <option value="">-- Select a driver --</option>
-          {sortedDrivers?.map((d) => (
-            <option key={d.id} value={d.name}>
-              {d.name} ({d.vehicle}) -{" "}
+          {sortedVehicle?.map((v) => (
+            <option key={v.driverId} value={v.driverId}>
+              {d.driverName} ({v.vehicleTypeName}) -{" "}
               {formData.pickupAddress ? d.distance.toFixed(2) : "-"}
               {formData.pickupAddress && d.id === closestDriverId
                 ? " (Closest)"
@@ -55,36 +55,39 @@ export default function DriverList({
 
       {/* Driver List */}
       <ul className="space-y-2 max-h-48 overflow-y-auto">
-        {sortedDrivers?.map((d) => (
+        {sortedVehicle?.map((v) => (
           <li
-            key={d.id}
+            key={v.id}
             className={`border p-2 rounded flex justify-between items-center ${
-              formData.pickupAddress && d.id === closestDriverId
+              formData.pickupAddress && v.id === closestDriverId
                 ? "border-green-500 bg-green-50"
                 : ""
             }`}
           >
             <div>
               <p className="font-semibold">
-                {d.name}{" "}
-                {formData.pickupAddress && d.id === closestDriverId && (
+                {v.driverName}{" "}
+                {formData.pickupAddress && v.driverId === closestDriverId && (
                   <span className="text-green-600 text-xs font-medium">
                     (Closest)
                   </span>
                 )}
               </p>
               <p className="text-sm">
-                {d.vehicle} | {d.status}
+                {v.vehicleTypeName} | {v.status}
               </p>
               <p className="text-xs text-gray-500">
-                Distance: {formData.pickupAddress ? d.distance.toFixed(2) : "-"}
+                Distance: {formData.pickupAddress ? v.distance.toFixed(2) : "-"}
                 km
               </p>
             </div>
             <button
               className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
               onClick={() =>
-                setFormData((prev) => ({ ...prev, selectedDriverName: d.name }))
+                setFormData((prev) => ({
+                  ...prev,
+                  selectedDriverId: v.driverId,
+                }))
               }
             >
               Select

@@ -18,6 +18,7 @@ import CompletedRides from "./Pages/RideManagement/CompletedRides";
 import ProtectedRoute from "./Components/ProtectedRoute"; // ✅ role-based protection
 import LiveMap from "./Pages/dispatcher/LiveMap";
 import ManualDispatch from "./Pages/dispatcher/manualDispatch/ManualDispatch.jsx";
+import Logout from "./Pages/Logout.jsx";
 function App() {
   const [darkMode, setDarkmode] = useState(false);
   const toggleHandler = () => setDarkmode((prev) => !prev);
@@ -29,6 +30,8 @@ function App() {
       children: [
         { index: true, element: <Login /> },
         { path: "signup", element: <AdminSignup /> },
+        { path: "logout", element: <Logout /> },
+
         // ---- User Management (canonical paths) ----
         { path: "admin/users", element: <AllUsers /> },
         { path: "admin/users/drivers", element: <Drivers /> },
