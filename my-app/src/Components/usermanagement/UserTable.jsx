@@ -1,72 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { initialUsers } from "./data/users";
+import { useState } from "react";
 import SearchBar from "./SearchBar";
 import Pagination from "./Pagination";
 import UserRow from "./UserRow";
 import ViewUserModal from "./modals/ViewUserModal";
 import EditUserModal from "./modals/EditUserModal";
-const UserTable = ({ filter }) => {
-  const [allUsers, setAllUsers] = useState(initialUsers);
-  const [searchTerm, setSearchTerm] = useState("");
+const UserTable = ({ users, onDeleteSuccess, onUpdateSuccess }) => {
   const [rowsPerPage, setRowsPerPage] = useState(3);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [editUser, setEditUser] = useState(null);
-
-  useEffect(() => {
-    const term = searchTerm.trim().toLowerCase();
-    const byRole = (u) => {
-      if (filter === "drivers") return u.role.toLowerCase() === "driver";
-      if (filter === "passengers") return u.role.toLowerCase() === "passenger";
-      if (filter === "dispatchers")
-        return u.role.toLowerCase() === "dispatcher";
-      return true;
-    };
-    const bySearch = (u) =>
-      !term ||
-      String(u.id).includes(term) ||
-      u.name.toLowerCase().includes(term) ||
-      u.phone.toLowerCase().includes(term) ||
-      u.role.toLowerCase().includes(term) ||
-      u.status.toLowerCase().includes(term);
-
-    const next = allUsers.filter(byRole).filter(bySearch);
-    setFilteredUsers(next);
-    setCurrentPage(1);
-  }, [searchTerm, filter, allUsers]);
-  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / rowsPerPage));
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(tableUsers.length / rowsPerPage));
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const paginatedUsers = filteredUsers.slice(
-    startIndex,
-    startIndex + rowsPerPage
-  );
-  const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    setEditUser({ ...editUser, [name]: value });
-  };
-  const handleDelete = (userId) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      setAllUsers((prev) => prev.filter((u) => u.id !== userId));
-    }
-  };
-
-  const saveChanges = () => {
-    setAllUsers((prev) =>
-      prev.map((u) => (u.id === editUser.id ? editUser : u))
-    );
-    setEditUser(null);
-  };
+  const paginatedUsers = users.slice(startIndex, startIndex + rowsPerPage);
   return (
     <div className="space-y-4">
-      {/* Search Bar */}
-      <SearchBar
-        setSearchTerm={setSearchTerm}
-        rowsPerPage={rowsPerPage}
-        setRowsPerPage={setRowsPerPage}
-        filter={filter}
-      />
-      {/* User Table */}
       <div className="overflow-hidden rounded-lg border border-gray-300">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -83,35 +31,35 @@ const UserTable = ({ filter }) => {
           <tbody>
             {paginatedUsers.map((user) => (
               <UserRow
-                key={user.id}
+                key={user.userId}
                 user={user}
                 onView={() => setSelectedUser(user)}
                 onEdit={() => setEditUser(user)}
-                onDelete={() => handleDelete(user.id)}
+                onDelete={onDeleteSuccess}
               />
             ))}
           </tbody>
         </table>
       </div>
-
-      {/* Pagination */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
+        rowsPerPage={rowsPerPage}
+        setRowsPerPage={setRowsPerPage}
       />
 
-      {/* Modals */}
       <ViewUserModal
         user={selectedUser}
-        onClose={() => setSelectedUser(null)}
+        onCancel={() => setSelectedUser(null)}
       />
-      <EditUserModal
-        user={editUser}
-        onChange={handleEditChange}
-        onSave={saveChanges}
-        onCancel={() => setEditUser(null)}
-      />
+      {editUser && (
+        <EditUserModal
+          user={editUser}
+          onCancel={() => setEditUser(null)}
+          onUpdateSuccess={onUpdateSuccess} // <-- update table after save
+        />
+      )}
     </div>
   );
 };

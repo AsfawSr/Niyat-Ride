@@ -1,11 +1,10 @@
 import axios from "axios";
-import { setError, clearError } from "../store/errorSlice";
+import { setError, clearError } from "../store/globalErrorSlice";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL, // note: import.meta.env
+  baseURL: import.meta.env.VITE_BASE_URL,
   withCredentials: true,
 });
-const BASE_URL = import.meta.env.VITE_API_URL;
 export const setupInterceptors = (store) => {
   api.interceptors.request.use(
     (config) => {

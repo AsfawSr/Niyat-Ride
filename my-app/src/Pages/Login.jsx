@@ -3,27 +3,22 @@ import key from "../assets/mdkey.png";
 import email from "../assets/email.png";
 import admin from "../assets/admin.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { authActions } from "../store/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { authActions, loginUser } from "../store/authSlice";
 import Input from "../Components/input";
 import Windowresponsiv from "../Components/Windowresponsiv";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import { setError } from "../store/errorSlice";
-import { FiSmartphone } from "react-icons/fi";
-import api from "../api/api";
-
+import { setError } from "../store/globalErrorSlice";
 const Login = () => {
   const location = useLocation();
   const Redirectpath = location.state?.path || "/";
   const dispatch = useDispatch();
+  const { status } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-
   const [values, setValues] = useState({
     email: "",
     password: "",
-    role: "admin", // ✅ default role is admin
   });
-
   const InputChangeHandler = (event) => {
     const { name, value } = event.target;
     setValues((prevValues) => ({
@@ -31,53 +26,23 @@ const Login = () => {
       [name]: value,
     }));
   };
-
-  // const submitHandler = async (event) => {
-  //   event.preventDefault();
-  //   try {
-  //     const res = await api.post("/api/auth/login", values);
-  //     if (res.status === 200) {
-  //       console.log(res);
-  //       const { email, firstName, userId, role } = res.data.data.user;
-  //       const token = res.data.token;
-  //       dispatch(authActions.login({ email, firstName, userId, token, role }));
-  //       navigate(Redirectpath, { replace: true });
-  //     }
-  //   } catch (error) {}
-  // };
   const submitHandler = async (event) => {
     event.preventDefault();
 
-    const role = values.role;
+    try {
+      const resultAction = await dispatch(loginUser(values)).unwrap();
 
-    // ✅ Save into Redux
-    dispatch(
-      authActions.login({
-        email: values.email,
-        name: role === "admin" ? "Admin" : "Dispatcher",
-        FirstName: role === "admin" ? "Admin User" : "Dispatcher User",
-        _id: "12345",
-        token: "dummy-token",
-        role,
-      })
-    );
-
-    // ✅ Redirect to proper dashboard
-    if (role === "admin") {
-      navigate("/dashboard", { replace: true });
-    } else {
-      navigate("/dispatcher/livemap", { replace: true });
+      if (loginUser.fulfilled.match(resultAction)) {
+        navigate(Redirectpath || "/", { replace: true });
+      }
+    } catch (error) {
+      console.error("Login error:", error);
     }
   };
 
-  const { width } = Windowresponsiv();
-
-  // ✅ Google login handler
   const handleGoogleSuccess = async (response) => {
     try {
       console.log("Google login success:", response);
-
-      // For now, all Google logins = admin
       dispatch(
         authActions.login({
           email: values.email || "googleuser@example.com",
@@ -88,17 +53,14 @@ const Login = () => {
           role: "admin",
         })
       );
-
       navigate("/dashboard");
     } catch (error) {
       dispatch(setError("Google login failed!"));
     }
   };
-
   const handleGoogleFailure = (error) => {
     dispatch(setError("Login failed!"));
   };
-
   return (
     <>
       <h2 className="flex items-center justify-center gap-10 text-[32px] font-bold max-[414px]:flex-col max-[414px]:text-[28px] ">
@@ -136,30 +98,6 @@ const Login = () => {
               isVisible={true}
               icon={<img src={key} alt="" width={23} height={12} />}
             />
-
-            {/* ✅ Role Selector */}
-            <div className="flex gap-6 items-center justify-center">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="role"
-                  value="admin"
-                  checked={values.role === "admin"}
-                  onChange={InputChangeHandler}
-                />
-                Admin
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="role"
-                  value="dispatcher"
-                  checked={values.role === "dispatcher"}
-                  onChange={InputChangeHandler}
-                />
-                Dispatcher
-              </label>
-            </div>
           </div>
 
           {/* Submit */}

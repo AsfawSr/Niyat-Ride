@@ -74,15 +74,12 @@ const AdminSignup = () => {
       email: enteredEmail,
       phoneNumber: enteredPhone,
       password: enteredPassword,
-      // assignedRegion: enteredRegion, // ✅ required by the API
+      assignedRegion: "mekelle",
     };
-
-    // ✅ Validate password before sending
     if (enteredPassword !== confirmEnteredPassword) {
       alert("Passwords do not match!");
       return;
     }
-
     try {
       setLoading(true);
       const response = await api.post("/api/dispatchers/signup", userData, {
@@ -91,7 +88,6 @@ const AdminSignup = () => {
         },
       });
       console.log(userData);
-
       alert("Registration successful!");
       // Reset form
       resetFirstNameValue();
