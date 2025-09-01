@@ -1,4 +1,4 @@
-package com.niyat.ride.user.services;
+package com.niyat.ride.user.services.serviceImpl;
 
 import com.niyat.ride.user.dtos.DriverResponseDTO;
 import com.niyat.ride.user.dtos.DriverSignupDTO;
@@ -8,6 +8,7 @@ import com.niyat.ride.user.models.Driver;
 import com.niyat.ride.user.repositories.DriverRepository;
 import com.niyat.ride.enums.AccountStatus;
 import com.niyat.ride.enums.Role;
+import com.niyat.ride.user.services.DriverService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

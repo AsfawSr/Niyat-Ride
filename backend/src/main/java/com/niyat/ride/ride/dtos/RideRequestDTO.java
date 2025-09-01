@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RideRequestDTO {
+
     private double pickupLat;
     private double pickupLon;
-    private String pickupAddress;
     private Double dropoffLat;
     private Double dropoffLon;
-    private String dropoffAddress;
     private Long vehicleTypeId;
 }
 

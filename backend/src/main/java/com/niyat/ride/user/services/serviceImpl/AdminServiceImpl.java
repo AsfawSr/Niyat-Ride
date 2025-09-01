@@ -1,4 +1,4 @@
-package com.niyat.ride.user.services;
+package com.niyat.ride.user.services.serviceImpl;
 
 import com.niyat.ride.user.dtos.AdminResponseDTO;
 import com.niyat.ride.user.dtos.AdminSignupDTO;
@@ -9,6 +9,7 @@ import com.niyat.ride.user.repositories.AdminRepository;
 import com.niyat.ride.enums.Role;
 import com.niyat.ride.user.models.Credential;
 import com.niyat.ride.shared.repositories.CredentialRepository;
+import com.niyat.ride.user.services.AdminService;
 import com.niyat.ride.utils.Helpers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

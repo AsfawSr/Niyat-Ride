@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/dispatchers/**").permitAll()
                         .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/api/admins/**").permitAll()
+                        .requestMatchers("/api/rides/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs/public").permitAll()
                         .anyRequest().authenticated()
                 );
