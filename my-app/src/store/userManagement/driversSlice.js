@@ -1,13 +1,36 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { fetchDrivers } from "./driversThunk";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "../api/api";
 
+// Async thunk to fetch drivers
+export const fetchDrivers = createAsyncThunk(
+  "drivers/fetchDrivers",
+  async (payload = {}, thunkAPI) => {
+    try {
+      if (payload.id) {
+        // Fetch single driver by ID
+        const response = await api.get(`/drivers/${payload.id}`);
+        return { type: "detail", data: response.data.data };
+      }
+
+      // Fetch list (with optional search)
+      const params = payload.search ? { search: payload.search } : {};
+      const response = await api.get("/drivers", { params });
+      return { type: "list", data: response.data.data.drivers || [] };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+// Initial state
 const initialState = {
   drivers: [],
   selectedDriver: null,
-  status: "idle", // "idle" | "loading" | "succeeded" | "failed"
+  status: "idle", // idle | loading | succeeded | failed
   error: null,
 };
 
+// Slice
 const driversSlice = createSlice({
   name: "drivers",
   initialState,

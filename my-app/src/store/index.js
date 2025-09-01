@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice.js";
-import errorReducer from "./errorSlice.jsx";
-import vehicles from "./vehiclesDispatcherSlice.jsx";
+import errorReducer from "./globalErrorSlice.js";
+import vehicles from "./vehiclesDispatcherSlice.js";
 import allusersReducer from "./userManagement/allUsersSlice.js";
 import passengersReducer from "./userManagement/passengersSlice.js";
 import driversReducer from "./userManagement/driversSlice.js";

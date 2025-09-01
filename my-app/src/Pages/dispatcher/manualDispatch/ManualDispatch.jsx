@@ -135,7 +135,6 @@ export default function ManualDispatch() {
       vehicleTypePreference: formData.vehicleTypeId || undefined,
       notes: formData.passengerNotes || undefined,
     };
-
     try {
       const response = await api.post("/api/dispatcher/rides", payload, {
         withCredentials: true, // if your backend uses cookies for auth

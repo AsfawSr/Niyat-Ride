@@ -1,13 +1,36 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { fetchPassengers } from "./passengersThunk";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "../api/api";
 
+// Async thunk to fetch passengers
+export const fetchPassengers = createAsyncThunk(
+  "passengers/fetchPassengers",
+  async (payload = {}, thunkAPI) => {
+    try {
+      if (payload.id) {
+        // Fetch single passenger by ID
+        const response = await api.get(`/passengers/${payload.id}`);
+        return { type: "detail", data: response.data.data };
+      }
+
+      // Fetch list (with optional search)
+      const params = payload.search ? { search: payload.search } : {};
+      const response = await api.get("/passengers", { params });
+      return { type: "list", data: response.data.data.passengers || [] };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+// Initial state
 const initialState = {
   passengers: [],
   selectedPassenger: null,
-  status: "idle", // "idle" | "loading" | "succeeded" | "failed"
+  status: "idle", // idle | loading | succeeded | failed
   error: null,
 };
 
+// Slice
 const passengersSlice = createSlice({
   name: "passengers",
   initialState,
