@@ -142,7 +142,6 @@ export default function Sidebar() {
 
         {/* Navigation List */}
         <List sx={{ pt: 1 }}>
-//////
           {/* ===== Admin Menus ===== */}
           {role === "admin" && (
             <>
@@ -245,7 +244,6 @@ export default function Sidebar() {
           )}
 
           {/* ===== Dispatcher Menus (shared with admin too) ===== */}
-/////////////
           {(role === "admin" || role === "dispatcher") && (
             <>
               <ListItemButton
