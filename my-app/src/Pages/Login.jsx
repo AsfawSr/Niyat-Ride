@@ -30,16 +30,10 @@ const Login = () => {
     event.preventDefault();
 
     try {
-      const resultAction = await dispatch(loginUser(values)).unwrap();
-
-      if (loginUser.fulfilled.match(resultAction)) {
-        navigate(Redirectpath || "/", { replace: true });
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-    }
+      await dispatch(loginUser(values)).unwrap();
+      navigate(Redirectpath || "/dashboard", { replace: true });
+    } catch (error) {}
   };
-
   const handleGoogleSuccess = async (response) => {
     try {
       console.log("Google login success:", response);

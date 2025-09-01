@@ -25,5 +25,4 @@ const GlobalError = () => {
     </div>
   );
 };
-
 export default GlobalError;

@@ -13,7 +13,8 @@ const initialState = {
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
-    try {
+    console.log(credentials)
+    try { 
       const response = await api.post("/api/auth/login", credentials);
       return response.data; // Expecting { data: { user }, token }
     } catch (error) {
@@ -36,7 +37,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.status = "success";
+        state.status = true;
         const { user, token } = action.payload.data;
         state.email = user.email;
         state.firstName = user.firstName;
@@ -46,7 +47,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.status = "failed";
+        state.status = false;
         state.error = action.payload;
       });
   },
