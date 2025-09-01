@@ -51,7 +51,10 @@ const Login = () => {
     if (role === "admin") {
       navigate("/dashboard", { replace: true });
     } else {
-      navigate("/dispatcher/livemap", { replace: true });
+
+      navigate("/dispatcher", { replace: true });
+
+
     }
   };
 
