@@ -1,21 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/api";
 
-// Async thunk to fetch passengers
 export const fetchPassengers = createAsyncThunk(
   "passengers/fetchPassengers",
   async (payload = {}, thunkAPI) => {
     try {
       if (payload.id) {
-        // Fetch single passenger by ID
         const response = await api.get(`/passengers/${payload.id}`);
         return { type: "detail", data: response.data.data };
       }
-
-      // Fetch list (with optional search)
-      const params = payload.search ? { search: payload.search } : {};
+      const params = {
+        search: payload.search || "",
+        page: payload.page || 1,
+        limit: payload.limit || 10
+      };
       const response = await api.get("/passengers", { params });
-      return { type: "list", data: response.data.data.passengers || [] };
+      return {
+        type: "list",
+        data: response.data.data.passengers || [],
+        totalPages: response.data.data.totalPages || 1
+      };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
@@ -26,7 +30,8 @@ export const fetchPassengers = createAsyncThunk(
 const initialState = {
   passengers: [],
   selectedPassenger: null,
-  status: "idle", // idle | loading | succeeded | failed
+  totalPages: 1,
+  status: "idle", // "idle" | "loading" | "succeeded" | "failed"
   error: null,
 };
 
@@ -51,9 +56,13 @@ const passengersSlice = createSlice({
       })
       .addCase(fetchPassengers.fulfilled, (state, action) => {
         state.status = "succeeded";
+
         if (action.payload.type === "list") {
           state.passengers = action.payload.data;
-        } else if (action.payload.type === "detail") {
+          state.totalPages = action.payload.totalPages; 
+        }
+
+        if (action.payload.type === "detail") {
           state.selectedPassenger = action.payload.data;
         }
       })

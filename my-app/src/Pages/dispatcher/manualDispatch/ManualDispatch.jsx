@@ -162,7 +162,6 @@ Notes: ${formData.passengerNotes || "-"}`);
         passengerNotes: "",
         selectedDriverId: "",
       });
-
       setPickupLocation(null);
       setDropoffLocation(null);
       setPickupSuggestions([]);
@@ -197,6 +196,7 @@ Notes: ${formData.passengerNotes || "-"}`);
               vehicles={vehicles}
               status={status}
             />
+            <button>request Ride</button>
             <DriverList
               vehicles={vehicles}
               formData={formData}

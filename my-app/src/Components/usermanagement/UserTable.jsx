@@ -5,14 +5,9 @@ import UserRow from "./UserRow";
 import ViewUserModal from "./modals/ViewUserModal";
 import EditUserModal from "./modals/EditUserModal";
 const UserTable = ({ users, onDeleteSuccess, onUpdateSuccess }) => {
-  const [rowsPerPage, setRowsPerPage] = useState(3);
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
   const [editUser, setEditUser] = useState(null);
-  // Pagination
-  const totalPages = Math.max(1, Math.ceil(tableUsers.length / rowsPerPage));
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const paginatedUsers = users.slice(startIndex, startIndex + rowsPerPage);
+
   return (
     <div className="space-y-4">
       <div className="overflow-hidden rounded-lg border border-gray-300">
@@ -29,7 +24,7 @@ const UserTable = ({ users, onDeleteSuccess, onUpdateSuccess }) => {
             </tr>
           </thead>
           <tbody>
-            {paginatedUsers.map((user) => (
+            {users.map((user) => (
               <UserRow
                 key={user.userId}
                 user={user}
@@ -41,13 +36,6 @@ const UserTable = ({ users, onDeleteSuccess, onUpdateSuccess }) => {
           </tbody>
         </table>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-        rowsPerPage={rowsPerPage}
-        setRowsPerPage={setRowsPerPage}
-      />
 
       <ViewUserModal
         user={selectedUser}

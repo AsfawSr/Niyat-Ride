@@ -1,21 +1,31 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/api";
 
-// Async thunk to fetch drivers
+// Async thunk to fetch drivers (list with pagination & search, or single detail)
 export const fetchDrivers = createAsyncThunk(
   "drivers/fetchDrivers",
   async (payload = {}, thunkAPI) => {
     try {
+      // Fetch single driver by ID
       if (payload.id) {
-        // Fetch single driver by ID
         const response = await api.get(`/drivers/${payload.id}`);
         return { type: "detail", data: response.data.data };
       }
 
-      // Fetch list (with optional search)
-      const params = payload.search ? { search: payload.search } : {};
+      // Fetch list with optional search and pagination
+      const params = {
+        search: payload.search || "",
+        page: payload.page || 1,
+        limit: payload.limit || 10
+      };
+
       const response = await api.get("/drivers", { params });
-      return { type: "list", data: response.data.data.drivers || [] };
+
+      return {
+        type: "list",
+        data: response.data.data.drivers || [],
+        totalPages: response.data.data.totalPages || 1
+      };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
@@ -26,7 +36,8 @@ export const fetchDrivers = createAsyncThunk(
 const initialState = {
   drivers: [],
   selectedDriver: null,
-  status: "idle", // idle | loading | succeeded | failed
+  totalPages: 1,
+  status: "idle", // "idle" | "loading" | "succeeded" | "failed"
   error: null,
 };
 
@@ -53,7 +64,9 @@ const driversSlice = createSlice({
         state.status = "succeeded";
         if (action.payload.type === "list") {
           state.drivers = action.payload.data;
-        } else if (action.payload.type === "detail") {
+          state.totalPages = action.payload.totalPages;
+        }
+        if (action.payload.type === "detail") {
           state.selectedDriver = action.payload.data;
         }
       })
@@ -63,6 +76,5 @@ const driversSlice = createSlice({
       });
   },
 });
-
 export const driversActions = driversSlice.actions;
 export default driversSlice.reducer;

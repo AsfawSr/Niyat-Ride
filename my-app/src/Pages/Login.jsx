@@ -6,7 +6,6 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/authSlice";
 import Input from "../Components/input";
-import Windowresponsiv from "../Components/Windowresponsiv";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { setError } from "../store/globalErrorSlice";
 const Login = () => {
@@ -28,7 +27,6 @@ const Login = () => {
   };
   const submitHandler = async (event) => {
     event.preventDefault();
-
     try {
       await dispatch(loginUser(values)).unwrap();
       navigate(Redirectpath || "/dashboard", { replace: true });
