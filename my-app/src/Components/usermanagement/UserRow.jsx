@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
-import api from "../api/api";
+import api from "../../api/api";
 
 const UserRow = ({ user, onEdit, onView, onDeleteSuccess }) => {
   const [loading, setLoading] = useState(false);

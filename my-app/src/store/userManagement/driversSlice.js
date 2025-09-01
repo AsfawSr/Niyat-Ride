@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api/api";
+import api from "../../api/api";
 
 // Async thunk to fetch drivers
 export const fetchDrivers = createAsyncThunk(

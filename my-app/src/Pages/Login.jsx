@@ -4,7 +4,7 @@ import email from "../assets/email.png";
 import admin from "../assets/admin.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { authActions, loginUser } from "../store/authSlice";
+import { loginUser } from "../store/authSlice";
 import Input from "../Components/input";
 import Windowresponsiv from "../Components/Windowresponsiv";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";

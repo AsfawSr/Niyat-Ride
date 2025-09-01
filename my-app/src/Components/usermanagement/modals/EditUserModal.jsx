@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import api from "../api/api";
 import { Input } from "@mui/material";
+import api from "../../../api/api";
 
 const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
   if (!user) return null;

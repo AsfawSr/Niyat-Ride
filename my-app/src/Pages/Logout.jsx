@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { authActions } from "../store/authSlice";
+// import { authActions } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 function Logout() {
