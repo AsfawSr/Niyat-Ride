@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Box,
   Card,
@@ -28,11 +29,12 @@ import {
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import Sidebar from "../../Components/Sidebar";
 import Topbar from "../../Components/Topbar";
-import { useRides } from "../../context/RidesContext"; // ✅ use context
+import { updateRide, deleteRide } from "../../store/ridesSlice"; // ✅ NEW: Redux actions
 
 export default function AllRides() {
-  // ✅ use global rides state
-  const { rides, updateRide, deleteRide } = useRides();
+  const dispatch = useDispatch();
+  // ✅ NEW: use useSelector to get the rides from the Redux store state.
+  const rides = useSelector((state) => state.rides.rides);
 
   // UI state
   const [page, setPage] = useState(0);
@@ -43,7 +45,7 @@ export default function AllRides() {
   // modals
   const [viewRide, setViewRide] = useState(null);
   const [editRide, setEditRide] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null); // ✅ renamed to avoid conflict
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   // ----- derived data: filter + paginate -----
   const filteredRides = useMemo(() => {
@@ -75,21 +77,21 @@ export default function AllRides() {
   const handleEditChange = (field, value) =>
     setEditRide((prev) => ({ ...prev, [field]: value }));
   const handleEditSave = () => {
-    updateRide(editRide); // ✅ update via context
+    // ✅ NEW: Dispatch the updateRide action with the updated ride object.
+    dispatch(updateRide(editRide));
     setEditRide(null);
   };
 
   // ----- delete handlers -----
   const handleDeleteConfirm = () => {
     if (!deleteTarget) return;
-    deleteRide(deleteTarget.id); // ✅ delete via context
+    // ✅ NEW: Dispatch the deleteRide action with the ride's ID.
+    dispatch(deleteRide(deleteTarget.id));
     setDeleteTarget(null);
   };
 
   return (
-
     <Box sx={{ display: "flex", bgcolor: "#f6f7fb", minHeight: "100vh" }}>
-
       <Sidebar />
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Topbar />
@@ -121,7 +123,6 @@ export default function AllRides() {
               sx={{ flex: 1, minWidth: 240, bgcolor: "#fff" }}
             />
             <FormControl size="small" sx={{ minWidth: 180, bgcolor: "#fff" }}>
-
               <InputLabel>Status</InputLabel>
               <Select
                 label="Status"
@@ -145,15 +146,11 @@ export default function AllRides() {
               <Typography variant="h6" gutterBottom>
                 All Rides
               </Typography>
-
-              {/* Table with sticky header */}
               <TableContainer component={Paper} sx={{ maxHeight: "70vh" }}>
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
-
                       <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Ride ID</TableCell>
-
                       <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Passenger</TableCell>
                       <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Driver</TableCell>
                       <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Status</TableCell>
@@ -195,8 +192,6 @@ export default function AllRides() {
               </TableContainer>
             </CardContent>
           </Card>
-
-          {/* Sticky bottom pagination */}
           <Box
             sx={{
               position: "sticky",

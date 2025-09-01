@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useSelector } from "react-redux"; // ✅ NEW: Import useSelector
 import {
   Box, Card, CardContent, Typography, Table, TableHead, TableRow,
   TableCell, TableBody, IconButton, Dialog, DialogTitle, DialogContent,
@@ -7,10 +8,10 @@ import {
 import { FaEye } from "react-icons/fa";
 import Sidebar from "../../Components/Sidebar";
 import Topbar from "../../Components/Topbar";
-import { useRides } from "../../context/RidesContext"; // ✅ use global context
 
 export default function CancelledRides() {
-  const { rides } = useRides(); // ✅ get rides globally
+  // ✅ NEW: use useSelector to get the rides from the Redux store state.
+  const rides = useSelector((state) => state.rides.rides);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [viewRide, setViewRide] = useState(null);
