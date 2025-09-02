@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Sidebar from "../../Components/Sidebar";
 import UserTable from "../../components/usermanagement/UserTable";
 import UserStats from "../../components/usermanagement/UserStats";
 import SearchBar from "../../components/usermanagement/SearchBar";
-import Pagination from "../../components/common/Pagination"; // assuming you have this
-import { fetchAdmins } from "../../store/userManagement/adminsSlice"; // ✅ new thunk
+import Pagination from "../../components/usermanagement/Pagination";
+import { fetchAdmins } from "../../store/userManagement/adminSlice";
 
 const Admins = () => {
   const dispatch = useDispatch();
@@ -41,7 +41,6 @@ const Admins = () => {
       })
     );
   };
-
   const handleUpdateSuccess = () => {
     dispatch(
       fetchAdmins({
@@ -59,7 +58,10 @@ const Admins = () => {
       {/* Main Admin Table Panel */}
       <div className="dark:bg-gray-900 dark:shadow-gray-700 flex-1 p-4">
         <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-200">
-          Admins
+          Admins{" "}
+          <button className="rounded bg-blue-500 text-white p-4">
+            <NavLink to="/signup">Create Admin</NavLink>
+          </button>
         </h1>
         {/* Search Bar */}
         <SearchBar onSearch={handleSearch} filter="admins" />

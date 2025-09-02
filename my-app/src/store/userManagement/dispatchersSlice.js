@@ -12,7 +12,7 @@ export const fetchDispatchers = createAsyncThunk(
       const params = {
         search: payload.search || "",
         page: payload.page || 1,
-        limit: payload.limit || 10
+        limit: payload.limit || 10,
       };
 
       const response = await api.get("/dispatchers", { params });
@@ -20,7 +20,7 @@ export const fetchDispatchers = createAsyncThunk(
       return {
         type: "list",
         data: response.data.data.dispatchers || [],
-        totalPages: response.data.data.totalPages || 1 // <-- Get total pages
+        totalPages: response.data.data.totalPages || 1, // <-- Get total pages
       };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
@@ -28,15 +28,13 @@ export const fetchDispatchers = createAsyncThunk(
   }
 );
 
-
-import { createSlice } from "@reduxjs/toolkit";
-import { fetchDispatchers } from "./dispatchersThunks";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 const initialState = {
   dispatchers: [],
   dispatcherDetail: null,
-  totalPages: 1, 
+  totalPages: 1,
   loading: false,
-  error: null
+  error: null,
 };
 const dispatchersSlice = createSlice({
   name: "dispatchers",
@@ -64,8 +62,7 @@ const dispatchersSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Something went wrong";
       });
-  }
+  },
 });
 
 export default dispatchersSlice.reducer;
-

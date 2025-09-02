@@ -3,9 +3,8 @@ import { useState } from "react";
 import { FaMoon, FaSun } from "react-icons/fa";
 import Login from "./Pages/Login";
 import RootLayout from "./Pages/RootLayout";
-import AdminSignup from "./Pages/AdminSignup";
+import AdminSignup from "./Pages/Signup.jsx";
 import Dashboard from "./Pages/Dashboard";
-import AllUsers from "./Pages/userManagement/AllUsers";
 import Dispatchers from "./Pages/userManagement/Dispatchers";
 import Passengers from "./Pages/userManagement/Passengers";
 import Drivers from "./Pages/userManagement/Drivers";
@@ -19,6 +18,7 @@ import ProtectedRoute from "./Components/ProtectedRoute"; // ✅ role-based prot
 import LiveMap from "./Pages/dispatcher/LiveMap";
 import ManualDispatch from "./Pages/dispatcher/manualDispatch/ManualDispatch.jsx";
 import Logout from "./Pages/Logout.jsx";
+import Admins from "./Pages/userManagement/Admins.jsx";
 function App() {
   const [darkMode, setDarkmode] = useState(false);
   const toggleHandler = () => setDarkmode((prev) => !prev);
@@ -33,12 +33,12 @@ function App() {
         { path: "logout", element: <Logout /> },
 
         // ---- User Management (canonical paths) ----
-        { path: "admin/users", element: <AllUsers /> },
+        { path: "admin/users", element: <Admins /> },
         { path: "admin/users/drivers", element: <Drivers /> },
         { path: "admin/users/passengers", element: <Passengers /> },
         { path: "admin/users/dispatchers", element: <Dispatchers /> },
         // ---- User Management (legacy aliases; safe to keep for now) ----
-        { path: "AllUsers", element: <AllUsers /> },
+        { path: "admins", element: <admins /> },
         { path: "drivers", element: <Drivers /> },
         { path: "passengers", element: <Passengers /> },
         { path: "dispatchers", element: <Dispatchers /> },
@@ -54,23 +54,21 @@ function App() {
         // ---- Dispatcher ----
         { path: "dispatcher/manualAssignment", element: <ManualDispatch /> },
         { path: "dispatcher/livemap", element: <LiveMap /> },
-
         // Optional 404
         // { path: "*", element: <PageNotFound /> },
-        // ✅ Admin routes (accessible only to admin)
         {
           path: "dashboard",
           element: (
-            <ProtectedRoute allowedRoles={["admin"]}>
+            <ProtectedRoute allowedRoles={["Admin"]}>
               <Dashboard />
             </ProtectedRoute>
           ),
         },
         {
-          path: "AllUsers",
+          path: "admins",
           element: (
             <ProtectedRoute allowedRoles={["admin"]}>
-              <AllUsers />
+              <Admins />
             </ProtectedRoute>
           ),
         },

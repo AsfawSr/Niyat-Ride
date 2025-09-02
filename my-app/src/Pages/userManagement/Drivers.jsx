@@ -4,8 +4,8 @@ import Sidebar from "../../Components/Sidebar";
 import UserTable from "../../components/usermanagement/UserTable";
 import UserStats from "../../components/usermanagement/UserStats";
 import SearchBar from "../../components/usermanagement/SearchBar";
-import Pagination from "../../components/common/Pagination"; // assuming you have this
 import { fetchDrivers } from "../../store/userManagement/driversSlice";
+import Pagination from "../../components/usermanagement/Pagination";
 
 const Drivers = () => {
   const dispatch = useDispatch();

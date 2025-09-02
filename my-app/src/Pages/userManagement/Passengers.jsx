@@ -4,8 +4,8 @@ import Sidebar from "../../Components/Sidebar";
 import UserTable from "../../components/userManagement/UserTable";
 import UserStats from "../../components/userManagement/UserStats";
 import SearchBar from "../../components/userManagement/SearchBar";
-import Pagination from "../../components/common/Pagination"; // assuming this exists
 import { fetchPassengers } from "../../store/userManagement/passengersSlice";
+import Pagination from "../../components/usermanagement/Pagination";
 
 const Passengers = () => {
   const dispatch = useDispatch();

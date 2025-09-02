@@ -87,8 +87,7 @@ const AdminSignup = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log(userData);
-      alert("Registration successful!");
+      console.log(response), alert("Registration successful!");
       // Reset form
       resetFirstNameValue();
       resetLastNameValue();

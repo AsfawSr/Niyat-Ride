@@ -8,6 +8,7 @@ import { loginUser } from "../store/authSlice";
 import Input from "../Components/input";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { setError } from "../store/globalErrorSlice";
+import Loading from "../Components/Loading";
 const Login = () => {
   const location = useLocation();
   const Redirectpath = location.state?.path || "/";
@@ -29,8 +30,13 @@ const Login = () => {
     event.preventDefault();
     try {
       await dispatch(loginUser(values)).unwrap();
-      navigate(Redirectpath || "/dashboard", { replace: true });
-    } catch (error) {}
+      if (role === "Admin") navigate("/dashboard");
+      if (role === "DISPATCHER") {
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
   const handleGoogleSuccess = async (response) => {
     try {
@@ -55,7 +61,11 @@ const Login = () => {
   };
   return (
     <>
-      <h2 className="flex items-center justify-center gap-10 text-[32px] font-bold max-[414px]:flex-col max-[414px]:text-[28px] ">
+      {/* {status === "loading" ? (
+        <Loading />
+      ) : (
+        <> */}
+      <h2 className="flex items-center justify-center gap-10 text-[32px] font-bold max-[414px]:flex-col max-[414px]:text-[28px]">
         <img
           src={admin}
           alt=""
@@ -65,8 +75,9 @@ const Login = () => {
         />
         Login
       </h2>
+
       <GoogleOAuthProvider clientId="">
-        <form onSubmit={submitHandler} className=" mx-1 lg:w-1/3 lg:mx-auto">
+        <form onSubmit={submitHandler} className="mx-1 lg:w-1/3 lg:mx-auto">
           {/* Inputs */}
           <div className="grid grid-cols-1 gap-8 mb-5">
             <Input
@@ -122,7 +133,7 @@ const Login = () => {
           </div>
 
           {/* Google Login */}
-          <div className="w-3/4 lg:w-1/2 mx-auto ">
+          <div className="w-3/4 lg:w-1/2 mx-auto">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleFailure}
@@ -132,6 +143,8 @@ const Login = () => {
           </div>
         </form>
       </GoogleOAuthProvider>
+      {/* </>
+      )} */}
     </>
   );
 };

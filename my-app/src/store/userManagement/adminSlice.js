@@ -16,7 +16,7 @@ export const fetchAdmins = createAsyncThunk(
       const params = {
         search: payload.search || "",
         page: payload.page || 1,
-        limit: payload.limit || 10
+        limit: payload.limit || 10,
       };
 
       const response = await api.get("/admins", { params });
@@ -24,7 +24,7 @@ export const fetchAdmins = createAsyncThunk(
       return {
         type: "list",
         data: response.data.data.admins || [],
-        totalPages: response.data.data.totalPages || 1
+        totalPages: response.data.data.totalPages || 1,
       };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
@@ -38,7 +38,7 @@ const initialState = {
   adminDetail: null,
   totalPages: 1,
   status: "idle", // "idle" | "loading" | "succeeded" | "failed"
-  error: null
+  error: null,
 };
 
 // Slice
@@ -49,7 +49,7 @@ const adminsSlice = createSlice({
     removeAdmin(state, action) {
       const { adminId } = action.payload;
       state.admins = state.admins.filter((a) => a.id !== adminId);
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -73,7 +73,7 @@ const adminsSlice = createSlice({
         state.status = "failed";
         state.error = action.payload || "Failed to fetch admins";
       });
-  }
+  },
 });
 
 export const adminActions = adminsSlice.actions;

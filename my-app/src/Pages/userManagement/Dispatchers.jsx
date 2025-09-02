@@ -5,8 +5,8 @@ import UserTable from "../../components/usermanagement/UserTable";
 import UserStats from "../../components/usermanagement/UserStats";
 import Sidebar from "../../Components/Sidebar";
 import SearchBar from "../../components/usermanagement/SearchBar";
-import Pagination from "../../components/common/Pagination"; // assuming you have this
 import { fetchDispatchers } from "../../store/userManagement/dispatchersSlice";
+import Pagination from "../../components/usermanagement/Pagination";
 
 const Dispatchers = () => {
   const dispatch = useDispatch();
@@ -69,9 +69,8 @@ const Dispatchers = () => {
         )}
 
         <button className="rounded bg-blue-500 text-white p-4">
-          <NavLink to="/create-dispatcher">Create dispatcher</NavLink>
+          <NavLink to="/signup">Create dispatcher</NavLink>
         </button>
-
         {status === "succeeded" && dispatchers.length > 0 && (
           <UserTable
             users={dispatchers}
