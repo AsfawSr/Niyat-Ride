@@ -42,8 +42,8 @@ public class DriverSignupDTO {
     @NotBlank(message = "front side license image is required")
     private String backLicenceImage;
 
-    @NotBlank(message = "Vehicle plate number is required")
-    private LocalDate licesneExipirationDate;
+//    @NotBlank(message = "Vehicle plate number is required")
+//    private LocalDate licesneExipirationDate;
 
 
 }

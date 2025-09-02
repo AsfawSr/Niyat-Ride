@@ -33,7 +33,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public CustomerResponseDTO verifyOtp(String phoneNumber, String otp) {
         if (!otpService.verifyOtp(phoneNumber, otp)) {
-            throw new RuntimeException("Invalid OTP"); // replace with custom exception if you want
+            throw new RuntimeException("Invalid OTP");
         }
 
         Customer customer = customerRepository.findByPhoneNumber(phoneNumber)

@@ -5,10 +5,7 @@ import com.niyat.ride.user.dtos.DriverSignupDTO;
 import com.niyat.ride.user.dtos.DriverUpdateDTO;
 
 public interface DriverService {
-    DriverResponseDTO signUpDriver(DriverSignupDTO driverSignupDTO);
+    void requestOtp(String phoneNumber, DriverSignupDTO signupDTO, boolean isSignup);
+    DriverResponseDTO verifyOtp(String phoneNumber, String otp, boolean isSignup);
     DriverResponseDTO updateDriver(Long driverId, DriverUpdateDTO updateDTO);
-    void checkIfDriverExists(String phoneNumber);
-    DriverResponseDTO getDriverByPhoneNumber(String phoneNumber);
-
-
 }
