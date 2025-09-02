@@ -1,8 +1,8 @@
 import axios from "axios";
-import { setError, clearError } from "../store/errorSlice";
+import { setError, clearError } from "../store/globalErrorSlice";
 
 const api = axios.create({
-  // baseURL: "/3000/api/v1",
+  baseURL: import.meta.env.VITE_BASE_URL,
   withCredentials: true,
 });
 export const setupInterceptors = (store) => {
@@ -14,14 +14,12 @@ export const setupInterceptors = (store) => {
         // Attach the token to the Authorization header
         config.headers["Authorization"] = `Bearer ${token}`;
       }
-
       return config;
     },
     (error) => {
       return Promise.reject(error);
     }
   );
-
   api.interceptors.response.use(
     (response) => {
       // Extract the request URL as the error source

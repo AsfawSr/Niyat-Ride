@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Sidebar from "../../Components/Sidebar";
-import UserTable from "../../components/userManagement/UserTable";
-import UserStats from "../../components/userManagement/UserStats";
-import SearchBar from "../../components/userManagement/SearchBar";
-import { fetchPassengers } from "../../store/userManagement/passengersSlice";
+import UserTable from "../../components/usermanagement/UserTable";
+import UserStats from "../../components/usermanagement/UserStats";
+import SearchBar from "../../components/usermanagement/SearchBar";
 import Pagination from "../../components/usermanagement/Pagination";
+import { fetchAdmins } from "../../store/userManagement/adminSlice";
 
-const Passengers = () => {
+const Admins = () => {
   const dispatch = useDispatch();
-  const { passengers, status, totalPages, error } = useSelector(
-    (state) => state.passengers
+  const { admins, status, totalPages, error } = useSelector(
+    (state) => state.admins
   );
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ✅ Fetch passengers whenever filters change
   useEffect(() => {
     dispatch(
-      fetchPassengers({
+      fetchAdmins({
         search: searchQuery,
         page: currentPage,
         limit: rowsPerPage,
@@ -30,22 +29,21 @@ const Passengers = () => {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    setCurrentPage(1); // ✅ Reset to first page on new search
+    setCurrentPage(1);
   };
 
-  const handleDeletePassenger = () => {
+  const handleDeleteAdmin = () => {
     dispatch(
-      fetchPassengers({
+      fetchAdmins({
         search: searchQuery,
         page: currentPage,
         limit: rowsPerPage,
       })
     );
   };
-
   const handleUpdateSuccess = () => {
     dispatch(
-      fetchPassengers({
+      fetchAdmins({
         search: searchQuery,
         page: currentPage,
         limit: rowsPerPage,
@@ -57,28 +55,28 @@ const Passengers = () => {
     <div className="flex">
       <Sidebar />
 
-      {/* Main Passenger Table Panel */}
+      {/* Main Admin Table Panel */}
       <div className="dark:bg-gray-900 dark:shadow-gray-700 flex-1 p-4">
         <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-200">
-          Passengers
+          Admins{" "}
+          <button className="rounded bg-blue-500 text-white p-4">
+            <NavLink to="/signup">Create Admin</NavLink>
+          </button>
         </h1>
-
         {/* Search Bar */}
-        <SearchBar onSearch={handleSearch} filter="passengers" />
-
+        <SearchBar onSearch={handleSearch} filter="admins" />
         {/* Status Messages */}
-        {status === "loading" && <p>Loading passengers...</p>}
+        {status === "loading" && <p>Loading admins...</p>}
         {status === "failed" && <p className="text-red-500">{error}</p>}
-        {status === "succeeded" && passengers.length === 0 && (
-          <p>No passengers found.</p>
+        {status === "succeeded" && admins.length === 0 && (
+          <p>No admins found.</p>
         )}
-
-        {/* Passenger Table */}
-        {status === "succeeded" && passengers.length > 0 && (
+        {/* Admin Table */}
+        {status === "succeeded" && admins.length > 0 && (
           <UserTable
-            users={passengers}
-            onDeleteSuccess={handleDeletePassenger}
-            updateSuccess={handleUpdateSuccess}
+            users={admins}
+            onDeleteSuccess={handleDeleteAdmin}
+            onUpdateSuccess={handleUpdateSuccess}
           />
         )}
 
@@ -92,12 +90,12 @@ const Passengers = () => {
         />
       </div>
 
-      {/* User Stats Panel */}
-      <div className="flex flex-col justify-between items-center">
+      {/* Admin Stats Panel */}
+      <div className="col-span-4">
         <UserStats />
       </div>
     </div>
   );
 };
 
-export default Passengers;
+export default Admins;

@@ -9,7 +9,6 @@ import {
   TableCell,
   TableBody,
 } from "@mui/material";
-
 export default function RecentRidesTable({ rows }) {
   return (
     <Card sx={{ borderRadius: 3, boxShadow: 3 }}>

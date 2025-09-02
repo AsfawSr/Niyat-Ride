@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, IconButton } from "@mui/material";
 import { FiBell, FiUser } from "react-icons/fi";
+import { NavLink } from "react-router-dom";
 
 export default function Topbar() {
   return (
@@ -23,7 +24,10 @@ export default function Topbar() {
         <FiBell />
       </IconButton>
       <IconButton>
-        <FiUser />
+        <NavLink to="/logout" className="text-xxs">
+          <FiUser className="inline-block mr-1" />
+          Logout
+        </NavLink>
       </IconButton>
     </Box>
   );

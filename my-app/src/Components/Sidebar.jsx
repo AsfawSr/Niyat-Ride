@@ -21,18 +21,18 @@ import {
   MdMenu,
   MdClose,
 } from "react-icons/md";
+import { FaCar } from "react-icons/fa";
 
 export default function Sidebar() {
   const location = useLocation();
-  const { role } = useSelector((state) => state.auth); // role = "admin" | "dispatcher"
+  const { role } = useSelector((state) => state.auth);
 
   const [openSidebar, setOpenSidebar] = useState(true);
 
-  // ✅ Persisted states for menus
   const [openUserMenu, setOpenUserMenu] = useState(() => {
     const saved = localStorage.getItem("nyat_open_user_menu");
     if (saved !== null) return saved === "true";
-    return location.pathname.startsWith("/AllUsers");
+    return location.pathname.startsWith("/admins");
   });
 
   const [openRides, setOpenRides] = useState(() => {
@@ -54,7 +54,7 @@ export default function Sidebar() {
     if (location.pathname.startsWith("/admin/rides")) setOpenRides(true);
 
     const isUserRoute = [
-      "/AllUsers",
+      "/admins",
       "/drivers",
       "/passengers",
       "/dispatchers",
@@ -133,7 +133,9 @@ export default function Sidebar() {
           }}
         >
           {openSidebar && (
-            <Box sx={{ fontWeight: 700, fontSize: 18 }}>🚗 Nyat Ride</Box>
+            <Box sx={{ fontWeight: 700, fontSize: 18 }}>
+              <FaCar /> Nyat Ride
+            </Box>
           )}
           <IconButton onClick={toggleSidebar} sx={{ color: "#fff" }}>
             {openSidebar ? <MdClose /> : <MdMenu />}
