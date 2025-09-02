@@ -12,11 +12,9 @@ const Admins = () => {
   const { admins, status, totalPages, error } = useSelector(
     (state) => state.admins
   );
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-
   useEffect(() => {
     dispatch(
       fetchAdmins({
@@ -49,7 +47,6 @@ const Admins = () => {
       })
     );
   };
-
   return (
     <div className="flex">
       <Sidebar />
