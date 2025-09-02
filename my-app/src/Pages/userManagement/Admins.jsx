@@ -97,5 +97,4 @@ const Admins = () => {
     </div>
   );
 };
-
 export default Admins;

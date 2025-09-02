@@ -34,9 +34,7 @@ const Login = () => {
       if (role === "dispacher") {
         navigate("/dispatcher");
       }
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
+    } catch (error) {}
   };
   const handleGoogleSuccess = async (response) => {
     try {

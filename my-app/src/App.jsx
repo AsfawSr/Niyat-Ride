@@ -2,6 +2,7 @@ import { RouterProvider } from "react-router-dom";
 import { useState } from "react";
 import { FaMoon, FaSun } from "react-icons/fa";
 import router from "./routes"; // ✅ clean import from routes/index.jsx
+import GlobalError from "./api/GlobalErrorHandler";
 
 function App() {
   const [darkMode, setDarkmode] = useState(false);
@@ -10,6 +11,7 @@ function App() {
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 py-3">
+        <GlobalError />
         <RouterProvider router={router} />
         <button
           onClick={toggleHandler}

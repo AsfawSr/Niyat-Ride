@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 import api from "../api/api";
 // import { authActions } from "../store/authSlice";
 // import api from "../api/api";
-const AdminSignup = () => {
+const Signup = () => {
   const { width } = Windowresponsiv();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -270,4 +270,4 @@ const AdminSignup = () => {
   );
 };
 
-export default AdminSignup;
+export default Signup;

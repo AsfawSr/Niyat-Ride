@@ -6,12 +6,10 @@ import DispatcherLayout from "../layouts/DispatcherLayout";
 
 // Auth & shared
 import Login from "../Pages/Login";
-import AdminSignup from "../Pages/AdminSignup";
 import ProtectedRoute from "../Components/ProtectedRoute";
 
 // Admin pages
 import Dashboard from "../Pages/Dashboard";
-import AllUsers from "../Pages/userManagement/AllUsers";
 import Dispatchers from "../Pages/userManagement/Dispatchers";
 import Passengers from "../Pages/userManagement/Passengers";
 import Drivers from "../Pages/userManagement/Drivers";
@@ -21,10 +19,11 @@ import AllRides from "../Pages/RideManagement/AllRides";
 import CancelledRides from "../Pages/RideManagement/CancelledRides";
 import OngoingRides from "../Pages/RideManagement/OngoingRides";
 import CompletedRides from "../Pages/RideManagement/CompletedRides";
-
 // Dispatcher
 import LiveMap from "../Pages/dispatcher/LiveMap";
 import ManualDispatch from "../Pages/dispatcher/manualDispatch/ManualDispatch.jsx";
+import Admins from "../Pages/userManagement/Admins.jsx";
+import Signup from "../Pages/Signup.jsx";
 
 const router = createBrowserRouter([
   {
@@ -32,7 +31,7 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <Login /> },
-      { path: "signup", element: <AdminSignup /> },
+      { path: "signup", element: <Signup /> },
 
       // ---- Admin routes ----
       {
@@ -43,7 +42,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { path: "admin/users", element: <AllUsers /> },
+      { path: "admin/admins", element: <Admins /> },
       { path: "admin/users/drivers", element: <Drivers /> },
       { path: "admin/users/passengers", element: <Passengers /> },
       { path: "admin/users/dispatchers", element: <Dispatchers /> },
@@ -54,7 +53,7 @@ const router = createBrowserRouter([
       { path: "admin/cancelled", element: <CancelledRides /> },
 
       // Legacy aliases (optional)
-      { path: "AllUsers", element: <AllUsers /> },
+      { path: "admins", element: <Admins /> },
       { path: "drivers", element: <Drivers /> },
       { path: "passengers", element: <Passengers /> },
       { path: "dispatchers", element: <Dispatchers /> },
