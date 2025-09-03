@@ -39,7 +39,7 @@ export default function DriverList({
 
       {/* Driver List */}
       <ul className="space-y-2 max-h-48 overflow-y-auto">
-        {sortedVehicle?.map((v) => (
+        {drivers?.map((v) => (
           <li
             key={v.id}
             className={`border p-2 rounded flex justify-between items-center ${

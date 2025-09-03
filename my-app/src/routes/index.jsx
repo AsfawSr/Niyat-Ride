@@ -37,7 +37,7 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Admin"]}>
             <Dashboard />
           </ProtectedRoute>
         ),
@@ -66,7 +66,7 @@ const router = createBrowserRouter([
   {
     path: "/dispatcher",
     element: (
-      <ProtectedRoute allowedRoles={["admin", "dispatcher"]}>
+      <ProtectedRoute allowedRoles={["Admin", "dispatcher"]}>
         <DispatcherLayout />
       </ProtectedRoute>
     ),

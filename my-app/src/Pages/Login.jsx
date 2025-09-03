@@ -30,7 +30,7 @@ const Login = () => {
     event.preventDefault();
     try {
       await dispatch(loginUser(values)).unwrap();
-      if (role === "admin") navigate("/dashboard");
+      if (role === "Admin") navigate("/dashboard");
       if (role === "dispacher") {
         navigate("/dispatcher");
       }
@@ -38,7 +38,6 @@ const Login = () => {
   };
   const handleGoogleSuccess = async (response) => {
     try {
-      console.log("Google login success:", response);
       dispatch(
         authActions.login({
           email: values.email || "googleuser@example.com",
