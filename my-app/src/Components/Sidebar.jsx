@@ -172,7 +172,7 @@ export default function Sidebar() {
               >
                 <List component="div" disablePadding>
                   {[
-                    { to: "/AllUsers", label: "All Users" },
+                    { to: "/admins", label: "Admins" },
                     { to: "/drivers", label: "Drivers" },
                     { to: "/passengers", label: "Passengers " },
                     { to: "/dispatchers", label: "Dispatchers" },

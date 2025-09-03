@@ -15,7 +15,6 @@ export default function PassengerForm({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   return (
     <>
       <h2 className="text-lg font-semibold mb-4">Passenger Details</h2>

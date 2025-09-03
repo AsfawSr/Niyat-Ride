@@ -1,10 +1,4 @@
-export default function DriverList({
-  formData,
-  setFormData,
-  drivers,
-  selectedDriverId,
-  setSelectedDriverId,
-}) {
+export default function DriverList({ formData, drivers, setFormData }) {
   return (
     <>
       <h2 className="text-lg font-semibold mt-6 mb-2">Available Drivers</h2>

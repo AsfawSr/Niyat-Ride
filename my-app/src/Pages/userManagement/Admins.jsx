@@ -6,6 +6,7 @@ import UserStats from "../../components/usermanagement/UserStats";
 import SearchBar from "../../components/usermanagement/SearchBar";
 import Pagination from "../../components/usermanagement/Pagination";
 import { fetchAdmins } from "../../store/userManagement/adminSlice";
+import { NavLink } from "react-router-dom";
 
 const Admins = () => {
   const dispatch = useDispatch();
