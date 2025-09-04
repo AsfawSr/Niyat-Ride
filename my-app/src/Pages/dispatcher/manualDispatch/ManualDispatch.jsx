@@ -6,7 +6,7 @@ import { dummyDrivers, DEFAULT_CENTER } from "./constants";
 import Sidebar from "../../../Components/Sidebar";
 import api from "../../../api/api";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchVehicles } from "../../../store/vehiclesDispatcherSlice";
+import { fetchVehicles } from "../../../store/activeVehiclesSlice";
 
 const initialState = {
   userPhone: "",
@@ -22,10 +22,9 @@ const initialState = {
 
 export default function ManualDispatch() {
   const { userId } = useSelector((state) => state.auth);
-  const { vehicles, status } = useSelector((state) => state.vehiclesDispacher);
-  const [nearDrivers, setNearDrivers] = useState([]);
+  const { vehicles, status } = useSelector((state) => state.activeVehicles);
+  const [nearDrivers, setNearDrivers] = useState(vehicles);
   const dispatch = useDispatch();
-
   // Fetch vehicles only once on mount
   useEffect(() => {
     dispatch(fetchVehicles());

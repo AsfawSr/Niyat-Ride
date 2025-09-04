@@ -5,7 +5,7 @@ export const fetchVehicles = createAsyncThunk(
   "vehicleTypes/fetchVehicleTypes",
   async (_, thunkAPI) => {
     try {
-      const response = await api.get("/vehicles"); // update with your actual endpoint
+      const response = await api.get("api/admin/vehicle-types/active"); // update with your actual endpoint
       return response.data.data.vehicles || [];
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);

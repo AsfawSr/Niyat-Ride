@@ -7,12 +7,10 @@ const stats = [
   { label: "Total dispachers", value: "350" },
   { label: "Total admins", value: "350" },
 ];
-
 const roles = [
   { label: "Passengers", color: "bg-blue-600", height: "80%" },
   { label: "Drivers", color: "bg-gray-600", height: "60%" },
 ];
-
 const UserStats = () => {
   return (
     <div className="space-y-4 flex flex-col ">

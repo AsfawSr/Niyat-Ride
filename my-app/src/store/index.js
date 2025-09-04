@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice.js";
 import errorReducer from "./globalErrorSlice.js";
-import vehicles from "./vehiclesDispatcherSlice.js";
+import vehicles from "./activeVehiclesSlice.js";
 import adminsReducer from "./userManagement/adminSlice.js";
 import passengersReducer from "./userManagement/passengersSlice.js";
 import driversReducer from "./userManagement/driversSlice.js";
@@ -11,7 +11,7 @@ const store = configureStore({
   reducer: {
     auth: authReducer,
     error: errorReducer,
-    vehiclesDispacher: vehicles,
+    activeVehicles: vehicles,
     admins: adminsReducer,
     passengers: passengersReducer,
     drivers: driversReducer,
