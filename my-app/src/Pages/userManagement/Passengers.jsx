@@ -17,7 +17,6 @@ const Passengers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ✅ Fetch whenever filters change
   useEffect(() => {
     dispatch(
       fetchPassengers({
@@ -30,7 +29,7 @@ const Passengers = () => {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    setCurrentPage(1); // ✅ Reset page on new search
+    setCurrentPage(1);
   };
 
   const handleDeletePassenger = () => {
@@ -57,22 +56,18 @@ const Passengers = () => {
     <div className="flex">
       <Sidebar />
 
-      {/* Main Passenger Table Panel */}
       <div className="dark:bg-gray-900 dark:shadow-gray-700 flex-1 p-4">
         <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-200">
           Passengers
         </h1>
 
-        {/* Search Bar */}
         <SearchBar onSearch={handleSearch} filter="passengers" />
 
-        {/* Status Messages */}
         {status === "loading" && <p>Loading passengers...</p>}
         {status === "failed" && <p className="text-red-500">{error}</p>}
         {status === "succeeded" && passengers.length === 0 && (
           <p>No passengers found.</p>
         )}
-        {/* Passenger Table */}
         {status === "succeeded" && passengers.length > 0 && (
           <UserTable
             users={passengers}
@@ -80,7 +75,6 @@ const Passengers = () => {
             updateSuccess={handleUpdateSuccess}
           />
         )}
-        {/* Pagination */}
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -90,7 +84,6 @@ const Passengers = () => {
         />
       </div>
 
-      {/* User Stats Panel */}
       <div className="col-span-4 space-y-4">
         <UserStats />
       </div>

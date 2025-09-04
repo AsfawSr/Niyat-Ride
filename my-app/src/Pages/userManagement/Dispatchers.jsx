@@ -7,19 +7,15 @@ import UserTable from "../../components/usermanagement/UserTable";
 import UserStats from "../../components/usermanagement/UserStats";
 import SearchBar from "../../components/usermanagement/SearchBar";
 import Pagination from "../../components/usermanagement/Pagination";
-
 import { fetchDispatchers } from "../../store/userManagement/dispatchersSlice";
-
 const Dispatchers = () => {
   const dispatch = useDispatch();
   const { dispatchers, status, totalPages, error } = useSelector(
     (state) => state.dispatchers
   );
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-
   useEffect(() => {
     dispatch(
       fetchDispatchers({
@@ -54,18 +50,19 @@ const Dispatchers = () => {
       })
     );
   };
-
   return (
     <div className="flex">
       <Sidebar />
-
       {/* Main Dispatcher Table Panel */}
       <div className="dark:bg-gray-900 dark:shadow-gray-700 flex-1 p-4">
         <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-200">
           Dispatchers{" "}
-          <button className="rounded bg-blue-500 text-white p-4">
-            <NavLink to="/signup">Create Dispatcher</NavLink>
-          </button>
+          <NavLink
+            to="/signup/Dispatcher"
+            className="rounded bg-blue-500 text-white p-4 inline-block"
+          >
+            Create Dispatcher
+          </NavLink>
         </h1>
 
         {/* Search Bar */}

@@ -102,6 +102,7 @@ export default function Sidebar() {
     background: isActive ? "rgba(37, 99, 235, 0.3)" : "transparent",
     display: "block",
   });
+  const drawerWidth = openSidebar ? 240 : 70;
 
   return (
     <Box sx={{ display: "flex" }}>

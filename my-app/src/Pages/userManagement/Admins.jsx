@@ -60,9 +60,12 @@ const Admins = () => {
       <div className="dark:bg-gray-900 dark:shadow-gray-700 flex-1 p-4">
         <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-200">
           Admins{" "}
-          <button className="rounded bg-blue-500 text-white p-4">
-            <NavLink to="/signup">Create Admin</NavLink>
-          </button>
+          <NavLink
+            to="/signup/Admin"
+            className="rounded bg-blue-500 text-white p-4 inline-block"
+          >
+            Create Admin
+          </NavLink>
         </h1>
         {/* Search Bar */}
         <SearchBar onSearch={handleSearch} filter="admins" />

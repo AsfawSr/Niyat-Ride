@@ -1,13 +1,13 @@
-import { useMemo, useEffect, useRef, useState } from "react";
+import { useMemo, useEffect, useRef, useState, useCallback } from "react";
 import PassengerForm from "./PassengerForm";
 import DriverList from "./DriverList";
 import MapView from "./MapView";
 import { dummyDrivers, DEFAULT_CENTER } from "./constants";
-import L from "leaflet";
 import Sidebar from "../../../Components/Sidebar";
 import api from "../../../api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchVehicles } from "../../../store/vehiclesDispatcherSlice";
+
 const initialState = {
   userPhone: "",
   firstName: "",
@@ -17,32 +17,35 @@ const initialState = {
   dropoffAddress: "",
   vehicleTypeId: "",
   passengerNotes: "",
-  driverId: "",
+  selectedDriverId: "",
 };
+
 export default function ManualDispatch() {
   const { userId } = useSelector((state) => state.auth);
   const { vehicles, status } = useSelector((state) => state.vehiclesDispacher);
   const [nearDrivers, setNearDrivers] = useState([]);
   const dispatch = useDispatch();
+
+  // Fetch vehicles only once on mount
   useEffect(() => {
-    if (status != "succes") {
-      dispatch(fetchVehicles());
-    }
-  });
+    dispatch(fetchVehicles());
+  }, [dispatch]);
+
   const [formData, setFormData] = useState(initialState);
-  const [pickupLocation, setPickupLocation] = useState(null);
-  const [dropoffLocation, setDropoffLocation] = useState(null);
+  const [pickupLocation, setPickupLocation] = useState(null); // {lat, lng}
+  const [dropoffLocation, setDropoffLocation] = useState(null); // {lat, lng}
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [dropoffSuggestions, setDropoffSuggestions] = useState([]);
   const [activeField, setActiveField] = useState("pickup");
-  // const [drivers] = useState(dummyDrivers);
+  const [loading, setLoading] = useState(false); // prevent multiple requests
+
   const pickupDebounceRef = useRef(null);
   const dropoffDebounceRef = useRef(null);
+
   // Fetch Suggestions
-  const fetchSuggestions = async (query, type, cityBias) => {
+  const fetchSuggestions = useCallback(async (query, type, cityBias) => {
     if (!query || query.trim().length < 2) {
-      if (type === "pickup") setPickupSuggestions([]);
-      else setDropoffSuggestions([]);
+      type === "pickup" ? setPickupSuggestions([]) : setDropoffSuggestions([]);
       return;
     }
     const q = cityBias ? `${query}, ${cityBias}` : query;
@@ -54,13 +57,14 @@ export default function ManualDispatch() {
         headers: { "User-Agent": "DispatcherDemo/1.0" },
       });
       const data = await res.json();
-      if (type === "pickup") setPickupSuggestions(data);
-      else setDropoffSuggestions(data);
+      type === "pickup"
+        ? setPickupSuggestions(data)
+        : setDropoffSuggestions(data);
     } catch {
-      if (type === "pickup") setPickupSuggestions([]);
-      else setDropoffSuggestions([]);
+      type === "pickup" ? setPickupSuggestions([]) : setDropoffSuggestions([]);
     }
-  };
+  }, []);
+
   const onPickupInput = (e) => {
     setFormData((prev) => ({ ...prev, pickupAddress: e.target.value }));
     setActiveField("pickup");
@@ -70,6 +74,7 @@ export default function ManualDispatch() {
       300
     );
   };
+
   const onDropoffInput = (e) => {
     setFormData((prev) => ({ ...prev, dropoffAddress: e.target.value }));
     setActiveField("dropoff");
@@ -79,41 +84,45 @@ export default function ManualDispatch() {
       300
     );
   };
-  const handleSelectSuggestion = (item, type) => {
-    const lat = parseFloat(item.lat),
-      lon = parseFloat(item.lon),
-      address = item.display_name;
+
+  const handleSelectSuggestion = useCallback((item, type) => {
+    const lat = parseFloat(item.lat);
+    const lng = parseFloat(item.lon);
+    const address = item.display_name;
+
     if (type === "pickup") {
-      setPickupLocation([lat, lon]);
+      setPickupLocation({ lat, lng });
       setFormData((prev) => ({ ...prev, pickupAddress: address }));
       setPickupSuggestions([]);
       setActiveField("dropoff");
     } else {
-      setDropoffLocation([lat, lon]);
+      setDropoffLocation({ lat, lng });
       setFormData((prev) => ({ ...prev, dropoffAddress: address }));
       setDropoffSuggestions([]);
     }
-  };
-  const handleMapSet = ({ lat, lon, display }, type) => {
-    console.log("==", display, lat, lon, type);
+  }, []);
+
+  const handleMapSet = useCallback(({ lat, lon, display }, type) => {
     if (type === "pickup") {
-      setPickupLocation([lat, lon]);
+      setPickupLocation({ lat, lng: lon });
       setFormData((prev) => ({ ...prev, pickupAddress: display }));
     } else {
-      setDropoffLocation([lat, lon]);
+      setDropoffLocation({ lat, lng: lon });
       setFormData((prev) => ({ ...prev, dropoffAddress: display }));
     }
-  };
+  }, []);
 
   const handleRideRequest = async () => {
+    if (loading) return; // prevent multiple requests
     if (!pickupLocation || !dropoffLocation) {
       alert("Please select both pickup and dropoff locations!");
       return;
     }
 
-    // Construct the payload according to DispatcherRideRequestDTO
+    setLoading(true);
+
     const payload = {
-      dispatcherId: userId, //  actual dispatcherId if you have it
+      dispatcherId: userId,
       customerInfo: {
         name: `${formData.firstName} ${formData.lastName}`,
         phone: formData.userPhone,
@@ -132,54 +141,64 @@ export default function ManualDispatch() {
       vehicleTypePreference: formData.vehicleTypeId || undefined,
       notes: formData.passengerNotes || undefined,
     };
+
     try {
       const response = await api.post("/api/dispatcher/rides", payload, {
-        withCredentials: true, // if your backend uses cookies for auth
+        withCredentials: true,
       });
-      // Show confirmation alert
 
+      const date = new Date();
       alert(`Ride assigned successfully!\n\nPassenger: ${formData.firstName} ${
         formData.lastName
       } (${formData.userPhone})
 Pickup: ${pickupLocation.lat}, ${pickupLocation.lng}
 Dropoff: ${dropoffLocation.lat}, ${dropoffLocation.lng}
 Driver: ${formData.selectedDriverId || "-"}
-Vehicle Type: ${formData.vehicleType || "-"}
+Vehicle Type: ${formData.vehicleTypeId || "-"}
 Date: ${date.toLocaleString()}
 Notes: ${formData.passengerNotes || "-"}`);
-      // Reset the form
+
+      // Reset form
       setFormData(initialState);
       setPickupLocation(null);
       setDropoffLocation(null);
       setPickupSuggestions([]);
       setDropoffSuggestions([]);
-      setNearDrivers(response.data.nearbyDrivers);
-      setActiveField("pickup"); // reset focus to pickup field
+      setNearDrivers(response.data.nearbyDrivers || []);
+      setActiveField("pickup");
     } catch (error) {
       alert("Failed to request ride. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
+
   const handleAssignRide = async () => {
-    const payload = {
-      date: new Date(),
-      driverId: nea,
-    };
+    if (!formData.selectedDriverId) return;
     try {
-      const response = await api.post("/api/dispatcher/rides", payload, {});
+      await api.post(
+        "/api/dispatcher/rides",
+        {
+          date: new Date(),
+          driverId: formData.selectedDriverId,
+        },
+        { withCredentials: true }
+      );
     } catch (error) {}
   };
+
   const mapCenter = useMemo(
     () => pickupLocation || dropoffLocation || DEFAULT_CENTER,
     [pickupLocation, dropoffLocation]
   );
+
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen w-full overflow-x-hidden">
       <Sidebar />
-      <main className="ml-0 bg-red-500 flex-1 p-6">
+      <main className="flex-1 bg-red-500 min-w-0 p-6">
         <h1 className="text-2xl font-bold mb-4">Manual Dispatch</h1>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-[86vh]">
-          {/* LEFT: Form + Drivers */}
-          <div className=" dark:text-white shadow rounded-lg p-6 overflow-y-auto">
+          <div className="dark:text-white shadow rounded-lg p-6 overflow-y-auto">
             <PassengerForm
               formData={formData}
               setFormData={setFormData}
@@ -194,16 +213,20 @@ Notes: ${formData.passengerNotes || "-"}`);
             />
             <button
               onClick={handleRideRequest}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+              disabled={loading}
+              className={`${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              } text-white px-4 py-2 rounded mt-2`}
             >
-              request Ride
+              {loading ? "Requesting..." : "Request Ride"}
             </button>
             <DriverList
               drivers={nearDrivers}
               formData={formData}
               setFormData={setFormData}
             />
-            {/* Actions */}
             <div className="flex gap-2 mt-4">
               <button
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
@@ -219,11 +242,10 @@ Notes: ${formData.passengerNotes || "-"}`);
               </button>
             </div>
           </div>
-          {/* RIGHT: Map */}
           <MapView
             pickupLocation={pickupLocation}
             dropoffLocation={dropoffLocation}
-            drivers={dummyDrivers}
+            drivers={nearDrivers}
             activeField={activeField}
             handleMapSet={handleMapSet}
             mapCenter={mapCenter}

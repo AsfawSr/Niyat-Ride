@@ -15,16 +15,17 @@ export const fetchDrivers = createAsyncThunk(
       // Fetch list with optional search and pagination
       const params = {
         search: payload.search || "",
-        page: payload.page || 1,
-        limit: payload.limit || 10
+        page: payload.page,
+        size: payload.limit,
       };
 
       const response = await api.get("/drivers", { params });
+      console.log(response);
 
       return {
         type: "list",
         data: response.data.data.drivers || [],
-        totalPages: response.data.data.totalPages || 1
+        totalPages: response.data.data.totalPages || 1,
       };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);

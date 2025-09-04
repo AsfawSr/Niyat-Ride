@@ -6,7 +6,7 @@ import admin from "../assets/admin.png";
 import user from "../assets/user.png";
 import Input from "../Components/input";
 import useInput from "../Components/input-hook";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import Windowresponsiv from "../Components/Windowresponsiv";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
@@ -17,6 +17,7 @@ const Signup = () => {
   const { width } = Windowresponsiv();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { role } = useParams();
   const {
     value: enteredFirstName,
     isValid: enteredFirstNameIsValid,
@@ -74,7 +75,7 @@ const Signup = () => {
       email: enteredEmail,
       phoneNumber: enteredPhone,
       password: enteredPassword,
-      assignedRegion: "mekelle",
+      role: role,
     };
     if (enteredPassword !== confirmEnteredPassword) {
       alert("Passwords do not match!");
@@ -126,7 +127,7 @@ const Signup = () => {
             height={90}
             className="dark:invert"
           />
-          Registration Form
+          Registration Form of {role}
         </h2>
         <form onSubmit={submitHandler}>
           {/* Grid Container for Inputs */}

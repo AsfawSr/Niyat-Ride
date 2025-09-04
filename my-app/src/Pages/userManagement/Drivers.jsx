@@ -17,7 +17,6 @@ const Drivers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ✅ Fetch whenever filters change
   useEffect(() => {
     dispatch(
       fetchDrivers({

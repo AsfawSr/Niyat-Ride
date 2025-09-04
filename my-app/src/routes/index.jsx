@@ -31,7 +31,7 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <Login /> },
-      { path: "signup", element: <Signup /> },
+      { path: "signup/:role", element: <Signup /> },
 
       // ---- Admin routes ----
       {

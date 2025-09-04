@@ -161,7 +161,7 @@
 //     </div>
 //   );
 // }
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   MOCK_TRIPS,
   MOCK_NEARBY_DRIVERS,
@@ -185,10 +185,8 @@ export default function LiveMap() {
   const [reassignTrip, setReassignTrip] = useState(null);
   const [cancelTrip, setCancelTrip] = useState(null);
   const [emergencyTrip, setEmergencyTrip] = useState(null);
-  // ✅ WebSocket to update trips and drivers live
   useEffect(() => {
     const socket = new WebSocket("wss://your-backend.com/live-updates");
-
     socket.onopen = () => {
       console.log("Connected to WebSocket server");
     };
@@ -208,14 +206,12 @@ export default function LiveMap() {
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
     };
-
     socket.onclose = () => {
       console.log("WebSocket connection closed");
     };
     return () => socket.close();
   }, []);
 
-  // ✅ Filtered trips
   const filtered = useMemo(() => {
     if (!query) return trips;
     const q = query.toLowerCase();

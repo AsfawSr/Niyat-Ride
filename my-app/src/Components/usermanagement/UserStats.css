@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.stats-container {
+  @apply space-y-4 flex flex-col;
+}
+
+.stat-card {
+  @apply w-full text-center bg-white dark:bg-black p-4 rounded shadow;
+}
+
+.stat-label {
+  @apply text-gray-500;
+}
+
+.stat-value {
+  @apply dark:text-white font-semibold;
+}
+
+.role-card {
+  @apply bg-white dark:bg-black p-4 rounded shadow;
+}
+
+.role-bars {
+  @apply h-32 bg-gray-100 flex items-end justify-around;
+}
+
+.role-bar {
+  @apply w-8;
+}
+
+.role-passengers {
+  @apply bg-blue-600;
+}
+
+.role-drivers {
+  @apply bg-gray-600;
+}
+
+.role-labels {
+  @apply flex justify-around mt-2;
+}
+
+.stats-loading {
+  @apply text-center text-gray-500;
+}
+
+.stats-error {
+  @apply text-center text-red-500;
+}

@@ -6,7 +6,7 @@ import adminsReducer from "./userManagement/adminSlice.js";
 import passengersReducer from "./userManagement/passengersSlice.js";
 import driversReducer from "./userManagement/driversSlice.js";
 import dispatchersReducer from "./userManagement/dispatchersSlice.js";
-import { setupInterceptors } from "../api/api.jsx";
+// import { setupInterceptors } from "../api/api.jsx";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -18,5 +18,5 @@ const store = configureStore({
     dispatchers: dispatchersReducer,
   },
 });
-setupInterceptors(store);
+// setupInterceptors(store);
 export default store;

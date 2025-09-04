@@ -2,9 +2,10 @@ import React from "react";
 
 const stats = [
   { label: "Total Users", value: "10,250" },
-  { label: "Active Users", value: "8,700" },
-  { label: "Inactive Users", value: "1,200" },
-  { label: "Banned Users", value: "350" },
+  { label: "Total passengers", value: "8,700" },
+  { label: " Total drivers", value: "1,200" },
+  { label: "Total dispachers", value: "350" },
+  { label: "Total admins", value: "350" },
 ];
 
 const roles = [
