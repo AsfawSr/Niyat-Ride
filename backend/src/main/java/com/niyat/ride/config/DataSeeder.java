@@ -56,7 +56,7 @@ public class DataSeeder {
         admin.setEmail(adminEmail);
         admin.setIsVerified(true);
         admin.setVerifiedAt(LocalDateTime.now());
-        admin.setRole(Role.Admin);
+        admin.setRole(Role.admin);
         admin.setStatus(AccountStatus.ACTIVE);
 
         admin = adminRepository.save(admin);

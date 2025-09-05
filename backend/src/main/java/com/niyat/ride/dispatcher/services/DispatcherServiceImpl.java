@@ -34,7 +34,7 @@ public class DispatcherServiceImpl implements DispatcherService {
                 .ifPresent(d -> { throw new RuntimeException("Dispatcher with email already exists"); });
 
         Dispatcher dispatcher = dispatcherMapper.toEntity(dispatcherSignupDTO);
-        dispatcher.setRole(Role.DISPATCHER);
+        dispatcher.setRole(Role.dispatcher);
         dispatcher.setCreatedAt(LocalDateTime.now());
         dispatcher.setUpdatedAt(LocalDateTime.now());
 

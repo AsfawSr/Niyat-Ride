@@ -5,7 +5,18 @@ import MapView from "./MapView";
 import { dummyDrivers, DEFAULT_CENTER } from "./constants";
 import L from "leaflet";
 import Sidebar from "../../../Components/Sidebar";
+import api from "../../../api/api";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchVehicles } from "../../../store/vehiclesDispatcherSlice";
 export default function ManualDispatch() {
+  const { userId } = useSelector((state) => state.auth);
+  const { vehicles, status } = useSelector((state) => state.vehiclesDispacher);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (status != "succes") {
+      dispatch(fetchVehicles());
+    }
+  });
   const [formData, setFormData] = useState({
     userPhone: "",
     firstName: "",
@@ -13,9 +24,9 @@ export default function ManualDispatch() {
     city: "Mek'ele",
     pickupAddress: "",
     dropoffAddress: "",
-    vehicleType: "",
+    vehicleTypeId: "",
     passengerNotes: "",
-    selectedDriverName: "",
+    driverId: "",
   });
   const [pickupLocation, setPickupLocation] = useState(null);
   const [dropoffLocation, setDropoffLocation] = useState(null);
@@ -97,36 +108,68 @@ export default function ManualDispatch() {
     const point2 = L.latLng(loc[0], loc[1]);
     return `${(point1.distanceTo(point2) / 1000).toFixed(2)} km`;
   };
-  const handleAssignRide = () => {
-    const date = new Date();
-    alert(`Ride assigned!\n\nPassenger: ${formData.firstName} ${
-      formData.lastName
-    } (${formData.userPhone})
-Pickup: ${pickupLocation}
-Dropoff: ${dropoffLocation}
-Driver: ${formData.selectedDriverName || "-"}
-Vehicle Type: ${formData.vehicleType}
-date: ${date.toLocaleString()}
-Notes: ${formData.passengerNotes || "-"}`);
-  };
+  const handleAssignRide = async () => {
+    if (!pickupLocation || !dropoffLocation) {
+      alert("Please select both pickup and dropoff locations!");
+      return;
+    }
 
-  const resetForm = () => {
-    setFormData({
-      userPhone: "",
-      firstName: "",
-      lastName: "",
-      city: "Mek'ele",
-      pickupAddress: "",
-      dropoffAddress: "",
-      vehicleType: "",
-      passengerNotes: "",
-      selectedDriverId: "",
-    });
-    setPickupLocation(null);
-    setDropoffLocation(null);
-    setPickupSuggestions([]);
-    setDropoffSuggestions([]);
-    setActiveField("pickup");
+    // Construct the payload according to DispatcherRideRequestDTO
+    const payload = {
+      dispatcherId: userId, //  actual dispatcherId if you have it
+      customerInfo: {
+        name: `${formData.firstName} ${formData.lastName}`,
+        phone: formData.userPhone,
+      },
+      pickupLocation: {
+        latitude: pickupLocation.lat,
+        longitude: pickupLocation.lng,
+        address: formData.pickupAddress,
+        notes: formData.passengerNotes || "",
+      },
+      dropoffLocation: {
+        latitude: dropoffLocation.lat,
+        longitude: dropoffLocation.lng,
+        address: formData.dropoffAddress,
+      },
+      vehicleTypePreference: formData.vehicleTypeId || undefined,
+      notes: formData.passengerNotes || undefined,
+    };
+    try {
+      const response = await api.post("/api/dispatcher/rides", payload, {
+        withCredentials: true, // if your backend uses cookies for auth
+      });
+      // Show confirmation alert
+      const date = new Date();
+      alert(`Ride assigned successfully!\n\nPassenger: ${formData.firstName} ${
+        formData.lastName
+      } (${formData.userPhone})
+Pickup: ${pickupLocation.lat}, ${pickupLocation.lng}
+Dropoff: ${dropoffLocation.lat}, ${dropoffLocation.lng}
+Driver: ${formData.selectedDriverId || "-"}
+Vehicle Type: ${formData.vehicleType || "-"}
+Date: ${date.toLocaleString()}
+Notes: ${formData.passengerNotes || "-"}`);
+      // Reset the form
+      setFormData({
+        userPhone: "",
+        firstName: "",
+        lastName: "",
+        city: "Mek'ele", // default city
+        pickupAddress: "",
+        dropoffAddress: "",
+        vehicleTypeName: "",
+        passengerNotes: "",
+        selectedDriverId: "",
+      });
+      setPickupLocation(null);
+      setDropoffLocation(null);
+      setPickupSuggestions([]);
+      setDropoffSuggestions([]);
+      setActiveField("pickup"); // reset focus to pickup field
+    } catch (error) {
+      alert("Failed to assign ride. Please try again.");
+    }
   };
 
   const mapCenter = useMemo(
@@ -150,14 +193,16 @@ Notes: ${formData.passengerNotes || "-"}`);
               onDropoffInput={onDropoffInput}
               handleSelectSuggestion={handleSelectSuggestion}
               setActiveField={setActiveField}
+              vehicles={vehicles}
+              status={status}
             />
+            <button>request Ride</button>
             <DriverList
-              drivers={dummyDrivers}
+              vehicles={vehicles}
               formData={formData}
               setFormData={setFormData}
               calculateDistance={calculateDistance}
             />
-
             {/* Actions */}
             <div className="flex gap-2 mt-4">
               <button
@@ -171,12 +216,6 @@ Notes: ${formData.passengerNotes || "-"}`);
                 onClick={handleAssignRide}
               >
                 Assign Ride
-              </button>
-              <button
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
-                onClick={resetForm}
-              >
-                Reset
               </button>
             </div>
           </div>

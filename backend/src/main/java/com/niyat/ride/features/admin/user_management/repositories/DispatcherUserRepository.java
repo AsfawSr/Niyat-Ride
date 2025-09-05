@@ -15,16 +15,29 @@ import java.time.LocalDateTime;
 @Repository
 public interface DispatcherUserRepository extends JpaRepository<Dispatcher, Long>, JpaSpecificationExecutor<Dispatcher> {
     
-    @Query("SELECT d FROM Dispatcher d WHERE " +
-           "(:search IS NULL OR " +
-           "LOWER(d.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(d.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(d.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(d.phoneNumber) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(d.assignedRegion) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
-           "(:status IS NULL OR d.status = :status) AND " +
-           "(:createdAtFrom IS NULL OR d.createdAt >= :createdAtFrom) AND " +
-           "(:createdAtTo IS NULL OR d.createdAt <= :createdAtTo)")
+    @Query(value = "SELECT d.* FROM dispatchers d " +
+                   "JOIN users u ON d.id = u.id " +
+                   "WHERE (:search IS NULL OR " +
+                   "u.first_name ILIKE CONCAT('%', :search, '%') OR " +
+                   "u.last_name ILIKE CONCAT('%', :search, '%') OR " +
+                   "u.email ILIKE CONCAT('%', :search, '%') OR " +
+                   "u.phone_number ILIKE CONCAT('%', :search, '%') OR " +
+                   "d.assigned_region ILIKE CONCAT('%', :search, '%')) AND " +
+                   "(:status IS NULL OR u.status = :status) AND " +
+                   "(:createdAtFrom IS NULL OR u.created_at >= :createdAtFrom) AND " +
+                   "(:createdAtTo IS NULL OR u.created_at <= :createdAtTo)",
+           countQuery = "SELECT COUNT(*) FROM dispatchers d " +
+                        "JOIN users u ON d.id = u.id " +
+                        "WHERE (:search IS NULL OR " +
+                        "u.first_name ILIKE CONCAT('%', :search, '%') OR " +
+                        "u.last_name ILIKE CONCAT('%', :search, '%') OR " +
+                        "u.email ILIKE CONCAT('%', :search, '%') OR " +
+                        "u.phone_number ILIKE CONCAT('%', :search, '%') OR " +
+                        "d.assigned_region ILIKE CONCAT('%', :search, '%')) AND " +
+                        "(:status IS NULL OR u.status = :status) AND " +
+                        "(:createdAtFrom IS NULL OR u.created_at >= :createdAtFrom) AND " +
+                        "(:createdAtTo IS NULL OR u.created_at <= :createdAtTo)",
+           nativeQuery = true)
     Page<Dispatcher> findWithFilters(@Param("search") String search,
                                    @Param("status") AccountStatus status,
                                    @Param("createdAtFrom") LocalDateTime createdAtFrom,

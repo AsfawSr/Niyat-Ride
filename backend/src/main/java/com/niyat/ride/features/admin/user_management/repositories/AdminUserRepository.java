@@ -15,15 +15,27 @@ import java.time.LocalDateTime;
 @Repository
 public interface AdminUserRepository extends JpaRepository<Admin, Long>, JpaSpecificationExecutor<Admin> {
     
-    @Query("SELECT a FROM Admin a WHERE " +
-           "(:search IS NULL OR " +
-           "LOWER(a.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(a.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(a.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(a.phoneNumber) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
-           "(:status IS NULL OR a.status = :status) AND " +
-           "(:createdAtFrom IS NULL OR a.createdAt >= :createdAtFrom) AND " +
-           "(:createdAtTo IS NULL OR a.createdAt <= :createdAtTo)")
+    @Query(value = "SELECT a.* FROM admins a " +
+                   "JOIN users u ON a.id = u.id " +
+                   "WHERE (:search IS NULL OR " +
+                   "u.first_name ILIKE CONCAT('%', :search, '%') OR " +
+                   "u.last_name ILIKE CONCAT('%', :search, '%') OR " +
+                   "u.email ILIKE CONCAT('%', :search, '%') OR " +
+                   "u.phone_number ILIKE CONCAT('%', :search, '%')) AND " +
+                   "(:status IS NULL OR u.status = :status) AND " +
+                   "(:createdAtFrom IS NULL OR u.created_at >= :createdAtFrom) AND " +
+                   "(:createdAtTo IS NULL OR u.created_at <= :createdAtTo)",
+           countQuery = "SELECT COUNT(*) FROM admins a " +
+                        "JOIN users u ON a.id = u.id " +
+                        "WHERE (:search IS NULL OR " +
+                        "u.first_name ILIKE CONCAT('%', :search, '%') OR " +
+                        "u.last_name ILIKE CONCAT('%', :search, '%') OR " +
+                        "u.email ILIKE CONCAT('%', :search, '%') OR " +
+                        "u.phone_number ILIKE CONCAT('%', :search, '%')) AND " +
+                        "(:status IS NULL OR u.status = :status) AND " +
+                        "(:createdAtFrom IS NULL OR u.created_at >= :createdAtFrom) AND " +
+                        "(:createdAtTo IS NULL OR u.created_at <= :createdAtTo)",
+           nativeQuery = true)
     Page<Admin> findWithFilters(@Param("search") String search,
                                @Param("status") AccountStatus status,
                                @Param("createdAtFrom") LocalDateTime createdAtFrom,

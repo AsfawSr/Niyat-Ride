@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Windowresponsiv from "../Components/Windowresponsiv";
-import { clearError } from "../store/errorSlice";
+import { clearError } from "../store/globalErrorSlice";
 const RootLayout = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const location = useLocation();

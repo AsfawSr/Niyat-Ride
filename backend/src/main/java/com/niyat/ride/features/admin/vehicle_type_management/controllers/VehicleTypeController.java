@@ -4,6 +4,7 @@ import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeReq
 import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeResponseDTO;
 import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeStatusDTO;
 import com.niyat.ride.features.admin.vehicle_type_management.services.VehicleTypeService;
+import com.niyat.ride.shared.utils.ApiResponse;
 import com.niyat.ride.shared.utils.PaginationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,7 @@ public class VehicleTypeController {
 
     @GetMapping
     @Operation(summary = "Get all vehicle types with pagination and filtering")
-    public ResponseEntity<Map<String, Object>> getAllVehicleTypes(
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAllVehicleTypes(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size,
             @RequestParam(defaultValue = "name") String sortBy,
@@ -38,54 +39,54 @@ public class VehicleTypeController {
         Page<VehicleTypeResponseDTO> vehicleTypesPage = vehicleTypeService.getAllVehicleTypes(
                 page, size, sortBy, sortDirection, search, isActive);
 
-        return ResponseEntity.ok(PaginationUtil.createPageResponse(vehicleTypesPage));
+        return ResponseEntity.ok(ApiResponse.success(PaginationUtil.createPageResponse(vehicleTypesPage)));
     }
 
     @GetMapping("/active")
     @Operation(summary = "Get all active vehicle types")
-    public ResponseEntity<List<VehicleTypeResponseDTO>> getAllActiveVehicleTypes() {
+    public ResponseEntity<ApiResponse<List<VehicleTypeResponseDTO>>> getAllActiveVehicleTypes() {
         List<VehicleTypeResponseDTO> activeVehicleTypes = vehicleTypeService.getAllActiveVehicleTypes();
-        return ResponseEntity.ok(activeVehicleTypes);
+        return ResponseEntity.ok(ApiResponse.success(activeVehicleTypes));
     }
 
     @PostMapping
     @Operation(summary = "Create new vehicle type with pricing")
-    public ResponseEntity<VehicleTypeResponseDTO> createVehicleType(
+    public ResponseEntity<ApiResponse<VehicleTypeResponseDTO>> createVehicleType(
             @Valid @RequestBody VehicleTypeRequestDTO request) {
         VehicleTypeResponseDTO vehicleType = vehicleTypeService.createVehicleType(request);
         return ResponseEntity.created(URI.create("/api/admin/vehicle-types/" + vehicleType.getId()))
-                .body(vehicleType);
+                .body(ApiResponse.success(vehicleType));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get specific vehicle type details")
-    public ResponseEntity<VehicleTypeResponseDTO> getVehicleTypeById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<VehicleTypeResponseDTO>> getVehicleTypeById(@PathVariable Long id) {
         VehicleTypeResponseDTO vehicleType = vehicleTypeService.getVehicleTypeById(id);
-        return ResponseEntity.ok(vehicleType);
+        return ResponseEntity.ok(ApiResponse.success(vehicleType));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update vehicle type and pricing")
-    public ResponseEntity<VehicleTypeResponseDTO> updateVehicleType(
+    public ResponseEntity<ApiResponse<VehicleTypeResponseDTO>> updateVehicleType(
             @PathVariable Long id,
             @Valid @RequestBody VehicleTypeRequestDTO request) {
         VehicleTypeResponseDTO vehicleType = vehicleTypeService.updateVehicleType(id, request);
-        return ResponseEntity.ok(vehicleType);
+        return ResponseEntity.ok(ApiResponse.success(vehicleType));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete vehicle type (soft delete)")
-    public ResponseEntity<Void> deleteVehicleType(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteVehicleType(@PathVariable Long id) {
         vehicleTypeService.deleteVehicleType(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Activate/deactivate vehicle type")
-    public ResponseEntity<VehicleTypeResponseDTO> updateVehicleTypeStatus(
+    public ResponseEntity<ApiResponse<VehicleTypeResponseDTO>> updateVehicleTypeStatus(
             @PathVariable Long id,
             @Valid @RequestBody VehicleTypeStatusDTO statusDTO) {
         VehicleTypeResponseDTO vehicleType = vehicleTypeService.updateVehicleTypeStatus(id, statusDTO.getIsActive());
-        return ResponseEntity.ok(vehicleType);
+        return ResponseEntity.ok(ApiResponse.success(vehicleType));
     }
 }

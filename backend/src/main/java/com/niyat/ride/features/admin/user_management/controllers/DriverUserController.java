@@ -4,6 +4,7 @@ import com.niyat.ride.enums.AccountStatus;
 import com.niyat.ride.features.admin.user_management.dtos.DriverUserResponseDTO;
 import com.niyat.ride.features.admin.user_management.dtos.StatusUpdateRequestDTO;
 import com.niyat.ride.features.admin.user_management.services.DriverUserService;
+import com.niyat.ride.shared.utils.ApiResponse;
 import com.niyat.ride.shared.utils.PaginationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,7 @@ public class DriverUserController {
 
     @GetMapping
     @Operation(summary = "Get all driver users with filtering and pagination")
-    public ResponseEntity<Map<String, Object>> getAllDrivers(
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAllDrivers(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -40,22 +41,22 @@ public class DriverUserController {
         Page<DriverUserResponseDTO> driversPage = driverUserService.getAllDrivers(
                 page, size, sortBy, sortDirection, search, status, createdAtFrom, createdAtTo);
 
-        return ResponseEntity.ok(PaginationUtil.createPageResponse(driversPage));
+        return ResponseEntity.ok(ApiResponse.success(PaginationUtil.createPageResponse(driversPage)));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get driver user by ID")
-    public ResponseEntity<DriverUserResponseDTO> getDriverById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<DriverUserResponseDTO>> getDriverById(@PathVariable Long id) {
         DriverUserResponseDTO driver = driverUserService.getDriverById(id);
-        return ResponseEntity.ok(driver);
+        return ResponseEntity.ok(ApiResponse.success(driver));
     }
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Update driver user status")
-    public ResponseEntity<DriverUserResponseDTO> updateDriverStatus(
+    public ResponseEntity<ApiResponse<DriverUserResponseDTO>> updateDriverStatus(
             @PathVariable Long id,
             @Valid @RequestBody StatusUpdateRequestDTO request) {
         DriverUserResponseDTO driver = driverUserService.updateDriverStatus(id, request.getStatus());
-        return ResponseEntity.ok(driver);
+        return ResponseEntity.ok(ApiResponse.success(driver));
     }
 }

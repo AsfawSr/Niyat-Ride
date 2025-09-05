@@ -18,11 +18,15 @@ public interface VehicleTypeRepository extends JpaRepository<VehicleType, Long>,
     @Query("SELECT vt FROM VehicleType vt WHERE vt.deletedAt IS NULL")
     Page<VehicleType> findAllActive(Pageable pageable);
     
-    @Query("SELECT vt FROM VehicleType vt WHERE vt.deletedAt IS NULL AND " +
-           "(:search IS NULL OR " +
-           "LOWER(vt.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(vt.description) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
-           "(:isActive IS NULL OR vt.isActive = :isActive)")
+    @Query(value = "SELECT * FROM vehicle_types vt " +
+                   "WHERE vt.deleted_at IS NULL AND " +
+                   "(:search IS NULL OR vt.name ILIKE CONCAT('%', :search, '%') OR vt.description ILIKE CONCAT('%', :search, '%')) AND " +
+                   "(:isActive IS NULL OR vt.is_active = :isActive)",
+           countQuery = "SELECT COUNT(*) FROM vehicle_types vt " +
+                        "WHERE vt.deleted_at IS NULL AND " +
+                        "(:search IS NULL OR vt.name ILIKE CONCAT('%', :search, '%') OR vt.description ILIKE CONCAT('%', :search, '%')) AND " +
+                        "(:isActive IS NULL OR vt.is_active = :isActive)",
+           nativeQuery = true)
     Page<VehicleType> findWithFilters(@Param("search") String search,
                                      @Param("isActive") Boolean isActive,
                                      Pageable pageable);

@@ -22,11 +22,12 @@ import {
   Chip,
 } from "@mui/material";
 import { FaEye } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import Sidebar from "../../Components/Sidebar";
 import Topbar from "../../Components/Topbar";
-import { useRides } from "../../context/RidesContext";
+// import { useRides } from "../../context/RidesContext";
 export default function CompletedRides() {
-  const { rides } = useRides();
+  const rides = useSelector((state) => state.rides.rides);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [viewRide, setViewRide] = useState(null);

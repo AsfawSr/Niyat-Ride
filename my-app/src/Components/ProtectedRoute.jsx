@@ -8,11 +8,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (!isAuthenticated) {
     return <Navigate to="/" replace />; // redirect to login
   }
-
   if (!allowedRoles.includes(role)) {
     return <Navigate to="/" replace />; // redirect if wrong role
   }
-
   return children; // allowed → render page
 };
 

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useSelector, useDispatch } from "react-redux"; // ✅ NEW: Import Redux hooks
 import {
   Box, Card, CardContent, Typography, Table, TableHead, TableRow,
   TableCell, TableBody, IconButton, Dialog, DialogTitle, DialogContent,
@@ -7,10 +8,12 @@ import {
 import { FaEye, FaTrash } from "react-icons/fa";
 import Sidebar from "../../Components/Sidebar";
 import Topbar from "../../Components/Topbar";
-import { useRides } from "../../context/RidesContext"; // ✅ use context
+import { cancelRide, finishRide } from "../../store/ridesSlice"; // ✅ NEW: Import actions
 
 export default function OngoingRides() {
-  const { rides, cancelRide, finishRide } = useRides(); // ✅ includes finishRide
+  // ✅ NEW: use useSelector to get rides from the store, and useDispatch to dispatch actions
+  const rides = useSelector((state) => state.rides.rides);
+  const dispatch = useDispatch();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [viewRide, setViewRide] = useState(null);
@@ -67,7 +70,7 @@ export default function OngoingRides() {
                           <Tooltip title="Finish Ride">
                             <IconButton
                               color="success"
-                              onClick={() => finishRide(ride.id)}
+                              onClick={() => dispatch(finishRide(ride.id))} // ✅ NEW: Dispatch the finishRide action
                             >
                               ✅
                             </IconButton>
@@ -125,7 +128,7 @@ export default function OngoingRides() {
         <DialogContent dividers>
           {cancelTarget && (
             <Typography>
-              Are you sure you want to cancel <b>{cancelTarget.id}</b> 
+              Are you sure you want to cancel <b>{cancelTarget.id}</b>
               ({cancelTarget.passenger} → {cancelTarget.driver})?
             </Typography>
           )}
@@ -136,7 +139,7 @@ export default function OngoingRides() {
             variant="contained"
             color="error"
             onClick={() => {
-              cancelRide(cancelTarget.id);
+              dispatch(cancelRide(cancelTarget.id)); // ✅ NEW: Dispatch the cancelRide action
               setCancelTarget(null);
             }}
           >

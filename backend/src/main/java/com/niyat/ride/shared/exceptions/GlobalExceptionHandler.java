@@ -1,5 +1,6 @@
 package com.niyat.ride.shared.exceptions;
 
+import com.niyat.ride.shared.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("errors", errors));
+                .body(ApiResponse.error("Validation failed", errors));
     }
 
     // Handle general runtime exceptions
@@ -34,6 +35,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", ex.getMessage()));
+                .body(ApiResponse.error(ex.getMessage()));
     }
 }

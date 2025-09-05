@@ -10,19 +10,28 @@ import { NavLink, useNavigate } from "react-router-dom";
 import Windowresponsiv from "../Components/Windowresponsiv";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
+import api from "../api/api";
 // import { authActions } from "../store/authSlice";
 // import api from "../api/api";
-const AdminSignup = () => {
+const Signup = () => {
   const { width } = Windowresponsiv();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
-    value: enteredName,
-    isValid: enteredNameIsValid,
-    hasError: enteredNameHasError,
-    valueChangeHandler: nameChangeHandler,
-    inputBlurHandler: nameBlurHandler,
-    resetValue: resetNameValue,
+    value: enteredFirstName,
+    isValid: enteredFirstNameIsValid,
+    hasError: enteredFirstNameHasError,
+    valueChangeHandler: firstNameChangeHandler,
+    inputBlurHandler: firstNameBlurHandler,
+    resetValue: resetFirstNameValue,
+  } = useInput((value) => value.trim() !== "");
+  const {
+    value: enteredLastName,
+    isValid: enteredLastNameIsValid,
+    hasError: enteredLastNameHasError,
+    valueChangeHandler: lastNameChangeHandler,
+    inputBlurHandler: lastNameBlurHandler,
+    resetValue: resetLastNameValue,
   } = useInput((value) => value.trim() !== "");
   const {
     value: enteredEmail,
@@ -60,25 +69,35 @@ const AdminSignup = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     const userData = {
-      fullName: enteredName,
+      firstName: enteredFirstName,
+      lastName: enteredLastName,
       email: enteredEmail,
-      phone: enteredPhone,
+      phoneNumber: enteredPhone,
       password: enteredPassword,
-      passwordConfirm: confirmEnteredPassword,
+      assignedRegion: "mekelle",
     };
-    // try {
-    //   setLoading(true);
-    //   const response = await api.post("/register", userData);
-    //   alert("Registration successful!");
-    //   // Reset form
-    //   resetNameValue();
-    //   resetEmailValue();
-    //   resetPasswordValue();
-    //   resetConfirmPasswordValue();
-    // } catch (error) {
-    // } finally {
-    //   setLoading(false);
-    // }
+    if (enteredPassword !== confirmEnteredPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    try {
+      setLoading(true);
+      const response = await api.post("/api/dispatchers/signup", userData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response), alert("Registration successful!");
+      // Reset form
+      resetFirstNameValue();
+      resetLastNameValue();
+      resetEmailValue();
+      resetPasswordValue();
+      resetConfirmPasswordValue();
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
   const handleGoogleSuccess = async (response) => {
     // try {
@@ -107,25 +126,38 @@ const AdminSignup = () => {
             height={90}
             className="dark:invert"
           />
-          Admin Registration
+          Registration Form
         </h2>
-
         <form onSubmit={submitHandler}>
           {/* Grid Container for Inputs */}
           <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 mb-5">
             <Input
               type="text"
-              id="fullName"
-              name="fullName"
-              label="Full Name"
-              placeholder="Abebe Bekila"
-              value={enteredName}
-              onChange={nameChangeHandler}
-              onBlur={nameBlurHandler}
-              hasError={enteredNameHasError}
+              id="firstName"
+              name="firstName"
+              label="First Name"
+              placeholder="enter first name "
+              value={enteredFirstName}
+              onChange={firstNameChangeHandler}
+              onBlur={firstNameBlurHandler}
+              hasError={enteredFirstNameHasError}
               icon={<img src={user} alt="" width={20} height={20} />}
               required
             />
+            <Input
+              type="text"
+              id="lastName"
+              name="lastName"
+              label="Last Name"
+              placeholder=" enter last name"
+              value={enteredLastName}
+              onChange={lastNameChangeHandler}
+              onBlur={lastNameBlurHandler}
+              hasError={enteredLastNameHasError}
+              icon={<img src={user} alt="" width={20} height={20} />}
+              required
+            />
+
             <Input
               type="email"
               id="email"
@@ -238,4 +270,4 @@ const AdminSignup = () => {
   );
 };
 
-export default AdminSignup;
+export default Signup;

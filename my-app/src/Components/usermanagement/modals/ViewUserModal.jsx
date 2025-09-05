@@ -12,7 +12,6 @@ const ViewUserModal = ({ user, onClose }) => {
         >
           ✖
         </button>
-
         <div className="text-center">
           <img
             src={user.avatar}

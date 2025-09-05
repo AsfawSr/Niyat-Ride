@@ -36,7 +36,7 @@ public class AdminServiceImpl implements AdminService {
 
 
         Admin admin = adminMapper.toEntity(adminSignupDTO);
-        admin.setRole(Role.Admin);
+        admin.setRole(Role.admin);
         admin.setCreatedAt(LocalDateTime.now());
         admin.setUpdatedAt(LocalDateTime.now());
 
