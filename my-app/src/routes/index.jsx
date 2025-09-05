@@ -44,23 +44,43 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { path: "admin/admins", element: <Admins /> },
-      { path: "admin/users/drivers", element: <Drivers /> },
-      { path: "admin/users/passengers", element: <Passengers /> },
-      { path: "admin/users/dispatchers", element: <Dispatchers /> },
+      {
+        path: "admin/admins",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Admins />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/users/drivers",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Drivers />{" "}
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/users/passengers",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Passengers />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/users/dispatchers",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Dispatchers />
+          </ProtectedRoute>
+        ),
+      },
 
       { path: "admin/rides", element: <AllRides /> },
       { path: "admin/ongoing", element: <OngoingRides /> },
       { path: "admin/completed", element: <CompletedRides /> },
       { path: "admin/cancelled", element: <CancelledRides /> },
-
-      // Legacy aliases (optional)
-      { path: "admins", element: <Admins /> },
-      { path: "drivers", element: <Drivers /> },
-      { path: "passengers", element: <Passengers /> },
-      { path: "dispatchers", element: <Dispatchers /> },
-      { path: "admin/Ongoing", element: <OngoingRides /> },
-      { path: "admin/Completed", element: <CompletedRides /> },
     ],
   },
 
