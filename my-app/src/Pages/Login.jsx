@@ -30,7 +30,7 @@ const Login = () => {
     event.preventDefault();
     try {
       await dispatch(loginUser(values)).unwrap();
-      if (role === "Admin") navigate("/dashboard");
+      if (role === "admin") navigate("/dashboard");
       if (role === "dispacher") {
         navigate("/dispatcher");
       }
@@ -40,7 +40,7 @@ const Login = () => {
     try {
       dispatch(
         authActions.login({
-          email: values.email || "googleuser@example.com",
+          email: values.email,
           name: "Google User",
           fullName: "Google Admin",
           _id: "google-123",

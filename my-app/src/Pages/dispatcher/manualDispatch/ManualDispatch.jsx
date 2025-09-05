@@ -6,7 +6,7 @@ import { dummyDrivers, DEFAULT_CENTER } from "./constants";
 import Sidebar from "../../../Components/Sidebar";
 import api from "../../../api/api";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchVehicles } from "../../../store/activeVehiclesSlice";
+import { fetchVehicles } from "../../../store/dispatcher/activeVehiclesSlice";
 
 const initialState = {
   userPhone: "",
@@ -29,7 +29,6 @@ export default function ManualDispatch() {
   useEffect(() => {
     dispatch(fetchVehicles());
   }, [dispatch]);
-
   const [formData, setFormData] = useState(initialState);
   const [pickupLocation, setPickupLocation] = useState(null); // {lat, lng}
   const [dropoffLocation, setDropoffLocation] = useState(null); // {lat, lng}
@@ -194,7 +193,7 @@ Notes: ${formData.passengerNotes || "-"}`);
   return (
     <div className="flex h-screen w-full overflow-x-hidden">
       <Sidebar />
-      <main className="flex-1 bg-red-500 min-w-0 p-6">
+      <main className="flex-1  min-w-0 p-6">
         <h1 className="text-2xl font-bold mb-4">Manual Dispatch</h1>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-[86vh]">
           <div className="dark:text-white shadow rounded-lg p-6 overflow-y-auto">

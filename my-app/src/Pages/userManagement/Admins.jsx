@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Sidebar from "../../Components/Sidebar";
-import UserTable from "../../components/usermanagement/UserTable";
-import UserStats from "../../components/usermanagement/UserStats";
-import SearchBar from "../../components/usermanagement/SearchBar";
-import Pagination from "../../components/usermanagement/Pagination";
-import { fetchAdmins } from "../../store/userManagement/adminSlice";
+import UserTable from "../../Components/userManagement/UserTable";
+import SearchBar from "../../Components/userManagement/SearchBar";
+import Pagination from "../../Components/userManagement/Pagination";
+import { clearState, fetchAdmins } from "../../store/userManagement/adminSlice";
 import { NavLink } from "react-router-dom";
 
 const Admins = () => {
@@ -17,7 +16,6 @@ const Admins = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-
   useEffect(() => {
     dispatch(
       fetchAdmins({
@@ -26,6 +24,9 @@ const Admins = () => {
         limit: rowsPerPage,
       })
     );
+    return () => {
+      dispatch(clearState());
+    };
   }, [dispatch, searchQuery, currentPage, rowsPerPage]);
 
   const handleSearch = (query) => {
@@ -71,7 +72,7 @@ const Admins = () => {
         <SearchBar onSearch={handleSearch} filter="admins" />
         {/* Status Messages */}
         {status === "loading" && <p>Loading admins...</p>}
-        {status === "failed" && <p className="text-red-500">{error}</p>}
+        {status === "failed" && <p className="text-red-500">failed</p>}
         {status === "succeeded" && admins.length === 0 && (
           <p>No admins found.</p>
         )}
@@ -92,11 +93,6 @@ const Admins = () => {
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
         />
-      </div>
-
-      {/* Admin Stats Panel */}
-      <div className="col-span-4">
-        <UserStats />
       </div>
     </div>
   );

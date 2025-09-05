@@ -24,6 +24,7 @@ import LiveMap from "../Pages/dispatcher/LiveMap";
 import ManualDispatch from "../Pages/dispatcher/manualDispatch/ManualDispatch.jsx";
 import Admins from "../Pages/userManagement/Admins.jsx";
 import Signup from "../Pages/Signup.jsx";
+import Logout from "../Pages/Logout.jsx";
 
 const router = createBrowserRouter([
   {
@@ -32,12 +33,13 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Login /> },
       { path: "signup/:role", element: <Signup /> },
+      { path: "logout", element: <Logout /> },
 
       // ---- Admin routes ----
       {
         path: "dashboard",
         element: (
-          <ProtectedRoute allowedRoles={["Admin"]}>
+          <ProtectedRoute allowedRoles={["admin"]}>
             <Dashboard />
           </ProtectedRoute>
         ),
@@ -66,7 +68,7 @@ const router = createBrowserRouter([
   {
     path: "/dispatcher",
     element: (
-      <ProtectedRoute allowedRoles={["Admin", "dispatcher"]}>
+      <ProtectedRoute allowedRoles={["admin", "dispatcher"]}>
         <DispatcherLayout />
       </ProtectedRoute>
     ),

@@ -1,15 +1,23 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice.js";
 import errorReducer from "./globalErrorSlice.js";
-import vehicles from "./activeVehiclesSlice.js";
+import vehicles from "./dispatcher/activeVehiclesSlice.js";
 import adminsReducer from "./userManagement/adminSlice.js";
 import passengersReducer from "./userManagement/passengersSlice.js";
 import driversReducer from "./userManagement/driversSlice.js";
+import storage from "redux-persist/lib/storage";
+import { persistReducer, persistStore } from "redux-persist";
 import dispatchersReducer from "./userManagement/dispatchersSlice.js";
 // import { setupInterceptors } from "../api/api.jsx";
-const store = configureStore({
+const persistedConfig = {
+  key: "auth",
+  storage,
+  whitelist: ["firstName", "isAuthenticated", "role"],
+};
+const persistedAuthReducer = persistReducer(persistedConfig, authReducer);
+export const store = configureStore({
   reducer: {
-    auth: authReducer,
+    auth: persistedAuthReducer,
     error: errorReducer,
     activeVehicles: vehicles,
     admins: adminsReducer,
@@ -17,6 +25,10 @@ const store = configureStore({
     drivers: driversReducer,
     dispatchers: dispatchersReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // needed for redux-persist
+    }),
 });
 // setupInterceptors(store);
-export default store;
+export const persistor = persistStore(store);

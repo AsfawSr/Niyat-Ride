@@ -146,7 +146,7 @@ export default function Sidebar() {
         {/* Navigation List */}
         <List sx={{ pt: 1 }}>
           {/* ===== Admin Menus ===== */}
-          {role === "Admin" && (
+          {role === "admin" && (
             <>
               {/* Dashboard */}
               <NavLink to="/dashboard" style={linkStyle} end>
@@ -247,7 +247,7 @@ export default function Sidebar() {
           )}
 
           {/* ===== Dispatcher Menus (shared with admin too) ===== */}
-          {(role === "Admin" || role === "dispatcher") && (
+          {(role === "admin" || role === "dispatcher") && (
             <>
               <ListItemButton
                 onClick={() => setOpenDispatcherMenu((v) => !v)}

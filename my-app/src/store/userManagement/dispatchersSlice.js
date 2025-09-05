@@ -16,10 +16,11 @@ export const fetchDispatchers = createAsyncThunk(
       const params = {
         search: payload.search || "",
         page: payload.page || 1,
-        limit: payload.limit || 10,
+        size: payload.limit || 10,
       };
-
-      const response = await api.get("/dispatchers", { params });
+      const response = await api.get("/api/dispatcher/dispatchers", {
+        params,
+      });
 
       return {
         type: "list",
@@ -46,11 +47,8 @@ const dispatchersSlice = createSlice({
   name: "dispatchers",
   initialState,
   reducers: {
-    removeDispatcher(state, action) {
-      const { dispatcherId } = action.payload;
-      state.dispatchers = state.dispatchers.filter(
-        (d) => d.id !== dispatcherId
-      );
+    clearState(state) {
+      Object.assign(state, initialState);
     },
   },
   extraReducers: (builder) => {
@@ -80,5 +78,5 @@ const dispatchersSlice = createSlice({
 });
 
 // Exports
-export const dispatcherActions = dispatchersSlice.actions;
+export const { clearState } = dispatchersSlice.actions;
 export default dispatchersSlice.reducer;

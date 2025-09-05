@@ -9,7 +9,7 @@ const RootLayout = () => {
   const dispatch = useDispatch();
   const { width } = Windowresponsiv();
   useEffect(() => {
-    dispatch(clearError()); // Clear errors on route change
+    dispatch(clearError());
   }, [location.pathname, dispatch]);
   return (
     <div>

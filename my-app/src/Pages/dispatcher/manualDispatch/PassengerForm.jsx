@@ -1,5 +1,3 @@
-// import { vehicleTypes } from "./constants";
-
 export default function PassengerForm({
   formData,
   setFormData,
@@ -19,9 +17,6 @@ export default function PassengerForm({
     <>
       <h2 className="text-lg font-semibold mb-4">Passenger Details</h2>
 
-      {/* Phone */}
-
-      {/* First & Last Name */}
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
           <label className="block text-sm mb-1">First Name</label>
@@ -72,7 +67,6 @@ export default function PassengerForm({
           <option value="Adigrat">Adigrat</option>
         </select>
       </div>
-
       {/* Pickup Address */}
       <div className="mb-4 relative">
         <label className="block text-sm  mb-1">Pickup Address</label>
@@ -125,7 +119,6 @@ export default function PassengerForm({
           </ul>
         )}
       </div>
-
       {/* Vehicle Type */}
       <div className="mb-3">
         <label className="block text-sm  mb-1">Vehicle Type</label>

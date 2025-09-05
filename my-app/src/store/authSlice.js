@@ -39,13 +39,13 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = true;
+
         const data = action.payload;
         console.log(data);
-        state.email = data.email;
-        state.token = data.token;
-        state.firstName = data.firstName;
+        // state.email = data.email;
+        state.firstName = data.data.firstName;
         state.userId = data.userId;
-        state.role = data.role;
+        state.role = data.data.role;
         state.isAuthenticated = true;
       })
       .addCase(loginUser.rejected, (state, action) => {

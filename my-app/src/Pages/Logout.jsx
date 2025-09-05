@@ -1,26 +1,45 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-// import { authActions } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
-import api from "../api/api";
+import { logout } from "../store/authSlice"; // use `logout` if that's your action name
+
 function Logout() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const logoutUser = async () => {
-      try {
-        // Call the backend to logout and clear the cookie
-        const res = await api.post("/auth/logout", { withCredentials: true });
-        // Dispatch the logout action to Redux
-        dispatch(authActions.logout());
-        // Redirect to the homepage or login page
-        navigate("/login");
-      } catch (error) {
-        alert(error);
-      }
-    };
-    logoutUser();
+    dispatch(logout());
+    navigate("/");
   }, [dispatch, navigate]);
 }
 
 export default Logout;
+
+// import React, { useEffect } from "react";
+// import { useDispatch } from "react-redux";
+// import { useNavigate } from "react-router-dom";
+// import { logout } from "../store/authSlice"; // use `logout` if that's your action name
+// import api from "../api/api";
+
+// function Logout() {
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch();
+//   const logoutUser = async () => {
+//     try {
+//       await api.post("/api/auth/logout", {}, { withCredentials: true });
+
+//       dispatch(logout());
+
+//       navigate("/");
+//     } catch (error) {
+//       console.error("Logout failed:", error);
+//     }
+//   };
+//   useEffect(() => {
+//     logoutUser();
+//   }, [dispatch, navigate]);
+
+//   return <div>Logging out...</div>;
+// }
+
+// export default Logout;

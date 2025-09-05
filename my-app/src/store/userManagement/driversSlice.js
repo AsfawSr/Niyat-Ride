@@ -19,7 +19,7 @@ export const fetchDrivers = createAsyncThunk(
         size: payload.limit,
       };
 
-      const response = await api.get("/drivers", { params });
+      const response = await api.get("/api/driver/drivers", { params });
       console.log(response);
 
       return {
@@ -47,12 +47,8 @@ const driversSlice = createSlice({
   name: "drivers",
   initialState,
   reducers: {
-    removeDriver(state, action) {
-      const { id } = action.payload;
-      state.drivers = state.drivers.filter((d) => d.id !== id);
-    },
-    clearSelectedDriver(state) {
-      state.selectedDriver = null;
+    clearState(state) {
+      Object.assign(state, initialState);
     },
   },
   extraReducers: (builder) => {
@@ -77,5 +73,5 @@ const driversSlice = createSlice({
       });
   },
 });
-export const driversActions = driversSlice.actions;
+export const { clearState } = driversSlice.actions;
 export default driversSlice.reducer;

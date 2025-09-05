@@ -12,13 +12,13 @@ export const fetchPassengers = createAsyncThunk(
       const params = {
         search: payload.search || "",
         page: payload.page || 1,
-        limit: payload.limit || 10
+        size: payload.limit || 10,
       };
-      const response = await api.get("/passengers", { params });
+      const response = await api.get("/api/passenger/passengers", { params });
       return {
         type: "list",
         data: response.data.data.passengers || [],
-        totalPages: response.data.data.totalPages || 1
+        totalPages: response.data.data.totalPages || 1,
       };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
@@ -40,12 +40,8 @@ const passengersSlice = createSlice({
   name: "passengers",
   initialState,
   reducers: {
-    removePassenger(state, action) {
-      const { id } = action.payload;
-      state.passengers = state.passengers.filter((p) => p.id !== id);
-    },
-    clearSelectedPassenger(state) {
-      state.selectedPassenger = null;
+    clearState(state) {
+      Object.assign(state, initialState);
     },
   },
   extraReducers: (builder) => {
@@ -59,7 +55,7 @@ const passengersSlice = createSlice({
 
         if (action.payload.type === "list") {
           state.passengers = action.payload.data;
-          state.totalPages = action.payload.totalPages; 
+          state.totalPages = action.payload.totalPages;
         }
 
         if (action.payload.type === "detail") {
@@ -73,5 +69,5 @@ const passengersSlice = createSlice({
   },
 });
 
-export const passengersActions = passengersSlice.actions;
+export const { clearState } = passengersSlice.actions;
 export default passengersSlice.reducer;

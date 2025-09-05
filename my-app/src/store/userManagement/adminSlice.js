@@ -16,11 +16,9 @@ export const fetchAdmins = createAsyncThunk(
       const params = {
         search: payload.search || "",
         page: payload.page || 1,
-        limit: payload.limit || 10,
+        size: payload.limit || 10,
       };
-
-      const response = await api.get("/admins", { params });
-
+      const response = await api.get("/api/admin/admins", { params });
       return {
         type: "list",
         data: response.data.data.admins || [],
@@ -46,9 +44,8 @@ const adminsSlice = createSlice({
   name: "admins",
   initialState,
   reducers: {
-    removeAdmin(state, action) {
-      const { adminId } = action.payload;
-      state.admins = state.admins.filter((a) => a.id !== adminId);
+    clearState(state) {
+      Object.assign(state, initialState);
     },
   },
   extraReducers: (builder) => {
@@ -76,5 +73,5 @@ const adminsSlice = createSlice({
   },
 });
 
-export const adminActions = adminsSlice.actions;
+export const { clearState } = adminsSlice.actions;
 export default adminsSlice.reducer;

@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Sidebar from "../../Components/Sidebar";
-import UserTable from "../../components/userManagement/UserTable";
-import UserStats from "../../components/userManagement/UserStats";
-import SearchBar from "../../components/userManagement/SearchBar";
-import { fetchPassengers } from "../../store/userManagement/passengersSlice";
-import Pagination from "../../components/usermanagement/Pagination";
-
+import UserTable from "../../Components/userManagement/UserTable";
+import SearchBar from "../../Components/userManagement/SearchBar";
+import {
+  clearState,
+  fetchPassengers,
+} from "../../store/userManagement/passengersSlice";
+import Pagination from "../../Components/userManagement/Pagination";
 const Passengers = () => {
   const dispatch = useDispatch();
   const { passengers, status, totalPages, error } = useSelector(
     (state) => state.passengers
   );
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,6 +25,9 @@ const Passengers = () => {
         limit: rowsPerPage,
       })
     );
+    return () => {
+      dispatch(clearState());
+    };
   }, [dispatch, searchQuery, currentPage, rowsPerPage]);
 
   const handleSearch = (query) => {
@@ -64,7 +67,7 @@ const Passengers = () => {
         <SearchBar onSearch={handleSearch} filter="passengers" />
 
         {status === "loading" && <p>Loading passengers...</p>}
-        {status === "failed" && <p className="text-red-500">{error}</p>}
+        {status === "failed" && <p className="text-red-500">failed</p>}
         {status === "succeeded" && passengers.length === 0 && (
           <p>No passengers found.</p>
         )}
@@ -82,10 +85,6 @@ const Passengers = () => {
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
         />
-      </div>
-
-      <div className="col-span-4 space-y-4">
-        <UserStats />
       </div>
     </div>
   );

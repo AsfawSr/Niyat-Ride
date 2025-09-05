@@ -3,14 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 
 import Sidebar from "../../Components/Sidebar";
-import UserTable from "../../components/usermanagement/UserTable";
-import UserStats from "../../components/usermanagement/UserStats";
-import SearchBar from "../../components/usermanagement/SearchBar";
-import Pagination from "../../components/usermanagement/Pagination";
-import { fetchDispatchers } from "../../store/userManagement/dispatchersSlice";
+import UserTable from "../../Components/userManagement/UserTable";
+import SearchBar from "../../Components/userManagement/SearchBar";
+import Pagination from "../../Components/userManagement/Pagination";
+import {
+  clearState,
+  fetchDispatchers,
+} from "../../store/userManagement/dispatchersSlice";
 const Dispatchers = () => {
   const dispatch = useDispatch();
-  const { dispatchers, status, totalPages, error } = useSelector(
+  const { dispatchers, status, totalPages } = useSelector(
     (state) => state.dispatchers
   );
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -24,6 +26,9 @@ const Dispatchers = () => {
         limit: rowsPerPage,
       })
     );
+    return () => {
+      dispatch(clearState());
+    };
   }, [dispatch, searchQuery, currentPage, rowsPerPage]);
 
   const handleSearch = (query) => {
@@ -70,7 +75,7 @@ const Dispatchers = () => {
 
         {/* Status Messages */}
         {status === "loading" && <p>Loading dispatchers...</p>}
-        {status === "failed" && <p className="text-red-500">{error}</p>}
+        {status === "failed" && <p className="text-red-500">failed </p>}
         {status === "succeeded" && dispatchers.length === 0 && (
           <p>No dispatchers found.</p>
         )}
@@ -92,11 +97,6 @@ const Dispatchers = () => {
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
         />
-      </div>
-
-      {/* Dispatcher Stats Panel */}
-      <div className="col-span-4">
-        <UserStats />
       </div>
     </div>
   );
