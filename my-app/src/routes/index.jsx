@@ -76,11 +76,18 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-
       { path: "admin/rides", element: <AllRides /> },
       { path: "admin/ongoing", element: <OngoingRides /> },
       { path: "admin/completed", element: <CompletedRides /> },
       { path: "admin/cancelled", element: <CancelledRides /> },
+
+      // Legacy aliases (optional)
+      { path: "admins", element: <Admins /> },
+      { path: "drivers", element: <Drivers /> },
+      { path: "passengers", element: <Passengers /> },
+      { path: "dispatchers", element: <Dispatchers /> },
+      { path: "admin/Ongoing", element: <OngoingRides /> },
+      { path: "admin/Completed", element: <CompletedRides /> },
     ],
   },
 
