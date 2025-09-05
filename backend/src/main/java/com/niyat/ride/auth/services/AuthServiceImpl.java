@@ -5,7 +5,6 @@ import com.niyat.ride.shared.repositories.CredentialRepository;
 import com.niyat.ride.auth.dtos.AuthResponseDTO;
 import com.niyat.ride.auth.dtos.LoginRequestDTO;
 import com.niyat.ride.enums.AccountStatus;
-import com.niyat.ride.enums.Role;
 import com.niyat.ride.user.models.User;
 import com.niyat.ride.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +36,6 @@ public class AuthServiceImpl implements AuthService {
         User user = credential.getUser();
         if (user.getStatus() == AccountStatus.SUSPENDED || user.getStatus() == AccountStatus.DEACTIVATED) {
             throw new RuntimeException("Account not allowed to login");
-        }
-
-        if (user.getRole() != Role.admin && user.getRole() != Role.dispatcher) {
-            throw new RuntimeException("Role not allowed for this login method");
         }
 
         String token = jwtUtil.generateToken(user.getId(), user.getRole().name());
