@@ -82,7 +82,7 @@ const Login = () => {
                   id="email"
                   name="email"
                   label="Email:"
-                  placeholder="abebebekila@gmail.com"
+                  placeholder="enter email"
                   value={values.email}
                   onChange={InputChangeHandler}
                   icon={<img src={email} alt="" width={23} height={12} />}
@@ -92,7 +92,7 @@ const Login = () => {
                   id="password"
                   name="password"
                   label="Password:"
-                  placeholder="************"
+                  placeholder="enter password"
                   value={values.password}
                   onChange={InputChangeHandler}
                   isVisible={true}

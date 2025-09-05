@@ -7,7 +7,6 @@ import GlobalError from "./api/GlobalErrorHandler";
 function App() {
   const [darkMode, setDarkmode] = useState(false);
   const toggleHandler = () => setDarkmode((prev) => !prev);
-
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 py-3">
