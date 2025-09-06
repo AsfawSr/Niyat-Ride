@@ -32,7 +32,14 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <Login /> },
-      { path: "signup/:role", element: <Signup /> },
+      {
+        path: "signup/:role",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Signup />
+          </ProtectedRoute>
+        ),
+      },
       { path: "logout", element: <Logout /> },
 
       // ---- Admin routes ----

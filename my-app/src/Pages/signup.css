@@ -1,0 +1,49 @@
+@reference "tailwindcss";
+
+.signup-container {
+  @apply w-[72%] mx-[15%] mt-[50px] mb-[70px] 
+         max-[414px]:w-[98%] max-[414px]:mx-[1%];
+}
+
+.signup-title {
+  @apply text-[32px] font-bold mb-8 flex items-center justify-center gap-10 
+         max-[414px]:flex-col max-[414px]:text-[28px] max-[414px]:gap-3;
+}
+
+.signup-grid {
+  @apply grid grid-cols-1 gap-7 sm:grid-cols-2 mb-5;
+}
+
+.signup-actions {
+  @apply mb-5;
+}
+.signup-btn {
+  @apply block mx-auto bg-blue-500 text-white text-[20px] font-semibold 
+         px-6 py-3 rounded-lg hover:bg-black transition duration-300;
+}
+.signup-login {
+  @apply text-center text-[16px] mt-4;
+}
+.signup-login-link {
+  @apply text-blue-500;
+}
+
+.signup-divider {
+  @apply relative text-center text-[14px] font-bold text-gray-500 my-6;
+}
+.signup-divider-text {
+  @apply relative z-10 bg-white px-3;
+}
+.signup-divider-line {
+  @apply absolute top-1/2 h-[3px] bg-gray-300;
+}
+.signup-divider-line.left {
+  @apply left-0 w-[35%];
+}
+.signup-divider-line.right {
+  @apply right-0 w-[35%];
+}
+
+.signup-google {
+  @apply w-3/4 lg:w-1/4 mx-auto;
+}

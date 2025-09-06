@@ -6,6 +6,7 @@ import SearchBar from "../../Components/userManagement/SearchBar";
 import Pagination from "../../Components/userManagement/Pagination";
 import { clearState, fetchAdmins } from "../../store/userManagement/adminSlice";
 import { NavLink } from "react-router-dom";
+import Loading from "../../Components/Loading";
 
 const Admins = () => {
   const dispatch = useDispatch();
@@ -58,7 +59,7 @@ const Admins = () => {
       <Sidebar />
 
       {/* Main Admin Table Panel */}
-      <div className="dark:bg-gray-900 dark:shadow-gray-700 flex-1 p-4">
+      <div className="dark:bg-gray-900 dark:shadow-gray-700 flex-1 flex flex-col justify-between h-screen">
         <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-200">
           Admins{" "}
           <NavLink
@@ -70,29 +71,36 @@ const Admins = () => {
         </h1>
         {/* Search Bar */}
         <SearchBar onSearch={handleSearch} filter="admins" />
-        {/* Status Messages */}
-        {status === "loading" && <p>Loading admins...</p>}
-        {status === "failed" && <p className="text-red-500">failed</p>}
-        {status === "succeeded" && admins.length === 0 && (
-          <p>No admins found.</p>
-        )}
-        {/* Admin Table */}
-        {status === "succeeded" && admins.length > 0 && (
-          <UserTable
-            users={admins}
-            onDeleteSuccess={handleDeleteAdmin}
-            onUpdateSuccess={handleUpdateSuccess}
-          />
-        )}
+        <div className="flex flex-col justify-between h-125">
+          <div className="text-center pt-4">
+            {status === "loading" && (
+              <p>
+                Loading admins...
+                <Loading />
+              </p>
+            )}
+            {status === "failed" && <p className="text-red-500">failed</p>}
+            {status === "succeeded" && admins.length === 0 && (
+              <p>No admins found.</p>
+            )}
+          </div>
 
-        {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          rowsPerPage={rowsPerPage}
-          setRowsPerPage={setRowsPerPage}
-        />
+          {status === "succeeded" && admins.length > 0 && (
+            <UserTable
+              users={admins}
+              onDeleteSuccess={handleDeleteAdmin}
+              onUpdateSuccess={handleUpdateSuccess}
+            />
+          )}
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+          />
+        </div>
       </div>
     </div>
   );

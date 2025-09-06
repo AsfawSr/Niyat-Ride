@@ -7,7 +7,6 @@ import Sidebar from "../../../Components/Sidebar";
 import api from "../../../api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchVehicles } from "../../../store/dispatcher/activeVehiclesSlice";
-
 const initialState = {
   userPhone: "",
   firstName: "",
@@ -19,7 +18,6 @@ const initialState = {
   passengerNotes: "",
   selectedDriverId: "",
 };
-
 export default function ManualDispatch() {
   const { userId } = useSelector((state) => state.auth);
   const { vehicles, status } = useSelector((state) => state.activeVehicles);
@@ -144,8 +142,6 @@ export default function ManualDispatch() {
       const response = await api.post("/api/dispatcher/rides", payload, {
         withCredentials: true,
       });
-
-      const date = new Date();
       alert(`Ride assigned successfully!\n\nPassenger: ${formData.firstName} ${
         formData.lastName
       } (${formData.userPhone})
@@ -175,7 +171,7 @@ Notes: ${formData.passengerNotes || "-"}`);
     if (!formData.selectedDriverId) return;
     try {
       await api.post(
-        "/api/dispatcher/rides",
+        `/api/dispatcher/rides/${rideId}/assign-driver`,
         {
           date: new Date(),
           driverId: formData.selectedDriverId,

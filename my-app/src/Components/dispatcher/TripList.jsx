@@ -1,5 +1,5 @@
 // src/Pages/dispatcher/TripList.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 // Badge component
 export function Badge({ status }) {
@@ -41,6 +41,13 @@ export function SectionTitle({ children }) {
 }
 // TopBar component
 export function TopBar({ count, onSearch }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      onSearch(searchTerm.trim());
+    }, 500); // wait 500ms
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm, onSearch]);
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
       <div>
@@ -56,7 +63,7 @@ export function TopBar({ count, onSearch }) {
           type="text"
           placeholder="Search rider, driver, or #ID…"
           className="w-64 rounded-xl bg-gray-800/60 border border-gray-700 px-3 py-2 text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          onChange={(e) => onSearch?.(e.target.value)}
+          onChange={(e) => setSearchTerm?.(e.target.value)}
         />
         <span className="text-sm text-gray-400">{count} active</span>
       </div>

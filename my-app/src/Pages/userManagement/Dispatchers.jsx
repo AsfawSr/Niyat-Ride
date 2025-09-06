@@ -10,6 +10,7 @@ import {
   clearState,
   fetchDispatchers,
 } from "../../store/userManagement/dispatchersSlice";
+import Loading from "../../Components/Loading";
 const Dispatchers = () => {
   const dispatch = useDispatch();
   const { dispatchers, status, totalPages } = useSelector(
@@ -72,31 +73,38 @@ const Dispatchers = () => {
 
         {/* Search Bar */}
         <SearchBar onSearch={handleSearch} filter="dispatchers" />
+        <div className="flex flex-col justify-between h-125">
+          <div className="text-center pt-4">
+            {/* Status Messages */}
+            {status === "loading" && (
+              <p>
+                Loading dispatchers...
+                <Loading />
+              </p>
+            )}
+            {status === "failed" && <p className="text-red-500">failed </p>}
+            {status === "succeeded" && dispatchers.length === 0 && (
+              <p>No dispatchers found.</p>
+            )}
+          </div>
+          {/* Dispatcher Table */}
+          {status === "succeeded" && dispatchers.length > 0 && (
+            <UserTable
+              users={dispatchers}
+              onDeleteSuccess={handleDeleteDispatcher}
+              onUpdateSuccess={handleUpdateSuccess}
+            />
+          )}
 
-        {/* Status Messages */}
-        {status === "loading" && <p>Loading dispatchers...</p>}
-        {status === "failed" && <p className="text-red-500">failed </p>}
-        {status === "succeeded" && dispatchers.length === 0 && (
-          <p>No dispatchers found.</p>
-        )}
-
-        {/* Dispatcher Table */}
-        {status === "succeeded" && dispatchers.length > 0 && (
-          <UserTable
-            users={dispatchers}
-            onDeleteSuccess={handleDeleteDispatcher}
-            onUpdateSuccess={handleUpdateSuccess}
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
           />
-        )}
-
-        {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          rowsPerPage={rowsPerPage}
-          setRowsPerPage={setRowsPerPage}
-        />
+        </div>
       </div>
     </div>
   );

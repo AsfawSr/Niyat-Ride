@@ -1,4 +1,5 @@
 import React from "react";
+import { MdClose } from "react-icons/md";
 
 const ViewUserModal = ({ user, onClose }) => {
   // preventing from rendering the modal incase of no user selected
@@ -10,7 +11,7 @@ const ViewUserModal = ({ user, onClose }) => {
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
           onClick={onClose}
         >
-          ✖
+          <MdClose />
         </button>
         <div className="text-center">
           <img

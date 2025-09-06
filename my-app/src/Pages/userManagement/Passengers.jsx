@@ -8,6 +8,7 @@ import {
   fetchPassengers,
 } from "../../store/userManagement/passengersSlice";
 import Pagination from "../../Components/userManagement/Pagination";
+import Loading from "../../Components/Loading";
 const Passengers = () => {
   const dispatch = useDispatch();
   const { passengers, status, totalPages, error } = useSelector(
@@ -65,26 +66,34 @@ const Passengers = () => {
         </h1>
 
         <SearchBar onSearch={handleSearch} filter="passengers" />
-
-        {status === "loading" && <p>Loading passengers...</p>}
-        {status === "failed" && <p className="text-red-500">failed</p>}
-        {status === "succeeded" && passengers.length === 0 && (
-          <p>No passengers found.</p>
-        )}
-        {status === "succeeded" && passengers.length > 0 && (
-          <UserTable
-            users={passengers}
-            onDeleteSuccess={handleDeletePassenger}
-            updateSuccess={handleUpdateSuccess}
+        <div className="flex flex-col justify-between h-125">
+          <div className="text-center pt-4">
+            {status === "loading" && (
+              <p>
+                Loading passengers...
+                <Loading />
+              </p>
+            )}
+            {status === "failed" && <p className="text-red-500">failed</p>}
+            {status === "succeeded" && passengers.length === 0 && (
+              <p>No passengers found.</p>
+            )}
+          </div>
+          {status === "succeeded" && passengers.length > 0 && (
+            <UserTable
+              users={passengers}
+              onDeleteSuccess={handleDeletePassenger}
+              updateSuccess={handleUpdateSuccess}
+            />
+          )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
           />
-        )}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          rowsPerPage={rowsPerPage}
-          setRowsPerPage={setRowsPerPage}
-        />
+        </div>
       </div>
     </div>
   );

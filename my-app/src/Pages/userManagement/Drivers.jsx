@@ -8,6 +8,7 @@ import {
   fetchDrivers,
 } from "../../store/userManagement/driversSlice";
 import Pagination from "../../Components/userManagement/Pagination";
+import Loading from "../../Components/Loading";
 
 const Drivers = () => {
   const dispatch = useDispatch();
@@ -66,29 +67,37 @@ const Drivers = () => {
 
         {/* Search Bar */}
         <SearchBar onSearch={handleSearch} filter="drivers" />
-
-        {/* Status Messages */}
-        {status === "loading" && <p>Loading drivers...</p>}
-        {status === "failed" && <p className="text-red-500">failed</p>}
-        {status === "succeeded" && drivers.length === 0 && (
-          <p>No drivers found.</p>
-        )}
-        {/* Driver Table */}
-        {status === "succeeded" && drivers.length > 0 && (
-          <UserTable
-            users={drivers}
-            onDeleteSuccess={handleDeleteDriver}
-            updateSuccess={handleUpdateSuccess}
+        <div className="flex flex-col justify-between h-125">
+          <div className="text-center pt-4">
+            {/* Status Messages */}
+            {status === "loading" && (
+              <p>
+                Loading drivers...
+                <Loading />
+              </p>
+            )}
+            {status === "failed" && <p className="text-red-500">failed</p>}
+            {status === "succeeded" && drivers.length === 0 && (
+              <p>No drivers found.</p>
+            )}
+          </div>
+          {/* Driver Table */}
+          {status === "succeeded" && drivers.length > 0 && (
+            <UserTable
+              users={drivers}
+              onDeleteSuccess={handleDeleteDriver}
+              updateSuccess={handleUpdateSuccess}
+            />
+          )}
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
           />
-        )}
-        {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          rowsPerPage={rowsPerPage}
-          setRowsPerPage={setRowsPerPage}
-        />
+        </div>
       </div>
     </div>
   );
