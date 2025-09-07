@@ -1,69 +1,49 @@
 import React, { useState } from "react";
-import { Box, IconButton, Menu, MenuItem, Divider } from "@mui/material";
 import { FiBell, FiUser } from "react-icons/fi";
 import { NavLink } from "react-router-dom";
 
 export default function Topbar() {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // Open menu
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  // Close menu
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const closeMenu = () => setMenuOpen(false);
 
   return (
-    <Box
-      component="header"
-      sx={{
-        height: 56,
-        borderBottom: "1px solid #eee",
-        px: 2,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "flex-end",
-        bgcolor: "#fff",
-        position: "sticky",
-        top: 0,
-        marginRight: 6,
-      }}
-    >
+    <header className="h-14 border-b border-gray-300 px-18 flex items-center justify-end sticky top-0 -mt-2 bg-gray-200 dark:bg-gray-900">
       {/* Notifications */}
-      <IconButton>
-        <FiBell />
-      </IconButton>
+      <button className="p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-800 transition-colors mr-4">
+        <FiBell className="text-gray-700 dark:text-gray-200" size={20} />
+      </button>
 
       {/* User Menu */}
-      <IconButton onClick={handleMenuOpen}>
-        <FiUser />
-      </IconButton>
+      <div className="relative">
+        <button
+          onClick={toggleMenu}
+          className="p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-800 transition-colors"
+        >
+          <FiUser className="text-gray-700 dark:text-gray-200" size={20} />
+        </button>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: " bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <MenuItem component={NavLink} to="/profile" onClick={handleMenuClose}>
-          Profile
-        </MenuItem>
-        <Divider />
-        <MenuItem component={NavLink} to="/logout" onClick={handleMenuClose}>
-          Logout
-        </MenuItem>
-      </Menu>
-    </Box>
+        {menuOpen && (
+          <div className="absolute right-0- mt-2 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-50">
+            <NavLink
+              to="/profile"
+              onClick={closeMenu}
+              className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              Profile
+            </NavLink>
+            <div className="border-t border-gray-200 dark:border-gray-700"></div>
+            <NavLink
+              to="/logout"
+              onClick={closeMenu}
+              className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              Logout
+            </NavLink>
+          </div>
+        )}
+      </div>
+    </header>
   );
 }

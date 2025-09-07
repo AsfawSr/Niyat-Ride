@@ -95,21 +95,21 @@ const router = createBrowserRouter([
       { path: "dispatchers", element: <Dispatchers /> },
       { path: "admin/Ongoing", element: <OngoingRides /> },
       { path: "admin/Completed", element: <CompletedRides /> },
-    ],
-  },
 
-  // ---- Dispatcher ----
-  {
-    path: "/dispatcher",
-    element: (
-      <ProtectedRoute allowedRoles={["admin", "dispatcher"]}>
-        <DispatcherLayout />
-      </ProtectedRoute>
-    ),
-    children: [
-      { index: true, element: <LiveMap /> },
-      { path: "livemap", element: <LiveMap /> },
-      { path: "manualAssignment", element: <ManualDispatch /> },
+      // ---- Dispatcher ----
+      {
+        path: "/dispatcher",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "dispatcher"]}>
+            <DispatcherLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          { index: true, element: <LiveMap /> },
+          { path: "livemap", element: <LiveMap /> },
+          { path: "manualAssignment", element: <ManualDispatch /> },
+        ],
+      },
     ],
   },
 ]);

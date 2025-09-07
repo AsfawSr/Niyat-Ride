@@ -121,7 +121,7 @@ export default function LiveMap() {
   }, [successMessage, error, dispatch]);
 
   return (
-    <div className="min-h-screen w-full  from-slate-950 to-slate-900 text-gray-100 p-4 md:p-6">
+    <div className=" min-h-screen w-full  from-slate-950 to-slate-900 text-gray-100">
       <TopBar count={trips.length} onSearch={setSearchQuery} />
       {loading && <Loading />}
       {error && <p className="text-red-500">{error}</p>}
@@ -152,12 +152,14 @@ export default function LiveMap() {
         </div>
 
         {/* Active Trips List */}
-        <div className="rounded-2xl border border-gray-800 bg-gray-900/60 shadow-xl overflow-hidden">
-          <div className="flex items-center justify-between p-3 border-b border-gray-800">
-            <SectionTitle>Active Trips</SectionTitle>
-            <div className="text-xs text-gray-400">Click to focus</div>
-          </div>
 
+        <div className="rounded-2xl border border-gray-800 shadow-xl overflow-hidden">
+          <div className="flex items-center justify-between p-3 border-b bg-gray-200 dark:bg-gray-700  border-gray-800">
+            <SectionTitle>Active Trips</SectionTitle>
+            <div className="text-xs text-gray-700 dark:text-gray-400">
+              Click to focus
+            </div>
+          </div>
           <ul className="divide-y divide-gray-800 max-h-[450px] overflow-y-auto">
             {trips.map((trip) => (
               <li

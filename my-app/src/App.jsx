@@ -1,8 +1,7 @@
 import { RouterProvider } from "react-router-dom";
 import { useState } from "react";
 import { FaMoon, FaSun } from "react-icons/fa";
-import router from "./routes"; // ✅ clean import from routes/index.jsx
-import GlobalError from "./api/GlobalErrorHandler";
+import router from "./routes"; //
 
 function App() {
   const [darkMode, setDarkmode] = useState(false);
