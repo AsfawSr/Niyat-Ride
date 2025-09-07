@@ -25,9 +25,16 @@ public class RideRequest {
     // PostGIS spatial columns
     @Column(name = "pickup_location", columnDefinition = "GEOMETRY(Point, 4326)")
     private Point pickupLocation;
-    
+
     @Column(name = "dropoff_location", columnDefinition = "GEOMETRY(Point, 4326)")
     private Point dropoffLocation;
+
+//Mysql spatial columns
+//    @Column(name = "pickup_location", columnDefinition = "POINT SRID 4326")
+//    private Point pickupLocation;
+//
+//    @Column(name = "dropoff_location", columnDefinition = "POINT SRID 4326")
+//    private Point dropoffLocation;
 
     // Backup coordinates for compatibility
     private Double pickupLatitude;

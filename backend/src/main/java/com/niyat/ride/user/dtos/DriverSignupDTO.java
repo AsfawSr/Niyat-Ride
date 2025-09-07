@@ -1,8 +1,6 @@
 package com.niyat.ride.user.dtos;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,15 +11,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DriverSignupDTO {
-    @NotBlank(message = "Full name is required")
+
+    @NotBlank(message = "First name is required")
     private String firstName;
 
-    @NotBlank(message = "Full name is required")
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
-    @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
-    private String email;
+    private String email; // optional
 
     @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "^[0-9]{9,15}$", message = "Invalid phone number")
@@ -30,20 +28,19 @@ public class DriverSignupDTO {
     @NotBlank(message = "License number is required")
     private String licenseNumber;
 
-    @NotBlank(message = "Vehicle type is required")
+    @NotBlank(message = "Vehicle model is required")
     private String vehicleModel;
 
     @NotBlank(message = "Vehicle plate number is required")
     private String vehiclePlateNumber;
 
-    @NotBlank(message = "front side licence image is required")
+    @NotBlank(message = "Front side license image is required")
     private String frontLicenceImage;
 
-    @NotBlank(message = "front side license image is required")
+    @NotBlank(message = "Back side license image is required")
     private String backLicenceImage;
 
-    @NotBlank(message = "Vehicle plate number is required")
-    private LocalDate licesneExipirationDate;
-
-
+    @Future(message = "License expiration date must be in the future")
+    @NotNull(message = "License expiration date is required")
+    private LocalDate licenseExpirations;
 }

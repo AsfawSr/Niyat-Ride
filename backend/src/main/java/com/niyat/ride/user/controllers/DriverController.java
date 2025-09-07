@@ -1,93 +1,112 @@
 package com.niyat.ride.user.controllers;
 
 import com.niyat.ride.user.dtos.DriverResponseDTO;
-import com.niyat.ride.user.services.DriverService;
-import com.niyat.ride.user.dtos.DriverSignupDTO;
 import com.niyat.ride.user.dtos.DriverUpdateDTO;
-import com.niyat.ride.otp.services.OtpService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import com.niyat.ride.user.mappers.DriverMapper;
+import com.niyat.ride.user.services.DriverService;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/drivers")
 @RequiredArgsConstructor
-@Tag(name = "Driver Management", description = "Endpoints for driver operations")
 public class DriverController {
 
     private final DriverService driverService;
-    private final OtpService otpService;
+    private final DriverMapper driverMapper;
+    private final GeometryFactory geometryFactory = new GeometryFactory();
 
-    // Temporary storage for signup data before OTP verification
-    private final Map<String, DriverSignupDTO> tempSignupStorage = new ConcurrentHashMap<>();
-
-
-    @PostMapping("/signup/request-otp")
-    @Operation(summary = "Request OTP for driver signup")
-    public ResponseEntity<String> requestSignupOtp(@Valid @RequestBody DriverSignupDTO driverSignupDTO) {
-        driverService.checkIfDriverExists(driverSignupDTO.getPhoneNumber());
-        otpService.sendOtp(driverSignupDTO.getPhoneNumber());
-        tempSignupStorage.put(driverSignupDTO.getPhoneNumber(), driverSignupDTO);
-        return ResponseEntity.ok("OTP sent to " + driverSignupDTO.getPhoneNumber());
-    }
-
-    @PostMapping("/signup/verify-otp")
-    @Operation(summary = "Verify OTP and complete driver signup")
-    public ResponseEntity<DriverResponseDTO> verifySignupOtp(@RequestParam String phoneNumber,
-                                                             @RequestParam String otp) {
-        if (!otpService.verifyOtp(phoneNumber, otp)) {
-            return ResponseEntity.badRequest().build();
+    // CRUD
+    @GetMapping("/{id}")
+    public ResponseEntity<DriverResponseDTO> getDriver(@PathVariable Long id) {
+        DriverResponseDTO driver = driverService.getDriverById(id);
+        if (driver != null) {
+            return ResponseEntity.ok(driver);
+        } else {
+            return ResponseEntity.notFound().build();
         }
-
-        DriverSignupDTO signupDTO = tempSignupStorage.get(phoneNumber);
-        if (signupDTO == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        DriverResponseDTO response = driverService.signUpDriver(signupDTO);
-        otpService.clearOtp(phoneNumber);
-        tempSignupStorage.remove(phoneNumber);
-
-        return ResponseEntity.created(URI.create("/api/drivers/" + response.getId()))
-                .body(response);
     }
 
 
-    @PostMapping("/login/request-otp")
-    @Operation(summary = "Request OTP for driver login")
-    public ResponseEntity<String> requestLoginOtp(@RequestParam String phoneNumber) {
-        driverService.getDriverByPhoneNumber(phoneNumber);
-        otpService.sendOtp(phoneNumber);
-        return ResponseEntity.ok("OTP sent to " + phoneNumber);
+
+    @GetMapping
+    public ResponseEntity<List<DriverResponseDTO>> getAllDrivers() {
+        List<DriverResponseDTO> drivers = driverService.getAllDrivers()
+                .stream()
+                .toList();
+        return ResponseEntity.ok(drivers);
     }
 
-    @PostMapping("/login/verify-otp")
-    @Operation(summary = "Verify OTP and log in driver")
-    public ResponseEntity<DriverResponseDTO> verifyLoginOtp(@RequestParam String phoneNumber,
-                                                            @RequestParam String otp) {
-        if (!otpService.verifyOtp(phoneNumber, otp)) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        DriverResponseDTO driver = driverService.getDriverByPhoneNumber(phoneNumber);
-        otpService.clearOtp(phoneNumber);
-        return ResponseEntity.ok(driver);
-    }
-
-
-    @PatchMapping("/updateDriver/{driverId}")
-    @Operation(summary = "Update driver details")
+    @PutMapping("/{id}")
     public ResponseEntity<DriverResponseDTO> updateDriver(
+            @PathVariable Long id,
+            @RequestBody DriverUpdateDTO updatedDTO) {
+
+        DriverResponseDTO updatedDriver = driverService.updateDriver(id, updatedDTO);
+        return ResponseEntity.ok(updatedDriver);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDriver(@PathVariable Long id) {
+        driverService.deleteDriver(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Toggle online status
+    @PatchMapping("/{driverId}/status")
+    public ResponseEntity<DriverResponseDTO> toggleOnlineStatus(
             @PathVariable Long driverId,
-            @Valid @RequestBody DriverUpdateDTO updateDTO) {
-        DriverResponseDTO response = driverService.updateDriver(driverId, updateDTO);
+            @RequestParam boolean online) {
+
+        DriverResponseDTO updatedDriver = driverService.toggleOnlineStatus(driverId, online);
+        return ResponseEntity.ok(updatedDriver);
+    }
+
+    // Location
+    @PatchMapping("/{driverId}/location")
+    public ResponseEntity<DriverResponseDTO> updateLocation(
+            @PathVariable Long driverId,
+            @RequestParam double latitude,
+            @RequestParam double longitude) {
+
+        Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+        point.setSRID(4326);
+
+        DriverResponseDTO updatedDriver = driverService.updateDriverLocation(driverId, point);
+        return ResponseEntity.ok(updatedDriver);
+    }
+
+    //  Nearby Drivers
+    @GetMapping("/nearby")
+    public ResponseEntity<List<DriverResponseDTO>> findNearbyDrivers(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam double radiusMeters,
+            @RequestParam(defaultValue = "10") int limit) {
+
+        String wkt = String.format("POINT(%f %f)", longitude, latitude);
+        List<DriverResponseDTO> nearbyDrivers = driverService.findNearbyDrivers(wkt, radiusMeters, limit);
+
+        List<DriverResponseDTO> response = nearbyDrivers.stream()
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    //  Online Drivers
+    @GetMapping("/online")
+    public ResponseEntity<List<DriverResponseDTO>> getOnlineDrivers() {
+        List<DriverResponseDTO> onlineDrivers = driverService.getOnlineDrivers();
+
+        List<DriverResponseDTO> response = onlineDrivers.stream()
+                .toList();
+
         return ResponseEntity.ok(response);
     }
 }

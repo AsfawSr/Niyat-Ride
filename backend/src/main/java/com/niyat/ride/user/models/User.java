@@ -21,20 +21,24 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "first_name", nullable = false)
     private String firstName;
+
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
 
     @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "is_verified", nullable = false)
     private Boolean isVerified = false;
-    
+
+    @Column(name = "verified_at")
     private LocalDateTime verifiedAt;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -44,11 +48,10 @@ public abstract class User {
     private AccountStatus status = AccountStatus.PENDING;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
 }

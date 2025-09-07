@@ -1,5 +1,6 @@
 package com.niyat.ride.user.dtos;
 
+import com.niyat.ride.enums.AccountStatus;
 import com.niyat.ride.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,10 +18,15 @@ public class DriverResponseDTO {
     private String email;
     private String phoneNumber;
     private Role role;
-    private String status;
+    private AccountStatus status;
     private String licenseNumber;
-    private String vehicleType;
+    private String vehicleModel;
     private String vehiclePlateNumber;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String frontLicenceImage;
+    private String backLicenceImage;
+    private Boolean isOnline;
+
+    //  fields for location
+    private Double latitude;
+    private Double longitude;
 }

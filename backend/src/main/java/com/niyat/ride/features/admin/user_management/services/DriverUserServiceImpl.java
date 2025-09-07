@@ -63,7 +63,6 @@ public class DriverUserServiceImpl implements DriverUserService {
         dto.setCreatedAt(driver.getCreatedAt());
         dto.setUpdatedAt(driver.getUpdatedAt());
         dto.setLicenseNumber(driver.getLicenseNumber());
-        dto.setLicenseImagePath(driver.getLicenseImagePath());
         return dto;
     }
 }

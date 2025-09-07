@@ -1,0 +1,62 @@
+package com.niyat.ride.user.controllers;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.niyat.ride.user.dtos.DriverResponseDTO;
+import com.niyat.ride.user.dtos.DriverSignupDTO;
+import com.niyat.ride.user.dtos.DriverUpdateDTO;
+import com.niyat.ride.user.services.DriverService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+
+@RestController
+@RequestMapping("/api/driver-auth")
+@RequiredArgsConstructor
+public class DriverAuthController {
+
+    private final DriverService driverService;
+
+    @PostMapping("/signup/request-otp")
+    @Operation(summary = "Request OTP for driver signup")
+    public ResponseEntity<String> requestSignupOtp(@Valid @RequestBody DriverSignupDTO driverSignupDTO) {
+        driverService.requestOtp(driverSignupDTO.getPhoneNumber(), driverSignupDTO, true);
+        return ResponseEntity.ok("OTP sent to " + driverSignupDTO.getPhoneNumber());
+    }
+
+    @PostMapping("/signup/verify-otp")
+    @Operation(summary = "Verify OTP and complete driver signup")
+    public ResponseEntity<DriverResponseDTO> verifySignupOtp(
+            @RequestParam String phoneNumber,
+            @RequestParam String otp) {
+
+        DriverResponseDTO response = driverService.verifyOtp(phoneNumber, otp, true);
+        return ResponseEntity.created(URI.create("/api/driver-auth/" + response.getId()))
+                .body(response);
+    }
+
+    @PostMapping("/login/request-otp")
+    @Operation(summary = "Request OTP for driver login")
+    public ResponseEntity<String> requestLoginOtp(@RequestParam String phoneNumber) {
+        driverService.requestOtp(phoneNumber, null, false);
+        return ResponseEntity.ok("OTP sent to " + phoneNumber);
+    }
+
+    @PostMapping("/login/verify-otp")
+    @Operation(summary = "Verify OTP and log in driver")
+    public ResponseEntity<DriverResponseDTO> verifyLoginOtp(
+            @RequestParam String phoneNumber,
+            @RequestParam String otp) {
+
+        DriverResponseDTO response = driverService.verifyOtp(phoneNumber, otp, false);
+        return ResponseEntity.ok(response);
+    }
+
+
+
+
+}
