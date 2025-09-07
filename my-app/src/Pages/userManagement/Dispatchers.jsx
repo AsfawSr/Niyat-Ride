@@ -11,14 +11,17 @@ import {
   fetchDispatchers,
 } from "../../store/userManagement/dispatchersSlice";
 import Loading from "../../Components/Loading";
+
 const Dispatchers = () => {
   const dispatch = useDispatch();
   const { dispatchers, status, totalPages } = useSelector(
     (state) => state.dispatchers
   );
+
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+
   useEffect(() => {
     dispatch(
       fetchDispatchers({
@@ -56,16 +59,19 @@ const Dispatchers = () => {
       })
     );
   };
+
   return (
     <div className="flex">
       <Sidebar />
+
       {/* Main Dispatcher Table Panel */}
-      <div className="dark:bg-gray-900 dark:shadow-gray-700 flex-1 p-4">
-        <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-200">
-          Dispatchers{" "}
+      <div className="dark:bg-gray-900 dark:shadow-gray-700 p-4 flex-1 flex flex-col justify-between h-160 ">
+        <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-200 flex items-center justify-center gap-10">
+          Dispatcher Page
           <NavLink
             to="/signup/Dispatcher"
-            className="rounded bg-blue-500 text-white p-4 inline-block"
+            className="rounded bg-blue-500 text-white px-4 py-2 text-base h-auto inline-block hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800 transition"
+            aria-label="Create a new dispatcher"
           >
             Create Dispatcher
           </NavLink>
@@ -75,19 +81,13 @@ const Dispatchers = () => {
         <SearchBar onSearch={handleSearch} filter="dispatchers" />
         <div className="flex flex-col justify-between h-125">
           <div className="text-center pt-4">
-            {/* Status Messages */}
-            {status === "loading" && (
-              <p>
-                Loading dispatchers...
-                <Loading />
-              </p>
-            )}
-            {status === "failed" && <p className="text-red-500">failed </p>}
+            {status === "loading" && <Loading />}
+            {status === "failed" && <p className="text-red-500">failed</p>}
             {status === "succeeded" && dispatchers.length === 0 && (
               <p>No dispatchers found.</p>
             )}
           </div>
-          {/* Dispatcher Table */}
+
           {status === "succeeded" && dispatchers.length > 0 && (
             <UserTable
               users={dispatchers}

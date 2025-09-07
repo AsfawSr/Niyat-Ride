@@ -1,30 +1,29 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api/api";
+import api from "../../api/api";
+
 const initialState = {
   userId: null,
   email: null,
   firstName: null,
   role: null,
-  token: null,
   isAuthenticated: false,
-  status: false,
+  status: "idle",
   error: null,
 };
+
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
-    console.log(credentials);
     try {
       const response = await api.post("/api/auth/login", credentials);
-      console.log(response);
-      return response.data; // Expecting { data: { user }, token }
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   }
 );
-const authSlice = createSlice({
-  name: "auth",
+const loginSlice = createSlice({
+  name: "login",
   initialState,
   reducers: {
     logout(state) {
@@ -38,21 +37,19 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.status = true;
-
+        state.status = "succeeded";
         const data = action.payload;
-        console.log(data);
-        // state.email = data.email;
-        state.firstName = data.data.firstName;
-        state.userId = data.userId;
-        state.role = data.data.role;
+        state.userId = data.data?.userId || null;
+        state.firstName = data.data?.firstName || null;
+        state.role = data.data?.role || null;
         state.isAuthenticated = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.status = false;
+        state.status = "failed";
         state.error = action.payload;
       });
   },
 });
-export const { logout } = authSlice.actions;
-export default authSlice.reducer;
+
+export const { logout } = loginSlice.actions;
+export default loginSlice.reducer;

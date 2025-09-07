@@ -35,9 +35,7 @@ const Pagination = ({
       >
         Next
       </button>
-      {/* Rows per page Select */}
     </div>
   );
 };
-
 export default Pagination;

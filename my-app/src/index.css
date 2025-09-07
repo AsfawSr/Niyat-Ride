@@ -8,7 +8,7 @@ body {
   width: 100vw;
   height: 100vh;
   color: #000000;
-  overflow-y: hidden; /* disables vertical scroll */
+  /* overflow-y: hidden; disables vertical scroll */
 
   font-weight: 400;
 }

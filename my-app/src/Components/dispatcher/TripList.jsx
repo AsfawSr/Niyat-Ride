@@ -34,7 +34,7 @@ export function Badge({ status }) {
 // Section title
 export function SectionTitle({ children }) {
   return (
-    <h2 className="text-lg md:text-xl font-semibold tracking-tight text-gray-100">
+    <h2 className=" text-gray-900 text-lg md:text-xl font-semibold tracking-tight dark:text-gray-100">
       {children}
     </h2>
   );
@@ -51,10 +51,10 @@ export function TopBar({ count, onSearch }) {
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-white">
+        <h1 className="text-2xl md:text-3xl text-gray-900 font-bold dark:text-white">
           Ride Status Tracking
         </h1>
-        <p className="text-gray-300 text-sm">
+        <p className=" text-black dark:text-gray-300 text-sm">
           Monitor ongoing trips and intervene when necessary.
         </p>
       </div>
@@ -62,10 +62,12 @@ export function TopBar({ count, onSearch }) {
         <input
           type="text"
           placeholder="Search rider, driver, or #ID…"
-          className="w-64 rounded-xl bg-gray-800/60 border border-gray-700 px-3 py-2 text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-64 rounded-xl dark:bg-gray-800/60 border border-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           onChange={(e) => setSearchTerm?.(e.target.value)}
         />
-        <span className="text-sm text-gray-400">{count} active</span>
+        <span className="text-sm text-gray-700 dark:text-gray-300">
+          {count} active
+        </span>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ const SearchBar = ({ onSearch }) => {
     return () => clearTimeout(delayDebounce);
   }, [searchTerm, onSearch]);
   return (
-    <div className="flex justify-between mb-4 items-center">
+    <div className="flex justify-between m-4  items-center">
       <input
         type="text"
         placeholder="Search by ID, Name, Email, Role, or Status..."

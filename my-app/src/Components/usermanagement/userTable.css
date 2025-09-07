@@ -1,0 +1,25 @@
+@reference "tailwindcss";
+
+.user-table-container {
+  @apply space-y-3 bg-red-500;
+}
+
+/* Table wrapper */
+.user-table-wrapper {
+  @apply overflow-hidden rounded-lg border border-gray-300;
+}
+
+/* Table */
+.user-table {
+  @apply w-full text-left border-collapse;
+}
+
+/* Header row */
+.user-table-header-row {
+  @apply bg-[#dfdfdf] dark:bg-gray-700 border-b border-gray-400 dark:border-gray-800;
+}
+
+/* Header cells */
+.user-table-header {
+  @apply p-3;
+}

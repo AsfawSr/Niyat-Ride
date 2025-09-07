@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import key from "../assets/mdkey.png";
 import email from "../assets/email.png";
 import call from "../assets/phone.png";
@@ -6,21 +6,20 @@ import admin from "../assets/admin.png";
 import user from "../assets/user.png";
 import Input from "../Components/input";
 import useInput from "../Components/input-hook";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
-import Windowresponsiv from "../Components/Windowresponsiv";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { useDispatch, useSelector } from "react-redux";
-import api from "../api/api";
-import "./Signup.css"; // 👈 import styles
+import "./Signup.css";
+import Loading from "../Components/Loading";
+import {
+  clearState,
+  registerUser,
+} from "../store/authentication/registrationSlice";
+import { useParams } from "react-router-dom";
 
 const Signup = () => {
-  const { width } = Windowresponsiv();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { userId } = useSelector((state) => state.auth);
+  const { status, error } = useSelector((state) => state.registration);
   const { role } = useParams();
-
-  // --- Input Hook Usage ---
   const {
     value: enteredFirstName,
     hasError: enteredFirstNameHasError,
@@ -69,11 +68,12 @@ const Signup = () => {
     resetValue: resetConfirmPasswordValue,
   } = useInput((value) => value.trim().length > 6 && value === enteredPassword);
 
-  const [loading, setLoading] = useState(false);
-
-  // --- Form Submit ---
-  const submitHandler = async (e) => {
+  const submitHandler = (e) => {
     e.preventDefault();
+    if (enteredPassword !== confirmEnteredPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
     const userData = {
       firstName: enteredFirstName,
       lastName: enteredLastName,
@@ -81,38 +81,34 @@ const Signup = () => {
       phoneNumber: enteredPhone,
       password: enteredPassword,
       role: role,
-      creater: userId,
+      createrId: userId,
+      assignedRegion: "mekelle",
     };
-    if (enteredPassword !== confirmEnteredPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    const URLRole = role === "Admin" ? "admins" : "dispatchers";
-    try {
-      setLoading(true);
-      await api.post(`/api/${URLRole}/signup`, userData, {
-        headers: { "Content-Type": "application/json" },
-      });
+    console.log(role, userData);
+
+    dispatch(registerUser({ userData }));
+  };
+
+  useEffect(() => {
+    if (status === "succeeded") {
       alert("Registration successful!");
       resetFirstNameValue();
       resetLastNameValue();
       resetEmailValue();
+      resetPhoneValue();
       resetPasswordValue();
       resetConfirmPasswordValue();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
     }
-  };
-
-  const handleGoogleSuccess = async (response) => {
-    // integration with backend (commented for now)
-  };
-  const handleGoogleFailure = (error) => {};
-
+    return () => {
+      dispatch(clearState());
+    };
+  }, [status]);
   return (
-    <GoogleOAuthProvider clientId="">
+    <>
+      <div className="text-center pt-2">
+        {status === "loading" && <Loading />}
+        {status === "failed" && <p className="text-red-500">{error}</p>}
+      </div>
       <div className="signup-container">
         <h2 className="signup-title">
           <img
@@ -126,7 +122,6 @@ const Signup = () => {
         </h2>
 
         <form onSubmit={submitHandler}>
-          {/* Grid Container for Inputs */}
           <div className="signup-grid">
             <Input
               type="text"
@@ -154,7 +149,6 @@ const Signup = () => {
               icon={<img src={user} alt="" width={20} height={20} />}
               required
             />
-
             <Input
               type="email"
               id="email"
@@ -165,14 +159,7 @@ const Signup = () => {
               onChange={emailChangeHandler}
               onBlur={emailBlurHandler}
               hasError={enteredEmailHasError}
-              icon={
-                <img
-                  src={email}
-                  alt=""
-                  width={width > 414 ? 17 : 23}
-                  height={width > 414 ? 16 : 18}
-                />
-              }
+              icon={<img src={email} alt="" width={23} height={18} />}
               required
             />
             <Input
@@ -185,17 +172,9 @@ const Signup = () => {
               onChange={phoneChangeHandler}
               onBlur={phoneBlurHandler}
               hasError={enteredPhoneHasError}
-              icon={
-                <img
-                  src={call}
-                  alt=""
-                  width={width > 414 ? 17 : 23}
-                  height={width > 414 ? 16 : 18}
-                />
-              }
+              icon={<img src={call} alt="" width={23} height={18} />}
               required
             />
-
             <Input
               type="password"
               id="password"
@@ -224,318 +203,17 @@ const Signup = () => {
               required
             />
           </div>
-
-          {/* Submit Button + Login Option */}
-          <div className="signup-actions">
-            <button type="submit" className="signup-btn" disabled={loading}>
-              {loading ? "Registering..." : "Register"}
-            </button>
-            <p className="signup-login">
-              Already have an account?{" "}
-              <NavLink className="signup-login-link" to="/">
-                Login
-              </NavLink>
-            </p>
-          </div>
-
-          {/* Divider */}
-          <div className="signup-divider">
-            <span className="signup-divider-text">OR CONTINUE WITH</span>
-            <div className="signup-divider-line left"></div>
-            <div className="signup-divider-line right"></div>
-          </div>
-
-          {/* Google Login */}
-          <div className="signup-google">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleFailure}
-              useOneTap
-              text="continue_with"
-            />
-          </div>
+          <button
+            type="submit"
+            className="signup-btn"
+            disabled={status === "loading"}
+          >
+            {status === "loading" ? "Registering..." : "Register"}
+          </button>
         </form>
       </div>
-    </GoogleOAuthProvider>
+    </>
   );
 };
 
 export default Signup;
-
-// import { useState } from "react";
-// import key from "../assets/mdkey.png";
-// import email from "../assets/email.png";
-// import call from "../assets/phone.png";
-// import admin from "../assets/admin.png";
-// import user from "../assets/user.png";
-// import Input from "../Components/input";
-// import useInput from "../Components/input-hook";
-// import { NavLink, useNavigate, useParams } from "react-router-dom";
-// import Windowresponsiv from "../Components/Windowresponsiv";
-// import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-// import { useDispatch, useSelector } from "react-redux";
-// import api from "../api/api";
-// // import { authActions } from "../store/authSlice";
-// // import api from "../api/api";
-// const Signup = () => {
-//   const { width } = Windowresponsiv();
-//   const navigate = useNavigate();
-//   const dispatch = useDispatch();
-//   const { userId } = useSelector((state) => state.auth);
-//   const { role } = useParams();
-//   const {
-//     value: enteredFirstName,
-//     isValid: enteredFirstNameIsValid,
-//     hasError: enteredFirstNameHasError,
-//     valueChangeHandler: firstNameChangeHandler,
-//     inputBlurHandler: firstNameBlurHandler,
-//     resetValue: resetFirstNameValue,
-//   } = useInput((value) => value.trim() !== "");
-//   const {
-//     value: enteredLastName,
-//     isValid: enteredLastNameIsValid,
-//     hasError: enteredLastNameHasError,
-//     valueChangeHandler: lastNameChangeHandler,
-//     inputBlurHandler: lastNameBlurHandler,
-//     resetValue: resetLastNameValue,
-//   } = useInput((value) => value.trim() !== "");
-//   const {
-//     value: enteredEmail,
-//     isValid: enteredEmailIsValid,
-//     hasError: enteredEmailHasError,
-//     valueChangeHandler: emailChangeHandler,
-//     inputBlurHandler: emailBlurHandler,
-//     resetValue: resetEmailValue,
-//   } = useInput((value) => value.includes("@"));
-//   const {
-//     value: enteredPhone,
-//     isValid: enteredPhoneIsValid,
-//     hasError: enteredPhoneHasError,
-//     valueChangeHandler: phoneChangeHandler,
-//     inputBlurHandler: phoneBlurHandler,
-//     resetValue: resetPhoneValue,
-//   } = useInput((value) => value.trim().length === 10);
-//   const {
-//     value: enteredPassword,
-//     isValid: enteredPasswordIsValid,
-//     hasError: enteredPasswordHasError,
-//     valueChangeHandler: passwordChangeHandler,
-//     inputBlurHandler: passwordBlurHandler,
-//     resetValue: resetPasswordValue,
-//   } = useInput((value) => value.trim().length > 6);
-//   const {
-//     value: confirmEnteredPassword,
-//     isValid: confirmEnteredPasswordIsValid,
-//     hasError: confirmEnteredPasswordHasError,
-//     valueChangeHandler: confirmPasswordChangeHandler,
-//     inputBlurHandler: confirmPasswordBlurHandler,
-//     resetValue: resetConfirmPasswordValue,
-//   } = useInput((value) => value.trim().length > 6 && value === enteredPassword);
-//   const [loading, setLoading] = useState(false); // Loading state for the API call
-//   const submitHandler = async (e) => {
-//     e.preventDefault();
-//     const userData = {
-//       firstName: enteredFirstName,
-//       lastName: enteredLastName,
-//       email: enteredEmail,
-//       phoneNumber: enteredPhone,
-//       password: enteredPassword,
-//       role: role,
-//       creater: userId,
-//     };
-//     if (enteredPassword !== confirmEnteredPassword) {
-//       alert("Passwords do not match!");
-//       return;
-//     }
-//     const URLRole = role === "Admin" ? "admins" : "dispatchers";
-//     try {
-//       setLoading(true);
-//       const response = await api.post(`/api/${URLRole}/signup`, userData, {
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//       });
-//       console.log(response), alert("Registration successful!");
-//       // Reset form
-//       resetFirstNameValue();
-//       resetLastNameValue();
-//       resetEmailValue();
-//       resetPasswordValue();
-//       resetConfirmPasswordValue();
-//     } catch (error) {
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-//   const handleGoogleSuccess = async (response) => {
-//     // try {
-//     //   const res = await api.post("/auth/google/register", {
-//     //     token: response.credential, // Send Google token to the backend
-//     //   });
-//     //   if (res.status === 200) {
-//     //     console.log(res);
-//     //     const { email, fullName, _id, role } = res.data.data.user;
-//     //     const name = fullName;
-//     //     dispatch(authActions.login({ email, name, _id, role }));
-//     //     console.log("navigating to home");
-//     //     navigate("/");
-//     //   }
-//     // } catch (error) {}
-//   };
-//   const handleGoogleFailure = (error) => {};
-//   return (
-//     <GoogleOAuthProvider clientId="">
-//       <div className="w-[72%] mx-[15%] mt-[50px] mb-[70px] max-[414px]:w-[98%] max-[414px]:mx-[1%]">
-//         <h2 className="text-[32px] font-bold mb-8 flex items-center justify-center gap-10 max-[414px]:flex-col max-[414px]:text-[28px] max-[414px]:gap-3">
-//           <img
-//             src={admin}
-//             alt=""
-//             width={90}
-//             height={90}
-//             className="dark:invert"
-//           />
-//           Registration Form of {role}
-//         </h2>
-//         <form onSubmit={submitHandler}>
-//           {/* Grid Container for Inputs */}
-//           <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 mb-5">
-//             <Input
-//               type="text"
-//               id="firstName"
-//               name="firstName"
-//               label="First Name"
-//               placeholder="enter first name "
-//               value={enteredFirstName}
-//               onChange={firstNameChangeHandler}
-//               onBlur={firstNameBlurHandler}
-//               hasError={enteredFirstNameHasError}
-//               icon={<img src={user} alt="" width={20} height={20} />}
-//               required
-//             />
-//             <Input
-//               type="text"
-//               id="lastName"
-//               name="lastName"
-//               label="Last Name"
-//               placeholder=" enter last name"
-//               value={enteredLastName}
-//               onChange={lastNameChangeHandler}
-//               onBlur={lastNameBlurHandler}
-//               hasError={enteredLastNameHasError}
-//               icon={<img src={user} alt="" width={20} height={20} />}
-//               required
-//             />
-
-//             <Input
-//               type="email"
-//               id="email"
-//               name="email"
-//               label="Email"
-//               placeholder="abebe@gmail.com"
-//               value={enteredEmail}
-//               onChange={emailChangeHandler}
-//               onBlur={emailBlurHandler}
-//               hasError={enteredEmailHasError}
-//               icon={
-//                 <img
-//                   src={email}
-//                   alt=""
-//                   width={width > 414 ? 17 : 23}
-//                   height={width > 414 ? 16 : 18}
-//                 />
-//               }
-//               required
-//             />
-//             <Input
-//               type="number"
-//               id="Phone"
-//               name="Phone"
-//               label="Phone"
-//               placeholder="enter phone number"
-//               value={enteredPhone}
-//               onChange={phoneChangeHandler}
-//               onBlur={phoneBlurHandler}
-//               hasError={enteredPhoneHasError}
-//               icon={
-//                 <img
-//                   className=" bg-white-500"
-//                   src={call}
-//                   alt=""
-//                   width={width > 414 ? 17 : 23}
-//                   height={width > 414 ? 16 : 18}
-//                 />
-//               }
-//               required
-//             />
-
-//             <Input
-//               type="password"
-//               id="password"
-//               name="password"
-//               label="Password"
-//               placeholder="*************"
-//               value={enteredPassword}
-//               onChange={passwordChangeHandler}
-//               onBlur={passwordBlurHandler}
-//               hasError={enteredPasswordHasError}
-//               icon={<img src={key} alt="" width={23} height={12} />}
-//               isVisible
-//               required
-//             />
-//             <Input
-//               type="password"
-//               id="confirmPassword"
-//               name="confirmPassword"
-//               label="Confirm Password"
-//               placeholder="**************"
-//               value={confirmEnteredPassword}
-//               onChange={confirmPasswordChangeHandler}
-//               onBlur={confirmPasswordBlurHandler}
-//               hasError={confirmEnteredPasswordHasError}
-//               icon={<img src={key} alt="" width={23} height={12} />}
-//               required
-//             />
-//           </div>
-
-//           {/* Submit Button + Login Option */}
-//           <div className="mb-5">
-//             <button
-//               type="submit"
-//               className="block mx-auto bg-blue-500 text-white text-[20px] font-semibold px-6 py-3 rounded-lg hover:bg-black transition duration-300"
-//               disabled={loading}
-//             >
-//               {loading ? "Registering..." : "Register"}
-//             </button>
-//             <p className="text-center text-[16px] mt-4">
-//               Already have an account?{" "}
-//               <NavLink className="text-blue-500 " to="/">
-//                 Login
-//               </NavLink>
-//             </p>
-//           </div>
-
-//           {/* Divider */}
-//           <div className="relative text-center text-[14px] font-bold text-gray-500 my-6">
-//             <span className="relative z-10 bg-white px-3">
-//               OR CONTINUE WITH
-//             </span>
-//             <div className="absolute top-1/2 left-0 w-[35%] h-[3px] bg-gray-300"></div>
-//             <div className="absolute top-1/2 right-0 w-[35%] h-[3px] bg-gray-300"></div>
-//           </div>
-
-//           {/* Google Login */}
-//           <div className=" w-3/4 lg:w-1/4 mx-auto ">
-//             <GoogleLogin
-//               onSuccess={handleGoogleSuccess}
-//               onError={handleGoogleFailure}
-//               useOneTap
-//               text="continue_with"
-//             />
-//           </div>
-//         </form>
-//       </div>
-//     </GoogleOAuthProvider>
-//   );
-// };
-
-// export default Signup;

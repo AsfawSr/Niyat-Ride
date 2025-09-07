@@ -1,0 +1,33 @@
+/* common.css */
+
+/* Layout */
+.page-container {
+  @apply flex;
+}
+
+.page-main {
+  @apply dark:bg-gray-900 dark:shadow-gray-700 p-4 flex-1 flex flex-col justify-between h-160;
+}
+
+/* Header */
+.page-header {
+  @apply text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-200 flex items-center justify-center gap-10;
+}
+
+.create-btn {
+  @apply rounded bg-blue-500 text-white px-4 py-2 text-base h-auto inline-block 
+         hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800 transition;
+}
+
+/* Search and Table Area */
+.table-wrapper {
+  @apply flex flex-col justify-between h-125;
+}
+
+.status-message {
+  @apply text-center pt-4;
+}
+
+.error-text {
+  @apply text-red-500;
+}

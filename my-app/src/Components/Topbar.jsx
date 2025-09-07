@@ -48,7 +48,7 @@ export default function Topbar() {
         open={open}
         onClose={handleMenuClose}
         anchorOrigin={{
-          vertical: "bottom",
+          vertical: " bottom",
           horizontal: "right",
         }}
         transformOrigin={{

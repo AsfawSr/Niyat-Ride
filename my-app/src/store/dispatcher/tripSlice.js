@@ -70,7 +70,6 @@ const tripSlice = createSlice({
         state.actionLoading = false;
         state.error = action.payload;
       })
-
       // --- Cancel Trip ---
       .addCase(cancelTripAPI.pending, (state) => {
         state.actionLoading = true;
@@ -85,7 +84,6 @@ const tripSlice = createSlice({
         state.actionLoading = false;
         state.error = action.payload;
       })
-
       // --- Emergency Trip ---
       .addCase(emergencyTripAPI.pending, (state) => {
         state.actionLoading = true;
@@ -104,7 +102,6 @@ const tripSlice = createSlice({
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/api";
-
 // --- Fallback fetch for trips (snapshot) ---
 export const fetchTrips = createAsyncThunk(
   "trips/fetchTrips",

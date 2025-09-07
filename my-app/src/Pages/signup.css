@@ -1,7 +1,7 @@
 @reference "tailwindcss";
 
 .signup-container {
-  @apply w-[72%] mx-[15%] mt-[50px] mb-[70px] 
+  @apply w-[72%] mx-[15%] mt-[5px] mb-[70px] 
          max-[414px]:w-[98%] max-[414px]:mx-[1%];
 }
 
@@ -11,7 +11,7 @@
 }
 
 .signup-grid {
-  @apply grid grid-cols-1 gap-7 sm:grid-cols-2 mb-5;
+  @apply grid grid-cols-1 gap-x-7 sm:grid-cols-2 mb-7;
 }
 
 .signup-actions {

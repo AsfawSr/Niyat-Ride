@@ -121,7 +121,7 @@ export default function LiveMap() {
   }, [successMessage, error, dispatch]);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-slate-950 to-slate-900 text-gray-100 p-4 md:p-6">
+    <div className="min-h-screen w-full  from-slate-950 to-slate-900 text-gray-100 p-4 md:p-6">
       <TopBar count={trips.length} onSearch={setSearchQuery} />
       {loading && <Loading />}
       {error && <p className="text-red-500">{error}</p>}
@@ -129,11 +129,11 @@ export default function LiveMap() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
         {/* Map */}
-        <div className="lg:col-span-2 rounded-2xl border border-gray-800 bg-gray-900/60 shadow-xl overflow-hidden">
+        <div className="lg:col-span-2 rounded-2xl border border-gray-800 bg-gray-200 dark:bg-gray-700 shadow-xl overflow-hidden">
           <div className="flex items-center justify-between p-3 border-b border-gray-800">
             <SectionTitle>Live Map</SectionTitle>
             {focusedTrip && (
-              <div className="flex items-center gap-3 text-sm text-gray-300">
+              <div className="flex items-center gap-3 text-sm text-gray-900 dark:text-gray-300">
                 <span>
                   Focused: <span className="font-medium">{focusedTrip.id}</span>
                 </span>

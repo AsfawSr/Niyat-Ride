@@ -62,18 +62,13 @@ const Passengers = () => {
 
       <div className="dark:bg-gray-900 dark:shadow-gray-700 flex-1 p-4">
         <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-200">
-          Passengers
+          Passengers Page
         </h1>
 
         <SearchBar onSearch={handleSearch} filter="passengers" />
         <div className="flex flex-col justify-between h-125">
           <div className="text-center pt-4">
-            {status === "loading" && (
-              <p>
-                Loading passengers...
-                <Loading />
-              </p>
-            )}
+            {status === "loading" && <Loading />}
             {status === "failed" && <p className="text-red-500">failed</p>}
             {status === "succeeded" && passengers.length === 0 && (
               <p>No passengers found.</p>

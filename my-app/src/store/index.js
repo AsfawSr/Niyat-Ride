@@ -1,27 +1,28 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "./authSlice.js";
+import loginReducer from "./authentication/loginSlice.js";
+import registrationReducer from "./authentication/registrationSlice.js";
+
 import errorReducer from "./globalErrorSlice.js";
 import activeVehiclesReducer from "./dispatcher/activeVehiclesSlice.js";
 import tripsReducer from "./dispatcher/tripSlice.js";
-
 import adminsReducer from "./userManagement/adminSlice.js";
 import passengersReducer from "./userManagement/passengersSlice.js";
 import editUserReducer from "./userManagement/editUserSlice.js";
-
 import driversReducer from "./userManagement/driversSlice.js";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import dispatchersReducer from "./userManagement/dispatchersSlice.js";
 // import { setupInterceptors } from "../api/api.jsx";
 const persistedConfig = {
-  key: "auth",
+  key: "login",
   storage,
-  whitelist: ["firstName", "isAuthenticated", "role"],
+  whitelist: ["firstName", "userId", "isAuthenticated", "role"],
 };
-const persistedAuthReducer = persistReducer(persistedConfig, authReducer);
+const persistedAuthReducer = persistReducer(persistedConfig, loginReducer);
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
+    registration: registrationReducer,
     error: errorReducer,
     activeVehicles: activeVehiclesReducer,
     admins: adminsReducer,

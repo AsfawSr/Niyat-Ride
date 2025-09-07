@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../store/authSlice"; // use `logout` if that's your action name
+import { logout } from "../store/authentication/loginSlice";
+import { persistor } from "../store";
 
 function Logout() {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ function Logout() {
 
   useEffect(() => {
     dispatch(logout());
+    persistor.purge();
     navigate("/");
   }, [dispatch, navigate]);
 }
