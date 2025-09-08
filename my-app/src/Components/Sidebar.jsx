@@ -21,6 +21,7 @@ import {
   MdMenu,
   MdClose,
 } from "react-icons/md";
+import { FaCarSide } from "react-icons/fa"; // ✅ icon for Vehicle Management
 
 export default function Sidebar() {
   const location = useLocation();
@@ -39,6 +40,12 @@ export default function Sidebar() {
     const saved = localStorage.getItem("nyat_open_rides");
     if (saved !== null) return saved === "true";
     return location.pathname.startsWith("/admin/rides");
+  });
+
+  const [openVehicles, setOpenVehicles] = useState(() => {
+    const saved = localStorage.getItem("nyat_open_vehicles");
+    if (saved !== null) return saved === "true";
+    return location.pathname.startsWith("/admin/vehicles");
   });
 
   const [openDispatcherMenu, setOpenDispatcherMenu] = useState(() => {
@@ -61,6 +68,8 @@ export default function Sidebar() {
     ].some((r) => location.pathname.startsWith(r));
     if (isUserRoute) setOpenUserMenu(true);
 
+    if (location.pathname.startsWith("/admin/vehicles")) setOpenVehicles(true);
+
     if (
       [
         "/dispatcher",
@@ -81,6 +90,10 @@ export default function Sidebar() {
   }, [openUserMenu]);
 
   useEffect(() => {
+    localStorage.setItem("nyat_open_vehicles", String(openVehicles));
+  }, [openVehicles]);
+
+  useEffect(() => {
     localStorage.setItem(
       "nyat_open_dispatcher_menu",
       String(openDispatcherMenu)
@@ -91,7 +104,7 @@ export default function Sidebar() {
     gap: 1.5,
     py: 1.2,
     justifyContent: openSidebar ? "flex-start" : "center",
-    "&:hover": { bgcolor: "rgba(37, 99, 235, 0.2)" }, // transparent blue hover
+    "&:hover": { bgcolor: "rgba(37, 99, 235, 0.2)" },
     borderRadius: "8px",
     transition: "background-color 0.2s",
   };
@@ -153,7 +166,7 @@ export default function Sidebar() {
                 </ListItemButton>
               </NavLink>
 
-              {/* User Management Dropdown */}
+              {/* User Management */}
               <ListItemButton
                 onClick={() => setOpenUserMenu(!openUserMenu)}
                 sx={listItemSx}
@@ -230,6 +243,34 @@ export default function Sidebar() {
                   ))}
                 </List>
               </Collapse>
+
+              {/* ✅ Vehicle Management */}
+<ListItemButton onClick={() => setOpenVehicles(v => !v)} sx={listItemSx}>
+  <FaCarSide style={{ fontSize: 20 }} />
+  {openSidebar && <ListItemText primary="Vehicle Management" />}
+  {openSidebar && (openVehicles ? <MdExpandLess /> : <MdExpandMore />)}
+</ListItemButton>
+
+<Collapse in={openVehicles && openSidebar} timeout="auto" unmountOnExit>
+  <List component="div" disablePadding>
+    {[
+      { to: "/admin/vehicles", label: "All Vehicles" },
+      { to: "/admin/vehicles/active", label: "Active Vehicles" },
+      { to: "/admin/vehicles/outofservice", label: "Out of Service" }, // ← match route
+    ].map(sub => (
+      <NavLink key={sub.to} to={sub.to} style={linkStyle}>
+        <ListItemButton sx={{ ...listItemSx, pl: 6 }}>
+          {openSidebar && (
+            <ListItemText
+              primary={sub.label}
+              primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+            />
+          )}
+        </ListItemButton>
+      </NavLink>
+    ))}
+  </List>
+</Collapse>
 
               {/* Reports */}
               <NavLink to="/admin/reports" style={linkStyle}>
