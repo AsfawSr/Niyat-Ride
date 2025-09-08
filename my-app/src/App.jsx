@@ -9,7 +9,7 @@ function App() {
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 py-3">
-        <GlobalError />
+        {/* <GlobalError /> */}
         <RouterProvider router={router} />
         <button
           onClick={toggleHandler}
