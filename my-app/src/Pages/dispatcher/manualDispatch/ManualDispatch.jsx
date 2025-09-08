@@ -7,6 +7,7 @@ import Sidebar from "../../../Components/Sidebar";
 import api from "../../../api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchVehicles } from "../../../store/dispatcher/activeVehiclesSlice";
+import { assignRide } from "../../../store/dispatcher/assignRideSlice";
 const initialState = {
   userPhone: "",
   firstName: "",
@@ -21,23 +22,33 @@ const initialState = {
 export default function ManualDispatch() {
   const { userId } = useSelector((state) => state.auth);
   const { vehicles, status } = useSelector((state) => state.activeVehicles);
-  const [nearDrivers, setNearDrivers] = useState(vehicles);
+  const { loading, error, rideId, nearDrivers } = useSelector(
+    (state) => state.requestRide
+  );
   const dispatch = useDispatch();
-  // Fetch vehicles only once on mount
-  useEffect(() => {
-    dispatch(fetchVehicles());
-  }, [dispatch]);
   const [formData, setFormData] = useState(initialState);
   const [pickupLocation, setPickupLocation] = useState(null); // {lat, lng}
   const [dropoffLocation, setDropoffLocation] = useState(null); // {lat, lng}
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [dropoffSuggestions, setDropoffSuggestions] = useState([]);
   const [activeField, setActiveField] = useState("pickup");
-  const [loading, setLoading] = useState(false); // prevent multiple requests
+
+  useEffect(() => {
+    if (rideId) {
+      alert("request success");
+      // reset form here
+      setFormData(initialState);
+      setPickupLocation(null);
+      setDropoffLocation(null);
+      setPickupSuggestions([]);
+      setDropoffSuggestions([]);
+      setActiveField("pickup");
+    }
+    dispatch(fetchVehicles());
+  }, [dispatch, rideId]);
 
   const pickupDebounceRef = useRef(null);
   const dropoffDebounceRef = useRef(null);
-
   // Fetch Suggestions
   const fetchSuggestions = useCallback(async (query, type, cityBias) => {
     if (!query || query.trim().length < 2) {
@@ -60,7 +71,6 @@ export default function ManualDispatch() {
       type === "pickup" ? setPickupSuggestions([]) : setDropoffSuggestions([]);
     }
   }, []);
-
   const onPickupInput = (e) => {
     setFormData((prev) => ({ ...prev, pickupAddress: e.target.value }));
     setActiveField("pickup");
@@ -70,7 +80,6 @@ export default function ManualDispatch() {
       300
     );
   };
-
   const onDropoffInput = (e) => {
     setFormData((prev) => ({ ...prev, dropoffAddress: e.target.value }));
     setActiveField("dropoff");
@@ -108,15 +117,7 @@ export default function ManualDispatch() {
     }
   }, []);
 
-  const handleRideRequest = async () => {
-    if (loading) return; // prevent multiple requests
-    if (!pickupLocation || !dropoffLocation) {
-      alert("Please select both pickup and dropoff locations!");
-      return;
-    }
-
-    setLoading(true);
-
+  const handleRideRequest = () => {
     const payload = {
       dispatcherId: userId,
       customerInfo: {
@@ -137,55 +138,20 @@ export default function ManualDispatch() {
       vehicleTypePreference: formData.vehicleTypeId || undefined,
       notes: formData.passengerNotes || undefined,
     };
-
-    try {
-      const response = await api.post("/api/dispatcher/rides", payload, {
-        withCredentials: true,
-      });
-      alert(`Ride assigned successfully!\n\nPassenger: ${formData.firstName} ${
-        formData.lastName
-      } (${formData.userPhone})
-Pickup: ${pickupLocation.lat}, ${pickupLocation.lng}
-Dropoff: ${dropoffLocation.lat}, ${dropoffLocation.lng}
-Driver: ${formData.selectedDriverId || "-"}
-Vehicle Type: ${formData.vehicleTypeId || "-"}
-Date: ${date.toLocaleString()}
-Notes: ${formData.passengerNotes || "-"}`);
-
-      // Reset form
-      setFormData(initialState);
-      setPickupLocation(null);
-      setDropoffLocation(null);
-      setPickupSuggestions([]);
-      setDropoffSuggestions([]);
-      setNearDrivers(response.data.nearbyDrivers || []);
-      setActiveField("pickup");
-    } catch (error) {
-      alert("Failed to request ride. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    dispatch(requestRide({ payload }));
   };
-
-  const handleAssignRide = async () => {
+  const handleAssignRide = () => {
     if (!formData.selectedDriverId) return;
-    try {
-      await api.post(
-        `/api/dispatcher/rides/${rideId}/assign-driver`,
-        {
-          date: new Date(),
-          driverId: formData.selectedDriverId,
-        },
-        { withCredentials: true }
-      );
-    } catch (error) {}
+    const payload = {
+      driverId: formData.selectedDriverId,
+      rideId: rideId,
+    };
+    dispatch(assignRide({ payload }));
   };
-
   const mapCenter = useMemo(
     () => pickupLocation || dropoffLocation || DEFAULT_CENTER,
     [pickupLocation, dropoffLocation]
   );
-
   return (
     <div className="flex h-screen w-full overflow-x-hidden">
       <Sidebar />

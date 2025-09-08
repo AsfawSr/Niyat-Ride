@@ -8,7 +8,6 @@ const ActiveVehicles = () => {
   const vehicles = useSelector((state) =>
     state.vehicles.vehicles.filter((v) => v.status === "active")
   );
-
   return (
     <div className="flex bg-gray-100 min-h-screen">
       <Sidebar />

@@ -2,25 +2,28 @@ import { configureStore } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 
-// ✅ Auth slices (friend’s version)
+// Auth slices (friend’s version)
 import loginReducer from "./authentication/loginSlice.js";
 import registrationReducer from "./authentication/registrationSlice.js";
 
-// ✅ Global error
+// Global error
 import errorReducer from "./globalErrorSlice.js";
 
-// ✅ Dispatcher slices (friend’s)
+//  Dispatcher slices (friend’s)
 import activeVehiclesReducer from "./dispatcher/activeVehiclesSlice.js";
+import requestRideReducer from "./dispatcher/requestRideSlice.js";
+import assignRideReducer from "./dispatcher/assignRideSlice.js";
+
 import tripsReducer from "./dispatcher/tripSlice.js";
 
-// ✅ User management slices (friend’s)
+// User management slices (friend’s)
 import adminsReducer from "./userManagement/adminSlice.js";
 import passengersReducer from "./userManagement/passengersSlice.js";
 import editUserReducer from "./userManagement/editUserSlice.js";
 import driversReducer from "./userManagement/driversSlice.js";
 import dispatchersReducer from "./userManagement/dispatchersSlice.js";
 
-// ✅ Your slices
+//  Your slices
 import ridesReducer from "./ridesSlice.js";
 import vehiclesReducer from "./vehicleSlice.js";
 
@@ -47,8 +50,8 @@ export const store = configureStore({
     drivers: driversReducer,
     dispatchers: dispatchersReducer,
     trips: tripsReducer,
-
-    // ✅ added yours
+requestRide:requestRideReducer,
+assignRide:assignRideReducer,
     rides: ridesReducer,
     vehicles: vehiclesReducer,
   },
