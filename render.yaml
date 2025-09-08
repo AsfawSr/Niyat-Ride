@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: ride-backend
-    env: docker
-    rootDir: backend
-    dockerfilePath: Dockerfile
-    envVars:
-      - key: SPRING_PROFILES_ACTIVE
-        value: prod

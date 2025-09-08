@@ -15,15 +15,27 @@ import java.time.LocalDateTime;
 @Repository
 public interface CustomerUserRepository extends JpaRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
     
-    @Query("SELECT c FROM Customer c WHERE " +
-           "(:search IS NULL OR " +
-           "LOWER(c.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(c.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(c.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(c.phoneNumber) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
-           "(:status IS NULL OR c.status = :status) AND " +
-           "(:createdAtFrom IS NULL OR c.createdAt >= :createdAtFrom) AND " +
-           "(:createdAtTo IS NULL OR c.createdAt <= :createdAtTo)")
+    @Query(value = "SELECT c.* FROM customers c " +
+                   "JOIN users u ON c.id = u.id " +
+                   "WHERE (:search IS NULL OR " +
+                   "u.first_name ILIKE CONCAT('%', :search, '%') OR " +
+                   "u.last_name ILIKE CONCAT('%', :search, '%') OR " +
+                   "u.email ILIKE CONCAT('%', :search, '%') OR " +
+                   "u.phone_number ILIKE CONCAT('%', :search, '%')) AND " +
+                   "(:status IS NULL OR u.status = :status) AND " +
+                   "(:createdAtFrom IS NULL OR u.created_at >= :createdAtFrom) AND " +
+                   "(:createdAtTo IS NULL OR u.created_at <= :createdAtTo)",
+           countQuery = "SELECT COUNT(*) FROM customers c " +
+                        "JOIN users u ON c.id = u.id " +
+                        "WHERE (:search IS NULL OR " +
+                        "u.first_name ILIKE CONCAT('%', :search, '%') OR " +
+                        "u.last_name ILIKE CONCAT('%', :search, '%') OR " +
+                        "u.email ILIKE CONCAT('%', :search, '%') OR " +
+                        "u.phone_number ILIKE CONCAT('%', :search, '%')) AND " +
+                        "(:status IS NULL OR u.status = :status) AND " +
+                        "(:createdAtFrom IS NULL OR u.created_at >= :createdAtFrom) AND " +
+                        "(:createdAtTo IS NULL OR u.created_at <= :createdAtTo)",
+           nativeQuery = true)
     Page<Customer> findWithFilters(@Param("search") String search,
                                  @Param("status") AccountStatus status,
                                  @Param("createdAtFrom") LocalDateTime createdAtFrom,

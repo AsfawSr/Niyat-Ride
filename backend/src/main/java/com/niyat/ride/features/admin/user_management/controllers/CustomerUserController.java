@@ -4,6 +4,7 @@ import com.niyat.ride.enums.AccountStatus;
 import com.niyat.ride.features.admin.user_management.dtos.CustomerUserResponseDTO;
 import com.niyat.ride.features.admin.user_management.dtos.StatusUpdateRequestDTO;
 import com.niyat.ride.features.admin.user_management.services.CustomerUserService;
+import com.niyat.ride.shared.utils.ApiResponse;
 import com.niyat.ride.shared.utils.PaginationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,7 @@ public class CustomerUserController {
 
     @GetMapping
     @Operation(summary = "Get all customer users with filtering and pagination")
-    public ResponseEntity<Map<String, Object>> getAllCustomers(
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAllCustomers(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -40,22 +41,22 @@ public class CustomerUserController {
         Page<CustomerUserResponseDTO> customersPage = customerUserService.getAllCustomers(
                 page, size, sortBy, sortDirection, search, status, createdAtFrom, createdAtTo);
 
-        return ResponseEntity.ok(PaginationUtil.createPageResponse(customersPage));
+        return ResponseEntity.ok(ApiResponse.success(PaginationUtil.createPageResponse(customersPage)));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get customer user by ID")
-    public ResponseEntity<CustomerUserResponseDTO> getCustomerById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<CustomerUserResponseDTO>> getCustomerById(@PathVariable Long id) {
         CustomerUserResponseDTO customer = customerUserService.getCustomerById(id);
-        return ResponseEntity.ok(customer);
+        return ResponseEntity.ok(ApiResponse.success(customer));
     }
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Update customer user status")
-    public ResponseEntity<CustomerUserResponseDTO> updateCustomerStatus(
+    public ResponseEntity<ApiResponse<CustomerUserResponseDTO>> updateCustomerStatus(
             @PathVariable Long id,
             @Valid @RequestBody StatusUpdateRequestDTO request) {
         CustomerUserResponseDTO customer = customerUserService.updateCustomerStatus(id, request.getStatus());
-        return ResponseEntity.ok(customer);
+        return ResponseEntity.ok(ApiResponse.success(customer));
     }
 }

@@ -1,0 +1,42 @@
+@reference "tailwindcss"
+
+/* Table row */
+.user-row {
+  @apply border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800;
+}
+
+.user-row-loading {
+  @apply opacity-50 pointer-events-none;
+}
+
+.user-row-cell {
+  @apply p-3;
+}
+
+.user-avatar {
+  @apply w-10 h-10 rounded-full;
+}
+
+.user-row-actions {
+  @apply flex gap-3;
+}
+
+.user-action {
+  @apply cursor-pointer;
+}
+
+.user-action.view {
+  @apply text-blue-500;
+}
+
+.user-action.edit {
+  @apply text-green-500;
+}
+
+.user-action.delete {
+  @apply text-red-500;
+}
+
+.user-action-loading {
+  @apply opacity-50 pointer-events-none;
+}

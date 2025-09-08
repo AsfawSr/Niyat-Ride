@@ -57,7 +57,6 @@ export default function Dashboard() {
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
       <Box sx={{ flex: 1 }}>
-        <Topbar />
         <Box component="main" sx={{ p: 3 }}>
           {/* KPI cards */}
           <Grid container spacing={2} mb={2}>

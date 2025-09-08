@@ -18,13 +18,13 @@ import java.util.List;
 public interface RideManagementRepository extends JpaRepository<RideRequest, Long>, JpaSpecificationExecutor<RideRequest> {
     
     @Query("SELECT r FROM RideRequest r WHERE " +
-           "(:status IS NULL OR r.status = :status) AND " +
-           "(:driverId IS NULL OR r.driverId = :driverId) AND " +
-           "(:customerId IS NULL OR r.passengerId = :customerId) AND " +
-           "(:fromDate IS NULL OR r.requestedAt >= :fromDate) AND " +
-           "(:toDate IS NULL OR r.requestedAt <= :toDate) AND " +
-           "(:minAmount IS NULL OR r.finalCost >= :minAmount) AND " +
-           "(:maxAmount IS NULL OR r.finalCost <= :maxAmount)")
+           "r.status = COALESCE(:status, r.status) AND " +
+           "r.driverId = COALESCE(:driverId, r.driverId) AND " +
+           "r.passengerId = COALESCE(:customerId, r.passengerId) AND " +
+           "r.requestedAt >= COALESCE(:fromDate, r.requestedAt) AND " +
+           "r.requestedAt <= COALESCE(:toDate, r.requestedAt) AND " +
+           "r.finalCost >= COALESCE(:minAmount, r.finalCost) AND " +
+           "r.finalCost <= COALESCE(:maxAmount, r.finalCost)")
     Page<RideRequest> findWithFilters(@Param("status") RideStatus status,
                                      @Param("driverId") Long driverId,
                                      @Param("customerId") Long customerId,

@@ -39,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Account not allowed to login");
         }
 
-        if (user.getRole() != Role.Admin && user.getRole() != Role.DISPATCHER) {
+        if (user.getRole() != Role.admin && user.getRole() != Role.dispatcher) {
             throw new RuntimeException("Role not allowed for this login method");
         }
 

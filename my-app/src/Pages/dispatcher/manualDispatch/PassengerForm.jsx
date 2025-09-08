@@ -1,5 +1,3 @@
-import { vehicleTypes } from "./constants";
-
 export default function PassengerForm({
   formData,
   setFormData,
@@ -9,19 +7,16 @@ export default function PassengerForm({
   onDropoffInput,
   handleSelectSuggestion,
   setActiveField,
+  vehicles,
 }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   return (
     <>
       <h2 className="text-lg font-semibold mb-4">Passenger Details</h2>
 
-      {/* Phone */}
-
-      {/* First & Last Name */}
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
           <label className="block text-sm mb-1">First Name</label>
@@ -72,7 +67,6 @@ export default function PassengerForm({
           <option value="Adigrat">Adigrat</option>
         </select>
       </div>
-
       {/* Pickup Address */}
       <div className="mb-4 relative">
         <label className="block text-sm  mb-1">Pickup Address</label>
@@ -125,25 +119,23 @@ export default function PassengerForm({
           </ul>
         )}
       </div>
-
       {/* Vehicle Type */}
       <div className="mb-3">
         <label className="block text-sm  mb-1">Vehicle Type</label>
         <select
           name="vehicleType"
           className="w-full border rounded px-3 py-2 dark:text-gray-500"
-          value={formData.vehicleType}
+          value={formData.vehicleTypeId}
           onChange={handleChange}
         >
           <option value="">Select vehicle</option>
-          {vehicleTypes.map((v) => (
-            <option key={v.value} value={v.value}>
-              {v.label}
+          {vehicles.map((v) => (
+            <option key={v.value} value={v.vehicleTypeId}>
+              {v.vehicleTypeName}
             </option>
           ))}
         </select>
       </div>
-
       {/* Passenger Notes */}
       <div className="mb-4">
         <label className="block text-sm  mb-1">Passenger Notes</label>

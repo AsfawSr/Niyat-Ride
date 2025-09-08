@@ -2,20 +2,21 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Windowresponsiv from "../Components/Windowresponsiv";
-import { clearError } from "../store/errorSlice";
+import { clearError } from "../store/globalErrorSlice";
+import Topbar from "../Components/Topbar";
 const RootLayout = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const location = useLocation();
   const dispatch = useDispatch();
   const { width } = Windowresponsiv();
   useEffect(() => {
-    dispatch(clearError()); // Clear errors on route change
+    dispatch(clearError());
   }, [location.pathname, dispatch]);
   return (
     <div>
+      {isAuthenticated && <Topbar />}
       <Outlet />
     </div>
   );
 };
-
 export default RootLayout;

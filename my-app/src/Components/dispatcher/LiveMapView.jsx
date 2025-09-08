@@ -29,7 +29,6 @@ export function FitToMarkers({ points }) {
   }, [map, points]);
   return null;
 }
-
 function calculateBearing(from, to) {
   const lat1 = (from.lat * Math.PI) / 180;
   const lon1 = (from.lng * Math.PI) / 180;
