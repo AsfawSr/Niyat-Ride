@@ -6,7 +6,7 @@ import DispatcherLayout from "../layouts/DispatcherLayout";
 
 // Auth & shared
 import Login from "../Pages/Login";
-import AdminSignup from "../Pages/AdminSignup"; // keep your signup
+// import AdminSignup from "../Pages/AdminSignup"; // keep your signup
 import Signup from "../Pages/Signup.jsx"; // keep bire signup
 import Logout from "../Pages/Logout.jsx";
 import ProtectedRoute from "../Components/ProtectedRoute";
@@ -14,7 +14,7 @@ import ProtectedRoute from "../Components/ProtectedRoute";
 // Admin pages
 import Dashboard from "../Pages/Dashboard";
 import Admins from "../Pages/userManagement/Admins.jsx";
-import AllUsers from "../Pages/userManagement/AllUsers";
+// import AllUsers from "../Pages/userManagement/AllUsers";
 import Dispatchers from "../Pages/userManagement/Dispatchers";
 import Passengers from "../Pages/userManagement/Passengers";
 import Drivers from "../Pages/userManagement/Drivers";
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
     element: <RootLayout />, // ✅ sidebar included
     children: [
       { index: true, element: <Login /> },
-      { path: "signup", element: <AdminSignup /> }, // your signup
+      // { path: "signup", element: <AdminSignup /> }, // your signup
       {
         path: "signup/:role", // bire signup
         element: (
@@ -68,7 +68,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { path: "/AllUsers", element: <AllUsers /> }, // your alias
+      // { path: "/AllUsers", element: <AllUsers /> }, // your alias
       {
         path: "admin/users/drivers",
         element: (
@@ -112,10 +112,12 @@ const router = createBrowserRouter([
       { path: "dispatchers", element: <Dispatchers /> },
       { path: "admin/Ongoing", element: <OngoingRides /> },
       { path: "admin/Completed", element: <CompletedRides /> },
-    ],
-  },
 
-  // ---- Dispatcher ----
+
+
+
+
+      // ---- Dispatcher ----
   {
     path: "/dispatcher",
     element: (
@@ -129,6 +131,10 @@ const router = createBrowserRouter([
       { path: "manualAssignment", element: <ManualDispatch /> },
     ],
   },
+    ],
+  },
+
+  
 ]);
 
 export default router;
