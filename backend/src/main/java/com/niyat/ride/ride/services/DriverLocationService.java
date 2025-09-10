@@ -47,7 +47,7 @@ public class DriverLocationService {
     }
 
     // Batch persistence
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 300000)
     public void persistLocationsToDb() {
         // Get all driver IDs from Redis sorted set
         Set<String> driverIds = redisTemplate.opsForZSet().range("drivers", 0, -1);
