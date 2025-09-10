@@ -22,14 +22,14 @@ public class RideRequest {
     private Long vehicleTypeId;
     private Long dispatcherId;
 
-    // PostGIS spatial columns
+    // PostGIS fields (legacy / admin / analytics)
     @Column(name = "pickup_location", columnDefinition = "GEOMETRY(Point, 4326)")
     private Point pickupLocation;
-    
+
     @Column(name = "dropoff_location", columnDefinition = "GEOMETRY(Point, 4326)")
     private Point dropoffLocation;
 
-    // Backup coordinates for compatibility
+    // Backup coordinates for API / real-time use
     private Double pickupLatitude;
     private Double pickupLongitude;
     private String pickupAddress;
@@ -55,5 +55,3 @@ public class RideRequest {
     private String cancellationReason;
     private String notes;
 }
-
-
