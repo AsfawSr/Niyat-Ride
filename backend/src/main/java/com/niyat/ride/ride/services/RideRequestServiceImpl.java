@@ -20,7 +20,6 @@ public class RideRequestServiceImpl implements RideRequestService {
     private final RideRequestRepository rideRepository;
     private final GeometryFactory geometryFactory = new GeometryFactory();
 
-
     @Override
     public RideRequest createRideRequest(RideRequestDTO dto, Long passengerId) {
         RideRequest ride = new RideRequest();
@@ -30,7 +29,9 @@ public class RideRequestServiceImpl implements RideRequestService {
         // Set pickup & dropoff locations
         ride.setPickupLocation(geometryFactory.createPoint(new Coordinate(dto.getPickupLon(), dto.getPickupLat())));
         if (dto.getDropoffLat() != null && dto.getDropoffLon() != null) {
-            ride.setDropoffLocation(geometryFactory.createPoint(new Coordinate(dto.getDropoffLon(), dto.getDropoffLat())));
+            ride.setDropoffLocation(geometryFactory.createPoint(
+                    new Coordinate(dto.getDropoffLon(), dto.getDropoffLat())
+            ));
         }
 
         // Backup coordinates
@@ -44,7 +45,7 @@ public class RideRequestServiceImpl implements RideRequestService {
         ride.setDistanceKm(dto.getEstimatedDistanceKm());
         ride.setEstimatedDurationMin(dto.getEstimatedDurationMin());
 
-        // Status
+        // Initial status
         ride.setStatus(RideStatus.REQUESTED);
         ride.setRequestedAt(LocalDateTime.now());
 

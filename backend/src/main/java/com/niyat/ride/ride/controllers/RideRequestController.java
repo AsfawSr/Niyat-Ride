@@ -3,13 +3,9 @@ package com.niyat.ride.ride.controllers;
 import com.niyat.ride.ride.dtos.*;
 import com.niyat.ride.ride.models.RideRequest;
 import com.niyat.ride.ride.services.RideRequestService;
-import com.niyat.ride.user.models.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/rides")
@@ -18,20 +14,22 @@ public class RideRequestController {
 
     private final RideRequestService rideService;
 
+    // Request a ride
     @PostMapping
     public ResponseEntity<RideResponseDTO> requestRide(@RequestBody RideRequestDTO dto,
-                                                       @AuthenticationPrincipal User user) {
-        RideRequest ride = rideService.createRideRequest(dto, user.getId());
+                                                       @RequestParam Long passengerId) {
+        RideRequest ride = rideService.createRideRequest(dto, passengerId);
         return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
     }
 
+    // Driver response (ACCEPT/REJECT)
     @PostMapping("/{rideId}/response")
     public ResponseEntity<RideResponseDTO> respondToRide(@PathVariable Long rideId,
                                                          @RequestBody RideActionDTO actionDTO,
-                                                         @AuthenticationPrincipal User driver) {
+                                                         @RequestParam Long driverId) {
         RideRequest ride;
         if ("ACCEPT".equalsIgnoreCase(actionDTO.getAction())) {
-            ride = rideService.acceptRide(rideId, driver.getId());
+            ride = rideService.acceptRide(rideId, driverId);
         } else if ("REJECT".equalsIgnoreCase(actionDTO.getAction())) {
             ride = rideService.rejectRide(rideId);
         } else {
@@ -40,6 +38,7 @@ public class RideRequestController {
         return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
     }
 
+    // Trip management (START / CANCEL)
     @PostMapping("/{rideId}/trip")
     public ResponseEntity<RideResponseDTO> manageTrip(@PathVariable Long rideId,
                                                       @RequestBody TripActionDTO actionDTO) {
@@ -54,6 +53,7 @@ public class RideRequestController {
         return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
     }
 
+    // Complete trip
     @PostMapping("/{rideId}/complete")
     public ResponseEntity<RideResponseDTO> completeTrip(@PathVariable Long rideId,
                                                         @RequestBody CompleteTripDTO dto) {
