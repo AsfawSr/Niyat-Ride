@@ -28,6 +28,7 @@ public class OtpService {
         try {
             afroMessageService.sendSms("+251" + phoneNumber, "Your Niyat Ride OTP code is: " + otp);
         } catch (IOException e) {
+
             throw new RuntimeException("Failed to send OTP via AfroMessage", e);
         }
     }
