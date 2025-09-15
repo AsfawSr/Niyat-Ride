@@ -21,12 +21,27 @@ public class DriverUserServiceImpl implements DriverUserService {
 
     @Override
     public Page<DriverUserResponseDTO> getAllDrivers(Integer page, Integer size, String sortBy, String sortDirection,
-                                                   String search, AccountStatus status, 
-                                                   LocalDateTime createdAtFrom, LocalDateTime createdAtTo) {
+                                                    String search, AccountStatus status, 
+                                                    LocalDateTime createdAtFrom, LocalDateTime createdAtTo) {
         Pageable pageable = PaginationUtil.createPageable(page, size, sortBy, sortDirection);
         Page<Driver> driverPage = driverUserRepository.findWithFilters(search, status, createdAtFrom, createdAtTo, pageable);
         
         return driverPage.map(this::mapToResponseDTO);
+    }
+    
+    private String mapSortFieldToColumn(String sortBy) {
+        if (sortBy == null) return "u.created_at";
+        
+        return switch (sortBy) {
+            case "createdAt" -> "u.created_at";
+            case "updatedAt" -> "u.updated_at";
+            case "firstName" -> "u.first_name";
+            case "lastName" -> "u.last_name";
+            case "email" -> "u.email";
+            case "status" -> "u.status";
+            case "licenseNumber" -> "d.license_number";
+            default -> "u.created_at";
+        };
     }
 
     @Override
