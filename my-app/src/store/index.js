@@ -36,7 +36,6 @@ const persistedConfig = {
   whitelist: ["firstName", "userId", "isAuthenticated", "role"],
 };
 const persistedAuthReducer = persistReducer(persistedConfig, loginReducer);
-
 // --- Store setup ---
 export const store = configureStore({
   reducer: {
@@ -50,8 +49,8 @@ export const store = configureStore({
     drivers: driversReducer,
     dispatchers: dispatchersReducer,
     trips: tripsReducer,
-requestRide:requestRideReducer,
-assignRide:assignRideReducer,
+    requestRide: requestRideReducer,
+    assignRide: assignRideReducer,
     rides: ridesReducer,
     vehicles: vehiclesReducer,
   },

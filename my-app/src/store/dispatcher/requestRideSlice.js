@@ -1,21 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/api";
-
-
-
+const initialState = {
+  loading: false,
+  rideId: null,
+  nearDrivers: [],
+  error: null,
+};
 const requestRideSLice = createSlice({
   name: "requestRide",
-  initialState: {
-    loading: false,
-    rideId: null,       
-    nearDrivers: [],
-    error: null,
-  },
+  initialState,
   reducers: {
     clearRideState: (state) => {
-      state.rideId = null; 
-      state.nearDrivers = [];
-      state.error = null;
+      Object.assign(state, initialState);
     },
   },
   extraReducers: (builder) => {
@@ -40,9 +36,8 @@ export const requestRide = createAsyncThunk(
   "ride/requestRide",
   async ({ payload }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/api/dispatcher/rides", payload, {
-      });
-      return response.data; 
+      const response = await api.post("/api/dispatcher/rides", payload, {});
+      return response.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to request ride"

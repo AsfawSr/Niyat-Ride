@@ -8,6 +8,8 @@ import api from "../../../api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchVehicles } from "../../../store/dispatcher/activeVehiclesSlice";
 import { assignRide } from "../../../store/dispatcher/assignRideSlice";
+import Loading from "../../../Components/Loading";
+import { requestRide } from "../../../store/dispatcher/requestRideSlice";
 const initialState = {
   userPhone: "",
   firstName: "",
@@ -19,12 +21,25 @@ const initialState = {
   passengerNotes: "",
   selectedDriverId: "",
 };
+
 export default function ManualDispatch() {
   const { userId } = useSelector((state) => state.auth);
-  const { vehicles, status } = useSelector((state) => state.activeVehicles);
-  const { loading, error, rideId, nearDrivers } = useSelector(
-    (state) => state.requestRide
+  const { vehicles, status: vehicleStatus } = useSelector(
+    (state) => state.activeVehicles
   );
+
+  const {
+    loading: requestLoading,
+    error: requestError,
+    rideId,
+    nearDrivers,
+  } = useSelector((state) => state.requestRide);
+
+  const {
+    loading: assignLoading,
+    error: assignError,
+    status: assignStatus,
+  } = useSelector((state) => state.assignRide);
   const dispatch = useDispatch();
   const [formData, setFormData] = useState(initialState);
   const [pickupLocation, setPickupLocation] = useState(null); // {lat, lng}
@@ -32,7 +47,6 @@ export default function ManualDispatch() {
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [dropoffSuggestions, setDropoffSuggestions] = useState([]);
   const [activeField, setActiveField] = useState("pickup");
-
   useEffect(() => {
     if (rideId) {
       alert("request success");
@@ -45,11 +59,9 @@ export default function ManualDispatch() {
       setActiveField("pickup");
     }
     dispatch(fetchVehicles());
-  }, [dispatch, rideId]);
-
+  }, [dispatch, rideId, assignStatus]);
   const pickupDebounceRef = useRef(null);
   const dropoffDebounceRef = useRef(null);
-  // Fetch Suggestions
   const fetchSuggestions = useCallback(async (query, type, cityBias) => {
     if (!query || query.trim().length < 2) {
       type === "pickup" ? setPickupSuggestions([]) : setDropoffSuggestions([]);
@@ -116,7 +128,6 @@ export default function ManualDispatch() {
       setFormData((prev) => ({ ...prev, dropoffAddress: display }));
     }
   }, []);
-
   const handleRideRequest = () => {
     const payload = {
       dispatcherId: userId,
@@ -141,7 +152,6 @@ export default function ManualDispatch() {
     dispatch(requestRide({ payload }));
   };
   const handleAssignRide = () => {
-    if (!formData.selectedDriverId) return;
     const payload = {
       driverId: formData.selectedDriverId,
       rideId: rideId,
@@ -154,7 +164,6 @@ export default function ManualDispatch() {
   );
   return (
     <div className="flex h-screen w-full overflow-x-hidden">
-      <Sidebar />
       <main className="flex-1  min-w-0 p-6">
         <h1 className="text-2xl font-bold mb-4">Manual Dispatch</h1>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-[86vh]">
@@ -169,19 +178,21 @@ export default function ManualDispatch() {
               handleSelectSuggestion={handleSelectSuggestion}
               setActiveField={setActiveField}
               vehicles={vehicles}
-              status={status}
             />
             <button
               onClick={handleRideRequest}
-              disabled={loading}
+              disabled={requestLoading}
               className={`${
-                loading
+                requestLoading
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700"
               } text-white px-4 py-2 rounded mt-2`}
             >
-              {loading ? "Requesting..." : "Request Ride"}
+              {requestLoading ? "Requesting..." : "Request Ride"}
             </button>
+            {requestLoading && <Loading />}
+
+            {requestError && <div className="text-red-500">{requestError}</div>}
             <DriverList
               drivers={nearDrivers}
               formData={formData}
@@ -200,6 +211,13 @@ export default function ManualDispatch() {
               >
                 Assign Ride
               </button>
+              {assignLoading && <Loading />}
+              {assignStatus === "success" && (
+                <p className="bg-green-500 text-white p-2 rounded">
+                  Successfully assigned
+                </p>
+              )}{" "}
+              {assignError && <div className="text-red-500">{assignError}</div>}
             </div>
           </div>
           <MapView

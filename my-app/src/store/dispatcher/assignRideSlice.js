@@ -6,31 +6,28 @@ export const assignRide = createAsyncThunk(
   "ride/assignRide",
   async ({ payload }, { rejectWithValue }) => {
     try {
-          const url = `/api/dispatcher/rides/${payload.rideId}/assign-driver`;
+      const url = `/api/dispatcher/rides/${payload.rideId}/assign-driver`;
       const response = await api.post(url, payload.driverId);
-      return response.data; 
+      return response.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to request ride"
       );
     }
   }
-);      
+);
 
-
+const initialState = {
+  loading: false,
+  error: null,
+  status: "idle",
+};
 const assignRideSlice = createSlice({
   name: "assignRide",
-  initialState: {
-    loading: false,
-    error: null,
-    status: "idle",
-  },
+  initialState,
   reducers: {
     clearRideState: (state) => {
-      state.error = null;
-      state.loading = false;
-      state.status = "idle";
-      state.rideData = null;
+      Object.assign(state, initialState);
     },
   },
   extraReducers: (builder) => {
