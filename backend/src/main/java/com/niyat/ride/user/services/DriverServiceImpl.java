@@ -1,8 +1,10 @@
 package com.niyat.ride.user.services;
 
 import com.niyat.ride.otp.services.OtpService;
+import com.niyat.ride.security.JwtUtil;
 import com.niyat.ride.user.dtos.DriverSignupDTO;
 import com.niyat.ride.user.dtos.DriverUpdateDTO;
+import com.niyat.ride.user.dtos.VerifyOtpResponse;
 import com.niyat.ride.user.mappers.DriverMapper;
 import com.niyat.ride.user.models.Driver;
 import com.niyat.ride.user.repositories.DriverRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.niyat.ride.enums.AccountStatus;
@@ -27,65 +30,83 @@ public class DriverServiceImpl implements DriverService {
     private final OtpService otpService;
     private final DriverMapper driverMapper;
     private final DriverRepository driverRepository;
+    private final JwtUtil jwtUtil;
 
     private final Map<String, DriverSignupDTO> tempSignupStorage = new ConcurrentHashMap<>();
 
-    // CREATE / SIGNUP
     @Override
-    @Transactional
-    public DriverResponseDTO createDriver(DriverSignupDTO signupDTO) {
-        String phone = signupDTO.getPhoneNumber();
-
-        // check uniqueness
-        driverRepository.findByPhoneNumber(phone)
-                .ifPresent(d -> { throw new RuntimeException("Driver with phone " + phone + " already exists"); });
-
-        driverRepository.findByLicenseNumber(signupDTO.getLicenseNumber())
-                .ifPresent(d -> { throw new RuntimeException("Driver with license " + d.getLicenseNumber() + " already exists"); });
-
-        // store temporarily until OTP verified
-        tempSignupStorage.put(phone, signupDTO);
-        otpService.sendOtp(phone);
-
-        return null;
+    public void requestOtp(String phoneNumber, DriverSignupDTO signupDTO) {
+        otpService.sendOtp(phoneNumber);
     }
 
     @Override
     @Transactional
-    public DriverResponseDTO verifyOtp(String phoneNumber, String otp, boolean isSignup) {
+    public VerifyOtpResponse verifyOtp(String phoneNumber, String otp) {
+        //  Verify OTP
         if (!otpService.verifyOtp(phoneNumber, otp)) {
             throw new RuntimeException("Invalid OTP");
         }
 
-        DriverResponseDTO response;
+        //  Check if driver exists
+        Optional<Driver> existingDriver = driverRepository.findByPhoneNumber(phoneNumber);
 
-        if (isSignup) {
-            DriverSignupDTO signupDTO = tempSignupStorage.get(phoneNumber);
-            if (signupDTO == null) {
-                throw new RuntimeException("No signup data found for phone " + phoneNumber);
-            }
+        String tempToken = jwtUtil.generateTempToken(phoneNumber);
 
-            Driver driver = driverMapper.toEntity(signupDTO);
-            driver.setRole(Role.DRIVER);
-            driver.setStatus(AccountStatus.ACTIVE);
-            driver.setIsVerified(true);
-            driver.setVerifiedAt(LocalDateTime.now());
-            driver.setCreatedAt(LocalDateTime.now());
-            driver.setUpdatedAt(LocalDateTime.now());
-            driver.setIsOnline(true);
-            Driver savedDriver = driverRepository.save(driver);
-            response = driverMapper.toResponseDTO(savedDriver);
-            tempSignupStorage.remove(phoneNumber);
+        VerifyOtpResponse response = new VerifyOtpResponse();
+        response.setToken(tempToken);
 
+        if (existingDriver.isPresent()) {
+            response.setRegistered(true);
+            response.setDriver(driverMapper.toResponseDTO(existingDriver.get()));
         } else {
-            Driver driver = driverRepository.findByPhoneNumber(phoneNumber)
-                    .orElseThrow(() -> new RuntimeException("Driver not found with phone " + phoneNumber));
-            response = driverMapper.toResponseDTO(driver);
+            response.setRegistered(false);
+            response.setDriver(null);
         }
 
+        //  Clear OTP after use
         otpService.clearOtp(phoneNumber);
+
         return response;
     }
+
+
+    //  SIGNUP
+    public DriverResponseDTO signupDriver(String token, DriverSignupDTO signupDTO) {
+        //  Validate temp token
+        if (!jwtUtil.validateTempToken(token)) {
+            throw new RuntimeException("Invalid or expired token");
+        }
+
+        //  Extract phone number from token
+        String phoneNumber = jwtUtil.extractPhoneNumber(token);
+
+        //  Ensure phone isn’t already registered
+        driverRepository.findByPhoneNumber(phoneNumber)
+                .ifPresent(d -> { throw new RuntimeException("Driver already exists with phone " + phoneNumber); });
+
+        //  Ensure license isn’t already registered
+        driverRepository.findByLicenseNumber(signupDTO.getLicenseNumber())
+                .ifPresent(d -> { throw new RuntimeException("Driver already exists with license " + signupDTO.getLicenseNumber()); });
+
+
+        // Map DTO to entity
+        Driver driver = driverMapper.toEntity(signupDTO);
+        driver.setPhoneNumber(phoneNumber);
+        driver.setRole(Role.DRIVER);
+        driver.setStatus(AccountStatus.ACTIVE);
+        driver.setIsVerified(true);
+        driver.setVerifiedAt(LocalDateTime.now());
+        driver.setCreatedAt(LocalDateTime.now());
+        driver.setUpdatedAt(LocalDateTime.now());
+        driver.setIsOnline(false);
+
+        //  Save driver
+        Driver savedDriver = driverRepository.save(driver);
+
+        //  Return response DTO
+        return driverMapper.toResponseDTO(savedDriver);
+    }
+
 
     // READ
     @Override
@@ -197,17 +218,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void requestOtp(String phoneNumber, DriverSignupDTO signupDTO, boolean isSignup) {
-        if (isSignup) {
-            driverRepository.findByPhoneNumber(phoneNumber)
-                    .ifPresent(d -> { throw new RuntimeException("Driver with phone " + phoneNumber + " already exists"); });
-            driverRepository.findByLicenseNumber(signupDTO.getLicenseNumber())
-                    .ifPresent(d -> { throw new RuntimeException("Driver with license " + d.getLicenseNumber() + " already exists"); });
-            tempSignupStorage.put(phoneNumber, signupDTO);
-        } else {
-            driverRepository.findByPhoneNumber(phoneNumber)
-                    .orElseThrow(() -> new RuntimeException("Driver not found with phone " + phoneNumber));
-        }
-        otpService.sendOtp(phoneNumber);
+    public long countDrivers() {
+        return driverRepository.count();
     }
 }

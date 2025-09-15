@@ -4,6 +4,7 @@ import com.niyat.ride.user.dtos.DriverResponseDTO;
 import com.niyat.ride.user.dtos.DriverUpdateDTO;
 import com.niyat.ride.user.mappers.DriverMapper;
 import com.niyat.ride.user.services.DriverService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -108,5 +109,13 @@ public class DriverController {
                 .toList();
 
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/count")
+    @Operation(summary = "Get total number of registered drivers")
+    public ResponseEntity<Long> countDrivers() {
+        long count = driverService.countDrivers();
+        return ResponseEntity.ok(count);
     }
 }
