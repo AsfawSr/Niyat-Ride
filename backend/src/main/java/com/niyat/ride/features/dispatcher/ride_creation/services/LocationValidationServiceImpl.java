@@ -24,8 +24,8 @@ public class LocationValidationServiceImpl implements LocationValidationService 
             return false;
         }
         
-        // For now, we only service Addis Ababa metropolitan area
-        return isWithinAddisAbabaArea(locationDTO.getLatitude(), locationDTO.getLongitude());
+        // Allow all locations - service area restriction removed
+        return true;
     }
     
     @Override
@@ -134,9 +134,9 @@ public class LocationValidationServiceImpl implements LocationValidationService 
         // Validate coordinates
         validateCoordinates(locationDTO.getLatitude(), locationDTO.getLongitude());
         
-        // Check if location is serviceable
+        // Check if location is serviceable (now allows all locations)
         if (!isLocationServiceable(locationDTO)) {
-            throw new IllegalArgumentException("Location is outside serviceable area. Currently, we only service Addis Ababa metropolitan area.");
+            throw new IllegalArgumentException("Invalid location coordinates provided.");
         }
         
         // Standardize address if provided

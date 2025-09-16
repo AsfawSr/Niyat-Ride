@@ -17,7 +17,11 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
     
     // PostGIS spatial queries for driver discovery
     @Query(value = """
-        SELECT d.* FROM drivers d 
+        SELECT u.id, u.first_name, u.last_name, u.phone_number, u.email, u.is_verified, u.verified_at, 
+               u.role, u.status, u.created_at, u.updated_at, d.license_number, d.license_image_path, 
+               d.current_location, d.current_latitude, d.current_longitude, d.is_online, d.last_location_update
+        FROM drivers d 
+        JOIN users u ON d.id = u.id
         WHERE d.is_online = true 
         AND d.current_location IS NOT NULL
         AND ST_DWithin(d.current_location, ST_GeomFromText(:pickupPoint, 4326), :radiusMeters)
@@ -31,7 +35,11 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
     );
     
     @Query(value = """
-        SELECT d.* FROM drivers d 
+        SELECT u.id, u.first_name, u.last_name, u.phone_number, u.email, u.is_verified, u.verified_at, 
+               u.role, u.status, u.created_at, u.updated_at, d.license_number, d.license_image_path, 
+               d.current_location, d.current_latitude, d.current_longitude, d.is_online, d.last_location_update
+        FROM drivers d 
+        JOIN users u ON d.id = u.id
         WHERE d.is_online = true 
         AND d.current_location IS NOT NULL
         AND ST_DWithin(d.current_location, :pickupLocation, :radiusMeters)

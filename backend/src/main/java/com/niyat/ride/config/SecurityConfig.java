@@ -31,11 +31,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/customers/**").permitAll()
                         .requestMatchers("/api/drivers/**").permitAll()
-                        .requestMatchers("/api/dispatchers/**").permitAll()
+                        .requestMatchers("/api/dispatcher/**").permitAll()
                         .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/api/admins/**").permitAll()
                         .requestMatchers("/api/rides/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs/public").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/files/**").permitAll()
                         .anyRequest().authenticated()
                 );
 //                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

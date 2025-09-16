@@ -36,6 +36,6 @@ public class VehicleType {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
     
-    private Integer capacity; // Number of passengers
-    private String features; // Comma-separated features like "AC, WiFi, etc."
+    private Integer capacity;
+    private String features;
 }

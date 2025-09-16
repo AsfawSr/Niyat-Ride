@@ -40,20 +40,18 @@ public class CustomerOrchestrationServiceImpl implements CustomerOrchestrationSe
             return existingCustomer;
         }
         
-        // Try to find by phone number
+        // Try to find by phone number first (automatic lookup)
         Customer existingCustomer = findCustomerByPhoneNumber(normalizedPhone);
         if (existingCustomer != null) {
             log.info("Found existing customer by phone: {}", normalizedPhone);
+            // Update the customerInfo with the found customer ID for consistency
+            customerInfo.setCustomerId(existingCustomer.getId());
             return existingCustomer;
         }
         
-        // Create new customer if none found
-        if (Boolean.TRUE.equals(customerInfo.getIsNewCustomer())) {
-            log.info("Creating new customer with phone: {}", normalizedPhone);
-            return createMinimalCustomer(customerInfo);
-        }
-        
-        throw new RuntimeException("Customer not found with phone number: " + normalizedPhone);
+        // Create new customer if none found (phone number is unique, so this is a new customer)
+        log.info("Creating new customer with phone: {}", normalizedPhone);
+        return createMinimalCustomer(customerInfo);
     }
     
     @Override
@@ -76,7 +74,8 @@ public class CustomerOrchestrationServiceImpl implements CustomerOrchestrationSe
         customer.setFirstName(customerInfo.getFirstName());
         customer.setLastName(customerInfo.getLastName());
         customer.setPhoneNumber(normalizedPhone);
-        customer.setEmail(customerInfo.getEmail());
+        // Email is no longer part of CustomerInfoDTO, so set to null or generate from phone
+        customer.setEmail(null);
         customer.setRole(Role.CUSTOMER);
         customer.setStatus(AccountStatus.ACTIVE); // Auto-activate for dispatcher-created customers
         customer.setIsVerified(false); // Will be verified later if needed
@@ -99,19 +98,12 @@ public class CustomerOrchestrationServiceImpl implements CustomerOrchestrationSe
             throw new IllegalArgumentException("Invalid Ethiopian phone number format");
         }
         
-        // If it's a new customer, ensure basic info is provided
-        if (Boolean.TRUE.equals(customerInfo.getIsNewCustomer())) {
-            if (customerInfo.getFirstName() == null || customerInfo.getFirstName().trim().isEmpty()) {
-                throw new IllegalArgumentException("First name is required for new customers");
-            }
-            if (customerInfo.getLastName() == null || customerInfo.getLastName().trim().isEmpty()) {
-                throw new IllegalArgumentException("Last name is required for new customers");
-            }
+        // Basic validation for customer names (always required now since we auto-detect new vs existing)
+        if (customerInfo.getFirstName() == null || customerInfo.getFirstName().trim().isEmpty()) {
+            throw new IllegalArgumentException("First name is required");
         }
-        
-        // If customer ID is provided but marked as new customer, that's inconsistent
-        if (customerInfo.getCustomerId() != null && Boolean.TRUE.equals(customerInfo.getIsNewCustomer())) {
-            throw new IllegalArgumentException("Cannot provide customer ID for new customer creation");
+        if (customerInfo.getLastName() == null || customerInfo.getLastName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Last name is required");
         }
     }
 }

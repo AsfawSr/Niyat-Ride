@@ -22,9 +22,4 @@ public class LocationDTO {
     @Size(max = 255, message = "Address must not exceed 255 characters")
     private String address;
     
-    @Size(max = 100, message = "Landmark must not exceed 100 characters")
-    private String landmark;
-    
-    @Size(max = 500, message = "Notes must not exceed 500 characters")
-    private String notes;
 }

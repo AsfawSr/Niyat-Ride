@@ -1,6 +1,8 @@
 package com.niyat.ride.features.admin.vehicle_type_management.services;
 
 import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeRequestDTO;
+import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeCreateRequestDTO;
+import org.springframework.web.multipart.MultipartFile;
 import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeResponseDTO;
 import org.springframework.data.domain.Page;
 
@@ -13,6 +15,8 @@ public interface VehicleTypeService {
     List<VehicleTypeResponseDTO> getAllActiveVehicleTypes();
     
     VehicleTypeResponseDTO createVehicleType(VehicleTypeRequestDTO request);
+    
+    VehicleTypeResponseDTO createVehicleTypeWithImage(VehicleTypeCreateRequestDTO request, MultipartFile imageFile);
     
     VehicleTypeResponseDTO getVehicleTypeById(Long id);
     

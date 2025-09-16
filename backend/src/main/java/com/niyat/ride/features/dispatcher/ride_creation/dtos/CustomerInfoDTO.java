@@ -19,12 +19,4 @@ public class CustomerInfoDTO {
     @Size(max = 50, message = "Last name must not exceed 50 characters")
     private String lastName;
     
-    @NotNull(message = "isNewCustomer flag is required")
-    private Boolean isNewCustomer;
-    
-    // Additional customer details for new customers
-    private String email;
-    
-    @Size(max = 500, message = "Notes must not exceed 500 characters")
-    private String notes;
 }

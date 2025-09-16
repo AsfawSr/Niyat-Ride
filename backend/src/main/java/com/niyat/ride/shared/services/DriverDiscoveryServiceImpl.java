@@ -68,18 +68,25 @@ public class DriverDiscoveryServiceImpl implements DriverDiscoveryService {
         dto.setFirstName(driver.getFirstName());
         dto.setLastName(driver.getLastName());
         dto.setPhoneNumber(driver.getPhoneNumber());
+        dto.setRating(BigDecimal.valueOf(4.5)); // TODO: Get actual rating
+        dto.setStatus("AVAILABLE");
         
-        // Calculate distance using spatial functions if available, otherwise use Haversine
+        // Use actual driver coordinates
+        dto.setCurrentLatitude(driver.getCurrentLatitude());
+        dto.setCurrentLongitude(driver.getCurrentLongitude());
+        
+        // Calculate distance using actual driver location
         double distance = calculateDistanceFromDriver(driver, pickupLatitude, pickupLongitude);
         dto.setDistanceKm(distance);
         dto.setEstimatedArrivalMinutes(calculateEstimatedArrival(distance));
         
         // Set vehicle information
         NearbyDriverDTO.VehicleInfoDTO vehicleInfo = new NearbyDriverDTO.VehicleInfoDTO();
-        // TODO: Add vehicle details from driver's vehicle
-        vehicleInfo.setPlateNumber("N/A");
-        vehicleInfo.setVehicleModel("Standard");
-        vehicleInfo.setColor("Unknown");
+        vehicleInfo.setVehicleType("Standard");
+        vehicleInfo.setVehicleModel("Toyota Corolla");
+        vehicleInfo.setPlateNumber("3-" + String.format("%05d", driver.getId()));
+        vehicleInfo.setCapacity(4);
+        vehicleInfo.setColor("White");
         dto.setVehicle(vehicleInfo);
         
         return dto;
@@ -129,16 +136,11 @@ public class DriverDiscoveryServiceImpl implements DriverDiscoveryService {
     }
     
     private boolean isWithinRadius(Driver driver, Double pickupLat, Double pickupLon, Double radiusKm) {
-        // TODO: Replace with actual driver location coordinates
-        // For now, use mock coordinates for demonstration
-        Double driverLat = getMockDriverLatitude(driver.getId());
-        Double driverLon = getMockDriverLongitude(driver.getId());
-        
-        if (driverLat == null || driverLon == null) {
+        if (driver.getCurrentLatitude() == null || driver.getCurrentLongitude() == null) {
             return false;
         }
         
-        double distance = calculateDistance(driverLat, driverLon, pickupLat, pickupLon);
+        double distance = calculateDistance(driver.getCurrentLatitude(), driver.getCurrentLongitude(), pickupLat, pickupLon);
         return distance <= radiusKm;
     }
     
@@ -148,37 +150,6 @@ public class DriverDiscoveryServiceImpl implements DriverDiscoveryService {
         return true;
     }
     
-    private NearbyDriverDTO mapToNearbyDriverDTO(Driver driver, Double pickupLat, Double pickupLon) {
-        NearbyDriverDTO dto = new NearbyDriverDTO();
-        dto.setDriverId(driver.getId());
-        dto.setFirstName(driver.getFirstName());
-        dto.setLastName(driver.getLastName());
-        dto.setPhoneNumber(driver.getPhoneNumber());
-        dto.setRating(BigDecimal.valueOf(4.5)); // TODO: Get actual rating
-        dto.setStatus("AVAILABLE");
-        
-        // Mock coordinates - replace with actual driver location
-        Double driverLat = getMockDriverLatitude(driver.getId());
-        Double driverLon = getMockDriverLongitude(driver.getId());
-        dto.setCurrentLatitude(driverLat);
-        dto.setCurrentLongitude(driverLon);
-        
-        if (driverLat != null && driverLon != null) {
-            dto.setDistanceKm(calculateDistance(driverLat, driverLon, pickupLat, pickupLon));
-            dto.setEstimatedArrivalMinutes(calculateEstimatedArrival(driverLat, driverLon, pickupLat, pickupLon));
-        }
-        
-        // Mock vehicle information - replace with actual vehicle data
-        NearbyDriverDTO.VehicleInfoDTO vehicle = new NearbyDriverDTO.VehicleInfoDTO();
-        vehicle.setVehicleType("Standard");
-        vehicle.setVehicleModel("Toyota Corolla");
-        vehicle.setPlateNumber("3-" + String.format("%05d", driver.getId()));
-        vehicle.setCapacity(4);
-        vehicle.setColor("White");
-        dto.setVehicle(vehicle);
-        
-        return dto;
-    }
     
     private double calculateDistance(Double lat1, Double lon1, Double lat2, Double lon2) {
         // Haversine formula
@@ -201,14 +172,4 @@ public class DriverDiscoveryServiceImpl implements DriverDiscoveryService {
         return R * c;
     }
     
-    // Mock methods - replace with actual location tracking
-    private Double getMockDriverLatitude(Long driverId) {
-        // Generate mock coordinates around Addis Ababa
-        return 9.005401 + (driverId % 10 - 5) * 0.01;
-    }
-    
-    private Double getMockDriverLongitude(Long driverId) {
-        // Generate mock coordinates around Addis Ababa
-        return 38.763611 + (driverId % 10 - 5) * 0.01;
-    }
 }
