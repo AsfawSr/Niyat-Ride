@@ -6,5 +6,5 @@ import java.math.BigDecimal;
 
 @Data
 public class CompleteTripDTO {
-    private BigDecimal finalCost;
+    private String action;
 }

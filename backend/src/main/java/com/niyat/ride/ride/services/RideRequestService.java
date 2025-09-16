@@ -15,7 +15,7 @@ public interface RideRequestService {
 
     RideRequest startTrip(Long rideId);
 
-    RideRequest completeTrip(Long rideId, BigDecimal finalCost);
+    RideRequest completeTrip(Long rideId);
 
     RideRequest cancelTrip(Long rideId, String reason);
 }

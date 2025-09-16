@@ -95,14 +95,13 @@ public class RideRequestServiceImpl implements RideRequestService {
 
     @Override
     @Transactional
-    public RideRequest completeTrip(Long rideId, BigDecimal finalCost) {
+    public RideRequest completeTrip(Long rideId) {
         RideRequest ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
         if (ride.getStatus() != RideStatus.IN_PROGRESS)
             throw new RuntimeException("Ride is not IN_PROGRESS");
 
         ride.setStatus(RideStatus.COMPLETED);
-        ride.setFinalCost(finalCost);
         ride.setCompletedAt(LocalDateTime.now());
         return rideRepository.save(ride);
     }

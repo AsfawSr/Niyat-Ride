@@ -1,7 +1,9 @@
 package com.niyat.ride.ride.controllers;
 
+import com.niyat.ride.enums.RideStatus;
 import com.niyat.ride.ride.dtos.*;
 import com.niyat.ride.ride.models.RideRequest;
+import com.niyat.ride.ride.repositories.RideRequestRepository;
 import com.niyat.ride.ride.services.RideRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class RideRequestController {
 
     private final RideRequestService rideService;
+    private final RideRequestRepository rideRequestRepository;
 
     // Request a ride
     @PostMapping
@@ -37,6 +40,24 @@ public class RideRequestController {
         }
         return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
     }
+    // Driver response (ACCEPT/REJECT)
+    @PostMapping("/{rideId}/response1")
+    public ResponseEntity<RideResponseDTO> confirmRide(@PathVariable Long rideId,
+                                                       @RequestBody RideActionDTO confirmDto) {
+        RideRequest ride = rideRequestRepository.findById(rideId).orElseThrow();
+        if ("CONFIRM".equalsIgnoreCase(confirmDto.getAction())) {
+            ride.setStatus(RideStatus.CONFIRMED);
+        } else if ("CANCEL".equalsIgnoreCase(confirmDto.getAction())) {
+            ride = rideService.rejectRide(rideId);
+        } else {
+            throw new RuntimeException("Invalid action");
+        }
+
+
+
+
+    return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
+    }
 
     // Trip management (START / CANCEL)
     @PostMapping("/{rideId}/trip")
@@ -55,9 +76,8 @@ public class RideRequestController {
 
     // Complete trip
     @PostMapping("/{rideId}/complete")
-    public ResponseEntity<RideResponseDTO> completeTrip(@PathVariable Long rideId,
-                                                        @RequestBody CompleteTripDTO dto) {
-        RideRequest ride = rideService.completeTrip(rideId, dto.getFinalCost());
+    public ResponseEntity<RideResponseDTO> completeTrip(@PathVariable Long rideId) {
+        RideRequest ride = rideService.completeTrip(rideId);
         return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
     }
 }
