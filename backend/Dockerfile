@@ -1,14 +1,21 @@
-# Use Java 21
-FROM eclipse-temurin:21-jdk-alpine
-
-# Set working directory
+#  Build the application
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 WORKDIR /app
 
-# Copy the built JAR
-COPY target/ride-0.0.1-SNAPSHOT.jar app.jar
+# Copy pom.xml and download dependencies first (for caching)
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Expose port 8080
+# Copy source code and build the JAR
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Stage 2: Run the application
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+
+# Copy the JAR from the build stage
+COPY --from=builder /app/target/ride-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
-
-# Run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]
