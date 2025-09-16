@@ -28,6 +28,21 @@ public class DispatcherUserServiceImpl implements DispatcherUserService {
         
         return dispatcherPage.map(this::mapToResponseDTO);
     }
+    
+    private String mapSortFieldToColumn(String sortBy) {
+        if (sortBy == null) return "u.created_at";
+        
+        return switch (sortBy) {
+            case "createdAt" -> "u.created_at";
+            case "updatedAt" -> "u.updated_at";
+            case "firstName" -> "u.first_name";
+            case "lastName" -> "u.last_name";
+            case "email" -> "u.email";
+            case "status" -> "u.status";
+            case "assignedRegion" -> "d.assigned_region";
+            default -> "u.created_at";
+        };
+    }
 
     @Override
     public DispatcherUserResponseDTO getDispatcherById(Long id) {

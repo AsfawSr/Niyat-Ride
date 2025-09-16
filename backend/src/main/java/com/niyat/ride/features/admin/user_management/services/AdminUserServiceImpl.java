@@ -7,7 +7,9 @@ import com.niyat.ride.user.models.Admin;
 import com.niyat.ride.shared.utils.PaginationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,20 @@ public class AdminUserServiceImpl implements AdminUserService {
         Page<Admin> adminPage = adminUserRepository.findWithFilters(search, status, createdAtFrom, createdAtTo, pageable);
         
         return adminPage.map(this::mapToResponseDTO);
+    }
+    
+    private String mapSortFieldToColumn(String sortBy) {
+        if (sortBy == null) return "u.created_at";
+        
+        return switch (sortBy) {
+            case "createdAt" -> "u.created_at";
+            case "updatedAt" -> "u.updated_at";
+            case "firstName" -> "u.first_name";
+            case "lastName" -> "u.last_name";
+            case "email" -> "u.email";
+            case "status" -> "u.status";
+            default -> "u.created_at";
+        };
     }
 
     @Override

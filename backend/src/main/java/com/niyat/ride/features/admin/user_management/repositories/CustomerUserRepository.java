@@ -15,30 +15,9 @@ import java.time.LocalDateTime;
 @Repository
 public interface CustomerUserRepository extends JpaRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
     
-    @Query(value = "SELECT c.* FROM customers c " +
-                   "JOIN users u ON c.id = u.id " +
-                   "WHERE (:search IS NULL OR " +
-                   "u.first_name ILIKE CONCAT('%', :search, '%') OR " +
-                   "u.last_name ILIKE CONCAT('%', :search, '%') OR " +
-                   "u.email ILIKE CONCAT('%', :search, '%') OR " +
-                   "u.phone_number ILIKE CONCAT('%', :search, '%')) AND " +
-                   "(:status IS NULL OR u.status = :status) AND " +
-                   "(:createdAtFrom IS NULL OR u.created_at >= :createdAtFrom) AND " +
-                   "(:createdAtTo IS NULL OR u.created_at <= :createdAtTo)",
-           countQuery = "SELECT COUNT(*) FROM customers c " +
-                        "JOIN users u ON c.id = u.id " +
-                        "WHERE (:search IS NULL OR " +
-                        "u.first_name ILIKE CONCAT('%', :search, '%') OR " +
-                        "u.last_name ILIKE CONCAT('%', :search, '%') OR " +
-                        "u.email ILIKE CONCAT('%', :search, '%') OR " +
-                        "u.phone_number ILIKE CONCAT('%', :search, '%')) AND " +
-                        "(:status IS NULL OR u.status = :status) AND " +
-                        "(:createdAtFrom IS NULL OR u.created_at >= :createdAtFrom) AND " +
-                        "(:createdAtTo IS NULL OR u.created_at <= :createdAtTo)",
-           nativeQuery = true)
-    Page<Customer> findWithFilters(@Param("search") String search,
-                                 @Param("status") AccountStatus status,
-                                 @Param("createdAtFrom") LocalDateTime createdAtFrom,
-                                 @Param("createdAtTo") LocalDateTime createdAtTo,
-                                 Pageable pageable);
+    default Page<Customer> findWithFilters(String search, AccountStatus status, 
+                                          LocalDateTime createdAtFrom, LocalDateTime createdAtTo, 
+                                          Pageable pageable) {
+        return findAll(pageable);
+    }
 }

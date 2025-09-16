@@ -21,12 +21,26 @@ public class CustomerUserServiceImpl implements CustomerUserService {
 
     @Override
     public Page<CustomerUserResponseDTO> getAllCustomers(Integer page, Integer size, String sortBy, String sortDirection,
-                                                       String search, AccountStatus status, 
-                                                       LocalDateTime createdAtFrom, LocalDateTime createdAtTo) {
+                                                        String search, AccountStatus status, 
+                                                        LocalDateTime createdAtFrom, LocalDateTime createdAtTo) {
         Pageable pageable = PaginationUtil.createPageable(page, size, sortBy, sortDirection);
         Page<Customer> customerPage = customerUserRepository.findWithFilters(search, status, createdAtFrom, createdAtTo, pageable);
         
         return customerPage.map(this::mapToResponseDTO);
+    }
+    
+    private String mapSortFieldToColumn(String sortBy) {
+        if (sortBy == null) return "u.created_at";
+        
+        return switch (sortBy) {
+            case "createdAt" -> "u.created_at";
+            case "updatedAt" -> "u.updated_at";
+            case "firstName" -> "u.first_name";
+            case "lastName" -> "u.last_name";
+            case "email" -> "u.email";
+            case "status" -> "u.status";
+            default -> "u.created_at";
+        };
     }
 
     @Override
