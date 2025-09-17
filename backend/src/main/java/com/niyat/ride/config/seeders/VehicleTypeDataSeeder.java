@@ -1,4 +1,4 @@
-package com.niyat.ride.config;
+package com.niyat.ride.config.seeders;
 
 import com.niyat.ride.vehicle.models.VehicleType;
 import com.niyat.ride.features.admin.vehicle_type_management.repositories.VehicleTypeRepository;

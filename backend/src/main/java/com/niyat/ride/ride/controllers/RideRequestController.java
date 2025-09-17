@@ -17,7 +17,7 @@ public class RideRequestController {
     private final RideRequestService rideService;
     private final RideRequestRepository rideRequestRepository;
 
-    // Request a ride
+    // request a ride
     @PostMapping
     public ResponseEntity<RideResponseDTO> requestRide(@RequestBody RideRequestDTO dto,
                                                        @RequestParam Long passengerId) {
@@ -25,7 +25,7 @@ public class RideRequestController {
         return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
     }
 
-    // Driver response (ACCEPT/REJECT)
+    // driver response (ACCEPT/REJECT)
     @PostMapping("/{rideId}/response")
     public ResponseEntity<RideResponseDTO> respondToRide(@PathVariable Long rideId,
                                                          @RequestBody RideActionDTO actionDTO,
@@ -40,7 +40,7 @@ public class RideRequestController {
         }
         return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
     }
-    // Driver response (ACCEPT/REJECT)
+    // customer ride CONFIRM or CANCEL
     @PostMapping("/{rideId}/response1")
     public ResponseEntity<RideResponseDTO> confirmRide(@PathVariable Long rideId,
                                                        @RequestBody RideActionDTO confirmDto) {
@@ -52,14 +52,10 @@ public class RideRequestController {
         } else {
             throw new RuntimeException("Invalid action");
         }
-
-
-
-
-    return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
+        return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
     }
 
-    // Trip management (START / CANCEL)
+    // trip management (START / CANCEL)
     @PostMapping("/{rideId}/trip")
     public ResponseEntity<RideResponseDTO> manageTrip(@PathVariable Long rideId,
                                                       @RequestBody TripActionDTO actionDTO) {
@@ -74,7 +70,7 @@ public class RideRequestController {
         return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
     }
 
-    // Complete trip
+    // complete trip
     @PostMapping("/{rideId}/complete")
     public ResponseEntity<RideResponseDTO> completeTrip(@PathVariable Long rideId) {
         RideRequest ride = rideService.completeTrip(rideId);

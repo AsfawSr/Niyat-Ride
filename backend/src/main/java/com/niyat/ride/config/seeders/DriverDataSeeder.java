@@ -1,4 +1,4 @@
-package com.niyat.ride.config;
+package com.niyat.ride.config.seeders;
 
 import com.niyat.ride.enums.AccountStatus;
 import com.niyat.ride.enums.Role;
@@ -42,19 +42,15 @@ public class DriverDataSeeder implements CommandLineRunner {
         List<Driver> drivers = new ArrayList<>();
 
         // Addis Ababa drivers (coordinates around the city)
-        drivers.add(createDriver("Abebe", "Kebede", "+251911234567", "AA001", 9.0054, 38.7636, true)); // Central Addis
-        drivers.add(createDriver("Almaz", "Tadesse", "+251911234568", "AA002", 9.0157, 38.7578, true)); // Piazza area
-        drivers.add(createDriver("Bekele", "Haile", "+251911234569", "AA003", 8.9806, 38.7578, true)); // Bole area
         drivers.add(createDriver("Chaltu", "Girma", "+251911234570", "AA004", 9.0348, 38.7469, true)); // Addis Ketema
         drivers.add(createDriver("Desta", "Mulugeta", "+251911234571", "AA005", 8.9900, 38.8000, true)); // East Addis
         drivers.add(createDriver("Emebet", "Wolde", "+251911234572", "AA006", 9.0200, 38.7300, false)); // Offline driver in Addis
 
         // Mekelle drivers (coordinates around Mekelle city)
-        drivers.add(createDriver("Gidey", "Gebru", "+251911234573", "MK001", 13.4967, 39.4753, true)); // Central Mekelle
-        drivers.add(createDriver("Hiwot", "Tekle", "+251911234574", "MK002", 13.5020, 39.4800, true)); // North Mekelle
-        drivers.add(createDriver("Kiros", "Aregay", "+251911234575", "MK003", 13.4900, 39.4700, true)); // South Mekelle
-        drivers.add(createDriver("Lemlem", "Hagos", "+251911234576", "MK004", 13.5100, 39.4850, true)); // East Mekelle
-        drivers.add(createDriver("Mulu", "Berhe", "+251911234577", "MK005", 13.4850, 39.4650, false)); // Offline driver in Mekelle
+        drivers.add(createDriver("Asfaw", "Yemane", "+251988492462", "MK001", 13.4967, 39.4753, true)); // Central Mekelle
+        drivers.add(createDriver("Mahtot", "Gher", "+251962596962", "MK002", 13.5020, 39.4800, true)); // North Mekelle
+        drivers.add(createDriver("Robel", "Guesh", "+251911000169", "MK003", 13.4900, 39.4700, true)); // South Mekelle
+        drivers.add(createDriver("Daniel", "Hagos", "+251908208659", "MK004", 13.5100, 39.4850, true)); // East Mekelle
 
         // Save all drivers
         driverRepository.saveAll(drivers);
@@ -87,7 +83,7 @@ public class DriverDataSeeder implements CommandLineRunner {
         
         // Create PostGIS Point geometry
         Point location = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-        location.setSRID(4326); // WGS84 coordinate system
+        location.setSRID(4326);
         driver.setCurrentLocation(location);
         
         return driver;

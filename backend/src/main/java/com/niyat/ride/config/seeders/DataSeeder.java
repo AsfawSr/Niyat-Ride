@@ -1,4 +1,4 @@
-package com.niyat.ride.config;
+package com.niyat.ride.config.seeders;
 
 import com.niyat.ride.enums.AccountStatus;
 import com.niyat.ride.enums.Role;
