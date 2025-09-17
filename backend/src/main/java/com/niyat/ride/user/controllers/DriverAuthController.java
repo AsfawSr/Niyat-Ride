@@ -48,7 +48,8 @@ public class DriverAuthController {
     public ResponseEntity<DriverResponseDTO> signupDriver(
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody DriverSignupDTO driverSignupDTO) {
-
+        System.out.println("signup response coming.");
+        System.out.println("Driver Signup DTO: " + driverSignupDTO);
         // Extract token from header: "Bearer <token>"
         String token = authHeader.replace("Bearer ", "");
 

@@ -25,6 +25,7 @@ public class DriverResponseDTO {
     private String frontLicenceImage;
     private String backLicenceImage;
     private Boolean isOnline;
+    private LocalDateTime licenseExpiration;
 
     //  fields for location
     private Double latitude;
