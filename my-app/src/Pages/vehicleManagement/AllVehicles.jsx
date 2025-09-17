@@ -1,71 +1,87 @@
-import React, { useState } from "react";
+// src/Pages/vehicleManagement/AllVehicles.jsx
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Sidebar from "../../Components/Sidebar";
 import Topbar from "../../Components/Topbar";
 import VehicleTable from "../../Components/VehicleTable";
-import { addVehicle } from "../../store/vehicleSlice"; // ✅ make sure it's vehiclesSlice.js
+import {
+  fetchVehicleTypes,
+  createVehicleType,
+} from "../../store/vehicleSlice"; // adjust path if needed
 
 const AllVehicles = () => {
   const dispatch = useDispatch();
-  const vehicles = useSelector((state) => state.vehicles.vehicles);
+  const { list: vehicles = [], status, error } = useSelector(
+    (state) => state.vehicles || { list: [], status: "idle", error: null }
+  );
 
   // form state
   const [form, setForm] = useState({
-    image: "",
+    file: null, // ✅ store File object instead of Base64
     name: "",
     pricePerKm: "",
     description: "",
-    status: "active",
+    isActive: true,
   });
+  const [busy, setBusy] = useState(false);
+  const [preview, setPreview] = useState(""); // for showing preview only
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    dispatch(fetchVehicleTypes());
+  }, [dispatch]);
 
-  // ✅ helper to convert image -> Base64
-  const toBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result); // base64 string
-      reader.onerror = (err) => reject(err);
-    });
-
-  // ✅ handle file upload (car image)
-  const handleFileChange = async (e) => {
+  const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const base64 = await toBase64(file);
-      setForm({ ...form, image: base64 });
+      setForm((f) => ({ ...f, file })); // ✅ keep the File object
+      setPreview(URL.createObjectURL(file)); // ✅ create preview
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "isActive") {
+      setForm((f) => ({ ...f, isActive: value === "true" }));
+    } else {
+      setForm((f) => ({ ...f, [name]: value }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setBusy(true);
+    try {
+      // ✅ build multipart/form-data
+      const formData = new FormData();
+      if (form.file) formData.append("image", form.file);
+      formData.append("name", form.name);
+      formData.append("pricePerKm", form.pricePerKm);
+      formData.append("description", form.description);
+      formData.append("isActive", form.isActive);
 
-    const newVehicle = {
-      id: Date.now().toString(), // simple unique ID
-      ...form,
-      pricePerKm: Number(form.pricePerKm),
-    };
+      await dispatch(createVehicleType(formData)).unwrap();
 
-    dispatch(addVehicle(newVehicle));
-
-    // reset form
-    setForm({
-      image: "",
-      name: "",
-      pricePerKm: "",
-      description: "",
-      status: "active",
-    });
+      // reset form
+      setForm({
+        file: null,
+        name: "",
+        pricePerKm: "",
+        description: "",
+        isActive: true,
+      });
+      setPreview("");
+    } catch (err) {
+      console.error("Create vehicle type failed:", err);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div className="flex bg-gray-100 min-h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Topbar />
+        
         <div className="p-6">
           <h1 className="text-2xl font-bold mb-6">All Vehicles</h1>
 
@@ -73,67 +89,72 @@ const AllVehicles = () => {
           <form
             onSubmit={handleSubmit}
             className="bg-white shadow-md rounded-lg p-4 mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+            encType="multipart/form-data" // ✅ important
           >
-            {/* Image upload */}
             <input
               type="file"
               accept="image/*"
               onChange={handleFileChange}
               className="border rounded px-3 py-2"
-              required
             />
-            {form.image && (
+            {preview && (
               <img
-                src={form.image}
+                src={preview}
                 alt="preview"
-                className="w-24 h-16 object-cover rounded mb-2"
+                className="w-28 h-20 object-contain rounded mb-2"
               />
             )}
 
             <input
-              type="text"
               name="name"
-              placeholder="Car Name"
               value={form.name}
               onChange={handleChange}
+              type="text"
+              placeholder="Car Name"
               className="border rounded px-3 py-2"
               required
             />
             <input
-              type="number"
               name="pricePerKm"
-              placeholder="Price per km"
               value={form.pricePerKm}
               onChange={handleChange}
+              type="number"
+              placeholder="Price per km"
               className="border rounded px-3 py-2"
               required
             />
             <input
-              type="text"
               name="description"
-              placeholder="Description"
               value={form.description}
               onChange={handleChange}
+              type="text"
+              placeholder="Description"
               className="border rounded px-3 py-2 md:col-span-2 lg:col-span-3"
             />
             <select
-              name="status"
-              value={form.status}
+              name="isActive"
+              value={form.isActive ? "true" : "false"}
               onChange={handleChange}
               className="border rounded px-3 py-2"
             >
-              <option value="active">Active</option>
-              <option value="outofservice">Out of Service</option>
+              <option value="true">Active</option>
+              <option value="false">Out of Service</option>
             </select>
+
             <button
               type="submit"
+              disabled={busy}
               className="bg-blue-600 text-white font-semibold px-4 py-2 rounded hover:bg-blue-700 transition"
             >
-              Add Vehicle
+              {busy ? "Adding..." : "Add Vehicle"}
             </button>
           </form>
 
-          {/* Vehicle Table */}
+          {/* Status/Error */}
+          {status === "loading" && <p>Loading vehicles...</p>}
+          {status === "failed" && <p className="text-red-500">{String(error)}</p>}
+
+          {/* Vehicle table */}
           <VehicleTable vehicles={vehicles} />
         </div>
       </div>

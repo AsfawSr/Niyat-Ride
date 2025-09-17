@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Box,
@@ -29,12 +29,11 @@ import {
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import Sidebar from "../../Components/Sidebar";
 import Topbar from "../../Components/Topbar";
-import { updateRide, deleteRide } from "../../store/ridesSlice"; // ✅ NEW: Redux actions
+import { fetchRides, updateRide, deleteRide } from "../../store/ridesSlice";
 
 export default function AllRides() {
   const dispatch = useDispatch();
-  // ✅ NEW: use useSelector to get the rides from the Redux store state.
-  const rides = useSelector((state) => state.rides.rides);
+  const { rides, loading, error } = useSelector((state) => state.rides);
 
   // UI state
   const [page, setPage] = useState(0);
@@ -47,45 +46,47 @@ export default function AllRides() {
   const [editRide, setEditRide] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
-  // ----- derived data: filter + paginate -----
+  // fetch rides on mount
+  useEffect(() => {
+    dispatch(fetchRides({ page: 0, size: 100 }));
+  }, [dispatch]);
+
+  // derived data: filter + paginate
   const filteredRides = useMemo(() => {
     const s = search.trim().toLowerCase();
     return rides.filter((r) => {
       const matchesStatus = filterStatus ? r.status === filterStatus : true;
       const matchesSearch =
         !s ||
-        r.id.toLowerCase().includes(s) ||
-        r.passenger.toLowerCase().includes(s) ||
-        r.driver.toLowerCase().includes(s);
+        String(r.id).toLowerCase().includes(s) ||
+        r.passengerName?.toLowerCase().includes(s) ||
+        r.driverName?.toLowerCase().includes(s);
       return matchesStatus && matchesSearch;
     });
   }, [rides, search, filterStatus]);
 
   const pageStart = page * rowsPerPage;
-  const pageEnd = pageStart + rowsPerPage;
-  const pageRows = filteredRides.slice(pageStart, pageEnd);
+  const pageRows = filteredRides.slice(pageStart, pageStart + rowsPerPage);
 
-  // ----- pagination handlers -----
+  // pagination handlers
   const handleChangePage = (_e, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (e) => {
     setRowsPerPage(parseInt(e.target.value, 10));
     setPage(0);
   };
 
-  // ----- edit handlers -----
+  // edit handlers
   const handleEditOpen = (ride) => setEditRide({ ...ride });
   const handleEditChange = (field, value) =>
     setEditRide((prev) => ({ ...prev, [field]: value }));
   const handleEditSave = () => {
-    // ✅ NEW: Dispatch the updateRide action with the updated ride object.
     dispatch(updateRide(editRide));
     setEditRide(null);
   };
 
-  // ----- delete handlers -----
+  // delete handlers
   const handleDeleteConfirm = () => {
     if (!deleteTarget) return;
-    // ✅ NEW: Dispatch the deleteRide action with the ride's ID.
     dispatch(deleteRide(deleteTarget.id));
     setDeleteTarget(null);
   };
@@ -94,23 +95,10 @@ export default function AllRides() {
     <Box sx={{ display: "flex", bgcolor: "#f6f7fb", minHeight: "100vh" }}>
       <Sidebar />
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <Topbar />
-
+        
         <Box component="main" sx={{ p: 3, flex: 1 }}>
           {/* Filters */}
-          <Box
-            sx={{
-              display: "flex",
-              gap: 2,
-              flexWrap: "wrap",
-              mb: 2,
-              position: "sticky",
-              top: 64, // height of your Topbar
-              zIndex: 10,
-              bgcolor: "#f6f7fb",
-              py: 1,
-            }}
-          >
+          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 2 }}>
             <TextField
               label="Search by Ride / Passenger / Driver"
               variant="outlined"
@@ -133,9 +121,10 @@ export default function AllRides() {
                 }}
               >
                 <MenuItem value="">All</MenuItem>
-                <MenuItem value="Completed">Completed</MenuItem>
-                <MenuItem value="Ongoing">Ongoing</MenuItem>
-                <MenuItem value="Cancelled">Cancelled</MenuItem>
+                <MenuItem value="COMPLETED">Completed</MenuItem>
+                <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+                <MenuItem value="REQUESTED">Requested</MenuItem>
+                <MenuItem value="CANCELLED">Cancelled</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -146,41 +135,61 @@ export default function AllRides() {
               <Typography variant="h6" gutterBottom>
                 All Rides
               </Typography>
+              {loading && <Typography>Loading rides...</Typography>}
+              {error && <Typography color="error">{error}</Typography>}
               <TableContainer component={Paper} sx={{ maxHeight: "70vh" }}>
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Ride ID</TableCell>
-                      <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Passenger</TableCell>
-                      <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Driver</TableCell>
-                      <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Status</TableCell>
-                      <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Date</TableCell>
-                      <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Fare</TableCell>
-                      <TableCell sx={{ fontWeight: "bold", bgcolor: "#f9fafb" }}>Actions</TableCell>
+                      <TableCell>Ride ID</TableCell>
+                      <TableCell>Passenger</TableCell>
+                      <TableCell>Driver</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Fare</TableCell>
+                      <TableCell>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {pageRows.map((ride) => (
                       <TableRow key={ride.id} hover>
                         <TableCell>{ride.id}</TableCell>
-                        <TableCell>{ride.passenger}</TableCell>
-                        <TableCell>{ride.driver}</TableCell>
+                        <TableCell>{ride.passengerName}</TableCell>
+                        <TableCell>{ride.driverName}</TableCell>
                         <TableCell>{ride.status}</TableCell>
-                        <TableCell>{ride.date}</TableCell>
-                        <TableCell>{ride.fare}</TableCell>
+                        <TableCell>
+                          {ride.requestedAt?.split("T")[0] ||
+                            ride.completedAt?.split("T")[0]}
+                        </TableCell>
+                        <TableCell>
+                          {ride.finalCost
+                            ? `$${ride.finalCost}`
+                            : ride.estimatedCost
+                            ? `$${ride.estimatedCost}`
+                            : "-"}
+                        </TableCell>
                         <TableCell>
                           <Tooltip title="View">
-                            <IconButton color="primary" onClick={() => setViewRide(ride)}>
+                            <IconButton
+                              color="primary"
+                              onClick={() => setViewRide(ride)}
+                            >
                               <FaEye />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Edit">
-                            <IconButton color="success" onClick={() => handleEditOpen(ride)}>
+                            <IconButton
+                              color="success"
+                              onClick={() => handleEditOpen(ride)}
+                            >
                               <FaEdit />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Delete">
-                            <IconButton color="error" onClick={() => setDeleteTarget(ride)}>
+                            <IconButton
+                              color="error"
+                              onClick={() => setDeleteTarget(ride)}
+                            >
                               <FaTrash />
                             </IconButton>
                           </Tooltip>
@@ -192,17 +201,9 @@ export default function AllRides() {
               </TableContainer>
             </CardContent>
           </Card>
-          <Box
-            sx={{
-              position: "sticky",
-              bottom: 0,
-              pt: 1,
-              mt: 3,
-              bgcolor: "transparent",
-              display: "flex",
-              justifyContent: "flex-end",
-            }}
-          >
+
+          {/* Pagination */}
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
             <TablePagination
               component="div"
               count={filteredRides.length}
@@ -217,19 +218,40 @@ export default function AllRides() {
       </Box>
 
       {/* ----- View Modal ----- */}
-      <Dialog open={!!viewRide} onClose={() => setViewRide(null)} fullWidth maxWidth="sm">
+      <Dialog
+        open={!!viewRide}
+        onClose={() => setViewRide(null)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Ride Details</DialogTitle>
         <DialogContent dividers>
           {viewRide && (
             <>
-              <Typography><b>Ride ID:</b> {viewRide.id}</Typography>
-              <Typography><b>Passenger:</b> {viewRide.passenger}</Typography>
-              <Typography><b>Driver:</b> {viewRide.driver}</Typography>
-              <Typography><b>Status:</b> {viewRide.status}</Typography>
-              <Typography><b>Date:</b> {viewRide.date}</Typography>
-              <Typography><b>Fare:</b> {viewRide.fare}</Typography>
-              <Typography sx={{ mt: 1 }}><b>Pickup:</b> {viewRide.pickup}</Typography>
-              <Typography><b>Drop-off:</b> {viewRide.dropoff}</Typography>
+              <Typography>
+                <b>Ride ID:</b> {viewRide.id}
+              </Typography>
+              <Typography>
+                <b>Passenger:</b> {viewRide.passengerName}
+              </Typography>
+              <Typography>
+                <b>Driver:</b> {viewRide.driverName}
+              </Typography>
+              <Typography>
+                <b>Status:</b> {viewRide.status}
+              </Typography>
+              <Typography>
+                <b>Fare:</b>{" "}
+                {viewRide.finalCost
+                  ? `$${viewRide.finalCost}`
+                  : `$${viewRide.estimatedCost || 0}`}
+              </Typography>
+              <Typography>
+                <b>Pickup:</b> {viewRide.pickupAddress}
+              </Typography>
+              <Typography>
+                <b>Drop-off:</b> {viewRide.dropoffAddress}
+              </Typography>
             </>
           )}
         </DialogContent>
@@ -239,69 +261,61 @@ export default function AllRides() {
       </Dialog>
 
       {/* ----- Edit Modal ----- */}
-      <Dialog open={!!editRide} onClose={() => setEditRide(null)} fullWidth maxWidth="sm">
+      <Dialog
+        open={!!editRide}
+        onClose={() => setEditRide(null)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Edit Ride</DialogTitle>
         <DialogContent dividers>
           {editRide && (
             <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, mt: 1 }}>
               <TextField
                 label="Passenger"
-                value={editRide.passenger}
-                onChange={(e) => handleEditChange("passenger", e.target.value)}
+                value={editRide.passengerName || ""}
+                onChange={(e) => handleEditChange("passengerName", e.target.value)}
               />
               <TextField
                 label="Driver"
-                value={editRide.driver}
-                onChange={(e) => handleEditChange("driver", e.target.value)}
+                value={editRide.driverName || ""}
+                onChange={(e) => handleEditChange("driverName", e.target.value)}
               />
               <FormControl>
                 <InputLabel>Status</InputLabel>
                 <Select
-                  label="Status"
-                  value={editRide.status}
+                  value={editRide.status || ""}
                   onChange={(e) => handleEditChange("status", e.target.value)}
                 >
-                  <MenuItem value="Completed">Completed</MenuItem>
-                  <MenuItem value="Ongoing">Ongoing</MenuItem>
-                  <MenuItem value="Cancelled">Cancelled</MenuItem>
+                  <MenuItem value="COMPLETED">Completed</MenuItem>
+                  <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+                  <MenuItem value="REQUESTED">Requested</MenuItem>
+                  <MenuItem value="CANCELLED">Cancelled</MenuItem>
                 </Select>
               </FormControl>
-              <TextField
-                label="Date (YYYY-MM-DD)"
-                value={editRide.date}
-                onChange={(e) => handleEditChange("date", e.target.value)}
-              />
-              <TextField
-                label="Fare"
-                value={editRide.fare}
-                onChange={(e) => handleEditChange("fare", e.target.value)}
-              />
-              <TextField
-                label="Pickup"
-                value={editRide.pickup}
-                onChange={(e) => handleEditChange("pickup", e.target.value)}
-              />
-              <TextField
-                label="Drop-off"
-                value={editRide.dropoff}
-                onChange={(e) => handleEditChange("dropoff", e.target.value)}
-              />
             </Box>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditRide(null)}>Cancel</Button>
-          <Button variant="contained" onClick={handleEditSave}>Save</Button>
+          <Button variant="contained" onClick={handleEditSave}>
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
 
       {/* ----- Delete Confirm ----- */}
-      <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        maxWidth="xs"
+        fullWidth
+      >
         <DialogTitle>Delete Ride</DialogTitle>
         <DialogContent dividers>
           {deleteTarget && (
             <Typography>
-              Are you sure you want to delete <b>{deleteTarget.id}</b> ({deleteTarget.passenger} → {deleteTarget.driver})?
+              Are you sure you want to delete ride <b>{deleteTarget.id}</b>?
             </Typography>
           )}
         </DialogContent>

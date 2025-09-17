@@ -1,19 +1,20 @@
+// src/store/index.js
 import { configureStore } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 
-// ✅ Auth slices (friend’s version)
+// ✅ Auth slices
 import loginReducer from "./authentication/loginSlice.js";
 import registrationReducer from "./authentication/registrationSlice.js";
 
 // ✅ Global error
 import errorReducer from "./globalErrorSlice.js";
 
-// ✅ Dispatcher slices (friend’s)
+// ✅ Dispatcher slices
 import activeVehiclesReducer from "./dispatcher/activeVehiclesSlice.js";
 import tripsReducer from "./dispatcher/tripSlice.js";
 
-// ✅ User management slices (friend’s)
+// ✅ User management slices
 import adminsReducer from "./userManagement/adminSlice.js";
 import passengersReducer from "./userManagement/passengersSlice.js";
 import editUserReducer from "./userManagement/editUserSlice.js";
@@ -24,7 +25,10 @@ import dispatchersReducer from "./userManagement/dispatchersSlice.js";
 import ridesReducer from "./ridesSlice.js";
 import vehiclesReducer from "./vehicleSlice.js";
 
-// import { setupInterceptors } from "../api/api.jsx";
+// ===== NEW: dashboard slice =====
+import dashboardReducer from "./dashboardSlice.js";
+
+// import { setupInterceptors } from "../api/api.jsx"; // optional: to attach auth token to api
 
 // --- Persist config for auth ---
 const persistedConfig = {
@@ -48,9 +52,12 @@ export const store = configureStore({
     dispatchers: dispatchersReducer,
     trips: tripsReducer,
 
-    // ✅ added yours
+    // your slices
     rides: ridesReducer,
     vehicles: vehiclesReducer,
+
+    // dashboard (added)
+    dashboard: dashboardReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -58,6 +65,7 @@ export const store = configureStore({
     }),
 });
 
+// optional: setup interceptors if you implemented setupInterceptors in api file
 // setupInterceptors(store);
 
 export const persistor = persistStore(store);
