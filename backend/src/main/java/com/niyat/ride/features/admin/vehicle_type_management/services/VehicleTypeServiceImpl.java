@@ -1,6 +1,9 @@
 package com.niyat.ride.features.admin.vehicle_type_management.services;
 
 import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeRequestDTO;
+import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeCreateRequestDTO;
+import com.niyat.ride.shared.services.FileUploadService;
+import org.springframework.web.multipart.MultipartFile;
 import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeResponseDTO;
 import com.niyat.ride.features.admin.vehicle_type_management.repositories.VehicleTypeRepository;
 import com.niyat.ride.vehicle.models.VehicleType;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 public class VehicleTypeServiceImpl implements VehicleTypeService {
 
     private final VehicleTypeRepository vehicleTypeRepository;
+    private final FileUploadService fileUploadService;
 
     @Override
     public Page<VehicleTypeResponseDTO> getAllVehicleTypes(Integer page, Integer size, String sortBy, String sortDirection,
@@ -55,6 +59,37 @@ public class VehicleTypeServiceImpl implements VehicleTypeService {
         vehicleType.setCapacity(request.getCapacity());
         vehicleType.setFeatures(request.getFeatures());
         vehicleType.setIsActive(true);
+
+        VehicleType savedVehicleType = vehicleTypeRepository.save(vehicleType);
+        return mapToResponseDTO(savedVehicleType);
+    }
+
+    @Override
+    @Transactional
+    public VehicleTypeResponseDTO createVehicleTypeWithImage(VehicleTypeCreateRequestDTO request, MultipartFile imageFile) {
+        // Check if name already exists
+        vehicleTypeRepository.findByNameAndDeletedAtIsNull(request.getName())
+                .ifPresent(vt -> {
+                    throw new RuntimeException("Vehicle type with name '" + request.getName() + "' already exists");
+                });
+
+        VehicleType vehicleType = new VehicleType();
+        vehicleType.setName(request.getName());
+        vehicleType.setDescription(request.getDescription());
+        vehicleType.setPricePerKm(request.getPricePerKm());
+        vehicleType.setCapacity(request.getCapacity());
+        vehicleType.setFeatures(request.getFeatures());
+        vehicleType.setIsActive(true);
+
+        // Handle image upload
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                String imagePath = fileUploadService.uploadFile(imageFile, "vehicle-types");
+                vehicleType.setImage(imagePath);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to upload image: " + e.getMessage());
+            }
+        }
 
         VehicleType savedVehicleType = vehicleTypeRepository.save(vehicleType);
         return mapToResponseDTO(savedVehicleType);

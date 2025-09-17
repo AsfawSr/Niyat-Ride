@@ -1,6 +1,7 @@
 package com.niyat.ride.features.admin.vehicle_type_management.controllers;
 
 import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeRequestDTO;
+import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeCreateRequestDTO;
 import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeResponseDTO;
 import com.niyat.ride.features.admin.vehicle_type_management.dtos.VehicleTypeStatusDTO;
 import com.niyat.ride.features.admin.vehicle_type_management.services.VehicleTypeService;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
@@ -50,10 +52,11 @@ public class VehicleTypeController {
     }
 
     @PostMapping
-    @Operation(summary = "Create new vehicle type with pricing")
+    @Operation(summary = "Create new vehicle type with pricing and image upload")
     public ResponseEntity<ApiResponse<VehicleTypeResponseDTO>> createVehicleType(
-            @Valid @RequestBody VehicleTypeRequestDTO request) {
-        VehicleTypeResponseDTO vehicleType = vehicleTypeService.createVehicleType(request);
+            @Valid @ModelAttribute VehicleTypeCreateRequestDTO request,
+            @RequestParam(value = "image", required = false) MultipartFile imageFile) {
+        VehicleTypeResponseDTO vehicleType = vehicleTypeService.createVehicleTypeWithImage(request, imageFile);
         return ResponseEntity.created(URI.create("/api/admin/vehicle-types/" + vehicleType.getId()))
                 .body(ApiResponse.success(vehicleType));
     }
