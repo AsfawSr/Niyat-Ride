@@ -1,0 +1,25 @@
+@reference "tailwindcss"
+.topbar-header {
+  @apply h-14 border-b border-gray-300 px-18 flex items-center justify-end sticky top-0 -mt-2 bg-gray-200 dark:bg-gray-900;
+}
+
+.topbar-notification-btn {
+  @apply p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-800 transition-colors mr-4;
+}
+
+.topbar-user-btn {
+  @apply p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-800 transition-colors;
+}
+
+.topbar-dropdown {
+  @apply absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-50;
+}
+
+.topbar-dropdown-link {
+  @apply block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700;
+}
+
+/* Divider */
+.topbar-divider {
+  @apply border-t border-gray-200 dark:border-gray-700;
+}

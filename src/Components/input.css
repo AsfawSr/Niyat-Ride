@@ -1,0 +1,38 @@
+@reference "tailwindcss";
+
+.input-container {
+  @apply flex flex-col w-full mt-3;
+}
+.input-label {
+  @apply text-[22px] font-medium mb-2;
+}
+.input-label-error {
+  @apply text-red-500;
+}
+
+.input-wrapper {
+  @apply flex items-center overflow-hidden rounded-[10px] bg-[#dfdfdf];
+}
+.input-wrapper-error {
+  @apply border border-red-500 bg-red-100;
+}
+
+.input-icon {
+  @apply flex items-center justify-center;
+}
+.input-icon-domain {
+  @apply w-1/5 text-[20px] text-gray-300;
+}
+.input-icon-default {
+  @apply w-[12.7%] bg-black h-full;
+}
+
+.input-field {
+  @apply flex-1 border-none outline-none bg-[#dfdfdf] text-gray-800 
+         text-[20px] font-medium px-4 py-4 placeholder-gray-500;
+}
+
+.input-toggle {
+  @apply flex items-center justify-center pr-3 cursor-pointer text-black 
+         text-[18px] hover:text-gray-700 bg-[#dfdfdf];
+}
