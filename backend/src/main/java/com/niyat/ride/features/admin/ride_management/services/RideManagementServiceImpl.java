@@ -35,6 +35,15 @@ public class RideManagementServiceImpl implements RideManagementService {
                                            LocalDateTime fromDate, LocalDateTime toDate,
                                            BigDecimal minAmount, BigDecimal maxAmount) {
         Pageable pageable = PaginationUtil.createPageable(page, size, sortBy, sortDirection);
+        
+        // If no filters are applied, use the simple query
+        if (status == null && driverId == null && customerId == null && 
+            fromDate == null && toDate == null && minAmount == null && maxAmount == null) {
+            Page<RideRequest> ridesPage = rideManagementRepository.findAllRides(pageable);
+            return ridesPage.map(this::mapToResponseDTO);
+        }
+        
+        // Otherwise use filtered query
         Page<RideRequest> ridesPage = rideManagementRepository.findWithFilters(
                 status, driverId, customerId, fromDate, toDate, minAmount, maxAmount, pageable);
         

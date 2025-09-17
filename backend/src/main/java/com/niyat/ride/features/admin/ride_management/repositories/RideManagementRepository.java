@@ -17,14 +17,16 @@ import java.util.List;
 @Repository
 public interface RideManagementRepository extends JpaRepository<RideRequest, Long>, JpaSpecificationExecutor<RideRequest> {
     
+    // Simple method to get all rides without complex filtering
+    @Query("SELECT r FROM RideRequest r ORDER BY r.requestedAt DESC")
+    Page<RideRequest> findAllRides(Pageable pageable);
+    
     @Query("SELECT r FROM RideRequest r WHERE " +
-           "r.status = COALESCE(:status, r.status) AND " +
-           "r.driverId = COALESCE(:driverId, r.driverId) AND " +
-           "r.passengerId = COALESCE(:customerId, r.passengerId) AND " +
-           "r.requestedAt >= COALESCE(:fromDate, r.requestedAt) AND " +
-           "r.requestedAt <= COALESCE(:toDate, r.requestedAt) AND " +
-           "r.finalCost >= COALESCE(:minAmount, r.finalCost) AND " +
-           "r.finalCost <= COALESCE(:maxAmount, r.finalCost)")
+           "(:status IS NULL OR r.status = :status) AND " +
+           "(:driverId IS NULL OR r.driverId = :driverId) AND " +
+           "(:customerId IS NULL OR r.passengerId = :customerId) AND " +
+           "(:fromDate IS NULL OR r.requestedAt >= :fromDate) AND " +
+           "(:toDate IS NULL OR r.requestedAt <= :toDate)")
     Page<RideRequest> findWithFilters(@Param("status") RideStatus status,
                                      @Param("driverId") Long driverId,
                                      @Param("customerId") Long customerId,

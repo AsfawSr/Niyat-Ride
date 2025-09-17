@@ -2,6 +2,7 @@ package com.niyat.ride.features.dispatcher.ride_creation.controllers;
 
 import com.niyat.ride.features.dispatcher.ride_creation.dtos.DispatcherRideRequestDTO;
 import com.niyat.ride.features.dispatcher.ride_creation.dtos.DispatcherRideResponseDTO;
+import com.niyat.ride.features.dispatcher.ride_creation.dtos.AssignDriverRequestDTO;
 import com.niyat.ride.features.dispatcher.ride_creation.services.DispatcherRideService;
 import com.niyat.ride.shared.utils.PaginationUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,9 +38,9 @@ public class DispatcherRideController {
     @Operation(summary = "Assign a driver to an existing ride")
     public ResponseEntity<DispatcherRideResponseDTO> assignDriverToRide(
             @PathVariable Long rideId,
-            @RequestParam Long driverId) {
+            @Valid @RequestBody AssignDriverRequestDTO request) {
         
-        DispatcherRideResponseDTO ride = dispatcherRideService.assignDriverToRide(rideId, driverId);
+        DispatcherRideResponseDTO ride = dispatcherRideService.assignDriverToRide(rideId, request.getDriverId());
         return ResponseEntity.ok(ride);
     }
 

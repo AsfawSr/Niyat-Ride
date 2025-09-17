@@ -88,22 +88,21 @@ public class CustomerOrchestrationServiceImpl implements CustomerOrchestrationSe
     }
     
     @Override
+    public Customer findCustomerById(Long customerId) {
+        return customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + customerId));
+    }
+    
+    @Override
     public void validateCustomerInfo(CustomerInfoDTO customerInfo) {
-        if (customerInfo == null) {
-            throw new IllegalArgumentException("Customer information is required");
-        }
-        
-        // Validate phone number format
-        if (!PhoneNumberUtil.isValidEthiopianPhoneNumber(customerInfo.getPhoneNumber())) {
-            throw new IllegalArgumentException("Invalid Ethiopian phone number format");
-        }
-        
-        // Basic validation for customer names (always required now since we auto-detect new vs existing)
         if (customerInfo.getFirstName() == null || customerInfo.getFirstName().trim().isEmpty()) {
-            throw new IllegalArgumentException("First name is required");
+            throw new IllegalArgumentException("Customer first name is required");
         }
         if (customerInfo.getLastName() == null || customerInfo.getLastName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Last name is required");
+            throw new IllegalArgumentException("Customer last name is required");
+        }
+        if (customerInfo.getPhoneNumber() == null || customerInfo.getPhoneNumber().trim().isEmpty()) {
+            throw new IllegalArgumentException("Customer phone number is required");
         }
     }
 }

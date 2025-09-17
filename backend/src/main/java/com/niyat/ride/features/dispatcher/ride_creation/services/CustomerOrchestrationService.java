@@ -30,6 +30,15 @@ public interface CustomerOrchestrationService {
     Customer createMinimalCustomer(CustomerInfoDTO customerInfo);
     
     /**
+     * Find existing customer by ID
+     * 
+     * @param customerId Customer ID
+     * @return Customer if found
+     * @throws RuntimeException if customer not found
+     */
+    Customer findCustomerById(Long customerId);
+    
+    /**
      * Validate customer information completeness
      * 
      * @param customerInfo Customer information to validate

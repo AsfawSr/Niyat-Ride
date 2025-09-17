@@ -13,8 +13,10 @@ import com.niyat.ride.ride.repositories.RideRequestRepository;
 import com.niyat.ride.features.admin.vehicle_type_management.repositories.VehicleTypeRepository;
 import com.niyat.ride.shared.dtos.NearbyDriverDTO;
 import com.niyat.ride.shared.services.DriverDiscoveryService;
+import com.niyat.ride.shared.services.RideCostCalculationService;
 import com.niyat.ride.shared.services.PriceCalculatorService;
 import com.niyat.ride.shared.utils.PaginationUtil;
+import com.niyat.ride.shared.utils.DistanceCalculationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,6 +39,7 @@ public class DispatcherRideServiceImpl implements DispatcherRideService {
     private final PriceCalculatorService priceCalculatorService;
     private final CustomerOrchestrationService customerOrchestrationService;
     private final LocationValidationService locationValidationService;
+    private final RideCostCalculationService rideCostCalculationService;
     private final DriverDiscoveryService driverDiscoveryService;
     private final BasePriceService basePriceService;
 
@@ -54,14 +57,21 @@ public class DispatcherRideServiceImpl implements DispatcherRideService {
 
         // Calculate distance if not provided
         Double distance = request.getEstimatedDistance();
-        if (distance == null) {
-            distance = locationValidationService.calculateDistance(
+        if (distance == null || distance <= 0) {
+            distance = DistanceCalculationUtil.calculateDistance(
                     request.getPickupLocation().getLatitude(),
                     request.getPickupLocation().getLongitude(),
                     request.getDropoffLocation().getLatitude(),
                     request.getDropoffLocation().getLongitude()
             );
+            log.info("Calculated distance for ride: {} km", distance);
         }
+        
+        // Calculate estimated cost and final cost
+        BigDecimal estimatedCost = rideCostCalculationService.calculateEstimatedCost(distance, request.getVehicleTypePreference());
+        BigDecimal finalCost = rideCostCalculationService.calculateFinalCost(distance, request.getVehicleTypePreference());
+        
+        log.info("Calculated costs - Estimated: {} ETB, Final: {} ETB", estimatedCost, finalCost);
 
         // Create ride request (without pricing - pricing happens at driver assignment)
         RideRequest rideRequest = new RideRequest();
@@ -81,6 +91,8 @@ public class DispatcherRideServiceImpl implements DispatcherRideService {
         
         rideRequest.setDistanceKm(distance);
         rideRequest.setEstimatedDurationMin(request.getEstimatedDuration());
+        rideRequest.setEstimatedCost(estimatedCost);
+        rideRequest.setFinalCost(finalCost);
         rideRequest.setStatus(RideStatus.REQUESTED);
         rideRequest.setNotes(request.getNotes());
         rideRequest.setRequestedAt(LocalDateTime.now());
@@ -134,8 +146,8 @@ public class DispatcherRideServiceImpl implements DispatcherRideService {
         RideRequest updatedRide = rideRequestRepository.save(ride);
         log.info("Driver assigned successfully. Total price: {}", totalPrice);
         
-        Customer customer = customerOrchestrationService.findCustomerByPhoneNumber(
-                ride.getPassengerId().toString()); // This needs to be fixed - should get customer by ID
+        // Get customer by ID from the repository
+        Customer customer = customerOrchestrationService.findCustomerById(ride.getPassengerId());
         
         return mapToResponseDTO(updatedRide, customer, List.of());
     }
