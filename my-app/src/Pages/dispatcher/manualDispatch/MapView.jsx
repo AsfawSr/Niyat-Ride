@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import SmartMapView from "./SmartMapView";
 import MapClickSetter from "./MapClickSetter";
-import { defaultIcon } from "./constants";
+import { carIcon, defaultIcon } from "./constants";
 export default function MapView({
   pickupLocation,
   dropoffLocation,
@@ -37,9 +37,24 @@ export default function MapView({
           )}
 
           {drivers.map((d) => (
-            <Marker key={d.id} position={d.location} icon={defaultIcon}>
+            <Marker
+              key={d.driverId}
+              position={[d.currentLatitude, d.currentLongitude]}
+              icon={carIcon}
+            >
               <Popup>
-                {d.name} | {d.status}
+                <div className="text-sm">
+                  <p className="font-semibold">
+                    {d.firstName} {d.lastName}
+                  </p>
+                  <p>Status: {d.status}</p>
+                  <p>
+                    Vehicle: {d.vehicle.vehicleModel} ({d.vehicle.color})
+                  </p>
+                  <p>Plate: {d.vehicle.plateNumber}</p>
+                  <p>Rating: ⭐ {d.rating}</p>
+                  <p>ETA: {d.estimatedArrivalMinutes} mins</p>
+                </div>
               </Popup>
             </Marker>
           ))}

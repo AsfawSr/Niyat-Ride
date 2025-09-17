@@ -14,10 +14,10 @@ export const fetchPassengers = createAsyncThunk(
         page: payload.page || 1,
         size: payload.limit || 10,
       };
-      const response = await api.get("/api/passenger/passengers", { params });
+      const response = await api.get("/api/admin/customers", { query:params });
       return {
         type: "list",
-        data: response.data.data.passengers || [],
+        data: response.data.data.content || [],
         totalPages: response.data.data.totalPages || 1,
       };
     } catch (error) {

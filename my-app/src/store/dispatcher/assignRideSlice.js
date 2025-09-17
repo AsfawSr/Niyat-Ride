@@ -7,7 +7,7 @@ export const assignRide = createAsyncThunk(
   async ({ payload }, { rejectWithValue }) => {
     try {
       const url = `/api/dispatcher/rides/${payload.rideId}/assign-driver`;
-      const response = await api.post(url, payload.driverId);
+      const response = await api.post(url, payload);
       return response.data;
     } catch (error) {
       return rejectWithValue(

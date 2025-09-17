@@ -34,9 +34,10 @@ const requestRideSLice = createSlice({
 });
 export const requestRide = createAsyncThunk(
   "ride/requestRide",
-  async ({ payload }, { rejectWithValue }) => {
+  async ({ data }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/api/dispatcher/rides", payload, {});
+      const response = await api.post("/api/dispatcher/rides", data);
+      console.log(response)
       return response.data;
     } catch (error) {
       return rejectWithValue(

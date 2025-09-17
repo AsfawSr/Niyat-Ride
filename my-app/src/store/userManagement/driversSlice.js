@@ -19,12 +19,12 @@ export const fetchDrivers = createAsyncThunk(
         size: payload.limit,
       };
 
-      const response = await api.get("/api/driver/drivers", { params });
+      const response = await api.get("/api/admin/drivers", {query: params });
       console.log(response);
 
       return {
         type: "list",
-        data: response.data.data.drivers || [],
+        data: response.data.data.content || [],
         totalPages: response.data.data.totalPages || 1,
       };
     } catch (error) {

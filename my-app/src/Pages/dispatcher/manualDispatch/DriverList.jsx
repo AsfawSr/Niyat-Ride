@@ -2,6 +2,7 @@ export default function DriverList({ formData, drivers, setFormData }) {
   return (
     <>
       <h2 className="text-lg font-semibold mt-6 mb-2">Available Drivers</h2>
+
       {/* Dropdown */}
       <div className="mb-4">
         <label className="block text-sm text-gray-700 mb-1">
@@ -10,53 +11,45 @@ export default function DriverList({ formData, drivers, setFormData }) {
         <select
           name="selectedDriverId"
           className="w-full border rounded px-3 py-2"
-          value={formData.driverId ?? ""}
+          value={formData.selectedDriverId ?? ""}
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
-              selectedDriverId: e.target.value,
+              selectedDriverId: Number(e.target.value), // convert to number if driverId is numeric
             }))
           }
         >
           <option value="">-- Select a driver --</option>
           {drivers?.map((d) => (
             <option key={d.driverId} value={d.driverId}>
-              {d.driverName} ({d.vehicleTypeName}) -{" "}
-              {formData.pickupAddress ? d.distance.toFixed(2) : "-"}
-              {formData.pickupAddress && d.id === closestDriverId
-                ? " (Closest)"
-                : ""}
+              {d.firstName} {d.lastName} ({d.vehicle.vehicleType}) -{" "}
+              {formData.pickupAddress ? d.distanceKm.toFixed(2) : "-"} km
             </option>
           ))}
         </select>
       </div>
 
       {/* Driver List */}
-      <ul className="space-y-2 max-h-48 overflow-y-auto">
-        {drivers?.map((v) => (
+      {/* <ul className="space-y-2 max-h-48 overflow-y-auto">
+        {drivers?.map((d) => (
           <li
-            key={v.id}
-            className={`border p-2 rounded flex justify-between items-center ${
-              formData.pickupAddress && v.id === closestDriverId
-                ? "border-green-500 bg-green-50"
-                : ""
-            }`}
+            key={d.driverId}
+            className="border p-2 rounded flex justify-between items-center"
           >
             <div>
               <p className="font-semibold">
-                {v.driverName}{" "}
-                {formData.pickupAddress && v.driverId === closestDriverId && (
-                  <span className="text-green-600 text-xs font-medium">
-                    (Closest)
-                  </span>
-                )}
+                {d.firstName} {d.lastName}
               </p>
               <p className="text-sm">
-                {v.vehicleTypeName} | {v.status}
+                {d.vehicle.vehicleModel} ({d.vehicle.vehicleType}) | {d.status}
               </p>
               <p className="text-xs text-gray-500">
-                Distance: {formData.pickupAddress ? v.distance.toFixed(2) : "-"}
-                km
+                Distance:{" "}
+                {formData.pickupAddress ? d.distanceKm.toFixed(2) : "-"} km •
+                ETA: {d.estimatedArrivalMinutes} mins
+              </p>
+              <p className="text-xs text-gray-400">
+                Plate: {d.vehicle.plateNumber}
               </p>
             </div>
             <button
@@ -64,7 +57,7 @@ export default function DriverList({ formData, drivers, setFormData }) {
               onClick={() =>
                 setFormData((prev) => ({
                   ...prev,
-                  selectedDriverId: v.driverId,
+                  selectedDriverId: d.driverId,
                 }))
               }
             >
@@ -72,7 +65,7 @@ export default function DriverList({ formData, drivers, setFormData }) {
             </button>
           </li>
         ))}
-      </ul>
+      </ul> */}
     </>
   );
 }

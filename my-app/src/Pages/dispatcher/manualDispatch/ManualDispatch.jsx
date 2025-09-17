@@ -106,7 +106,6 @@ export default function ManualDispatch() {
     const lat = parseFloat(item.lat);
     const lng = parseFloat(item.lon);
     const address = item.display_name;
-
     if (type === "pickup") {
       setPickupLocation({ lat, lng });
       setFormData((prev) => ({ ...prev, pickupAddress: address }));
@@ -129,11 +128,12 @@ export default function ManualDispatch() {
     }
   }, []);
   const handleRideRequest = () => {
-    const payload = {
+    const data = {
       dispatcherId: userId,
       customerInfo: {
-        name: `${formData.firstName} ${formData.lastName}`,
-        phone: formData.userPhone,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phoneNumber: formData.userPhone,
       },
       pickupLocation: {
         latitude: pickupLocation.lat,
@@ -146,17 +146,18 @@ export default function ManualDispatch() {
         longitude: dropoffLocation.lng,
         address: formData.dropoffAddress,
       },
-      vehicleTypePreference: formData.vehicleTypeId || undefined,
+      // vehicleTypePreference: formData.vehicleTypeId || undefined,
       notes: formData.passengerNotes || undefined,
     };
-    dispatch(requestRide({ payload }));
+    dispatch(requestRide({ data }));
   };
   const handleAssignRide = () => {
-    const payload = {
+    const data = {
       driverId: formData.selectedDriverId,
       rideId: rideId,
     };
-    dispatch(assignRide({ payload }));
+    dispatch(assignRide({ data }));
+    consol;
   };
   const mapCenter = useMemo(
     () => pickupLocation || dropoffLocation || DEFAULT_CENTER,

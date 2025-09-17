@@ -66,8 +66,7 @@ const UserTable = ({ users, onDeleteSuccess, onUpdateSuccess }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [editUser, setEditUser] = useState(null);
   return (
-    <div className="space-y-4 bg-red-500">
-      <p>hi</p>
+    <div className="space-y-4">
       <div className="overflow-hidden rounded-lg border border-gray-300">
         <table className="w-full text-left border-collapse">
           <thead>
