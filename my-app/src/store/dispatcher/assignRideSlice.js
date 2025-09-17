@@ -4,14 +4,17 @@ import api from "../../api/api";
 // Async thunk must be declared first
 export const assignRide = createAsyncThunk(
   "ride/assignRide",
-  async ({ payload }, { rejectWithValue }) => {
+  async ({ data }, { rejectWithValue }) => {
     try {
-      const url = `/api/dispatcher/rides/${payload.rideId}/assign-driver`;
-      const response = await api.post(url, payload);
+      const url = `/api/dispatcher/rides/${data.rideId}/assign-driver`;
+      const response = await api.patch(url, {
+        ...data
+      });
+      console.log(response)
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to request ride"
+        error.response?.data?.message || "Failed to assign ride"
       );
     }
   }

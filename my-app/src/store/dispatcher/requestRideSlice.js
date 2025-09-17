@@ -23,7 +23,7 @@ const requestRideSLice = createSlice({
       .addCase(requestRide.fulfilled, (state, action) => {
         state.loading = false;
         state.ride = action.payload;
-        state.rideId = action.payload?.Id || null;
+        state.rideId = action.payload?.id || null;
         state.nearDrivers = action.payload?.nearbyDrivers || [];
       })
       .addCase(requestRide.rejected, (state, action) => {

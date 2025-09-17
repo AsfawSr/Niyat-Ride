@@ -66,8 +66,8 @@ const UserTable = ({ users, onDeleteSuccess, onUpdateSuccess }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [editUser, setEditUser] = useState(null);
   return (
-    <div className="space-y-4">
-      <div className="overflow-hidden rounded-lg border border-gray-300">
+    <div className="">
+      <div className=" overflow-hidden rounded-lg border border-gray-300">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#dfdfdf] dark:bg-gray-700 border-b border-gray-400 dark:border-gray-800">
@@ -95,7 +95,7 @@ const UserTable = ({ users, onDeleteSuccess, onUpdateSuccess }) => {
       </div>
       <ViewUserModal
         user={selectedUser}
-        onCancel={() => setSelectedUser(null)}
+        onClose={() => setSelectedUser(null)}
       />
       {editUser && (
         <EditUserModal

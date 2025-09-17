@@ -48,16 +48,16 @@ export default function ManualDispatch() {
   const [dropoffSuggestions, setDropoffSuggestions] = useState([]);
   const [activeField, setActiveField] = useState("pickup");
   useEffect(() => {
-    if (rideId) {
-      alert("request success");
-      // reset form here
-      setFormData(initialState);
-      setPickupLocation(null);
-      setDropoffLocation(null);
-      setPickupSuggestions([]);
-      setDropoffSuggestions([]);
-      setActiveField("pickup");
-    }
+    console.log(formData.selectedDriverId);
+    // if (rideId) {
+    //   // reset form here
+    //   setFormData(initialState);
+    //   setPickupLocation(null);
+    //   setDropoffLocation(null);
+    //   setPickupSuggestions([]);
+    //   setDropoffSuggestions([]);
+    //   setActiveField("pickup");
+    // }
     dispatch(fetchVehicles());
   }, [dispatch, rideId, assignStatus]);
   const pickupDebounceRef = useRef(null);

@@ -80,7 +80,7 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
             <div className="flex flex-col items-center mb-4">
               <img
                 src={previewImage}
-                alt={localUser.name}
+                alt={localUser.firstName}
                 className="w-24 h-24 rounded-full mb-2 object-cover border border-gray-300 dark:border-gray-700"
               />
               <button
@@ -119,7 +119,7 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
                 type="number"
                 id="phone"
                 name="phone"
-                value={localUser.phone}
+                value={localUser.phoneNumber}
                 onChange={handleChange}
                 placeholder="Enter phone number"
               />

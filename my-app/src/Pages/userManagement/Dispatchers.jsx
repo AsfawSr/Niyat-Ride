@@ -17,7 +17,6 @@ const Dispatchers = () => {
   const { dispatchers, status, totalPages } = useSelector(
     (state) => state.dispatchers
   );
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");

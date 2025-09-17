@@ -5,7 +5,7 @@ import "./UserRow.css"; // 👈 import styles
 
 const UserRow = ({ user, onEdit, onView, onDeleteSuccess }) => {
   const [loading, setLoading] = useState(false);
-
+  console.log(user);
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     setLoading(true);

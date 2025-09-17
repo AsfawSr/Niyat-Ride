@@ -15,7 +15,7 @@ export default function DriverList({ formData, drivers, setFormData }) {
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
-              selectedDriverId: Number(e.target.value), // convert to number if driverId is numeric
+              selectedDriverId: e.target.value, // convert to number if driverId is numeric
             }))
           }
         >
