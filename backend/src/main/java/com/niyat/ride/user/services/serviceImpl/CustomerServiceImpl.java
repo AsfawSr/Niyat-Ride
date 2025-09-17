@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
@@ -23,6 +22,13 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final OtpService otpService;
+
+    private String normalizePhoneNumber(String phoneNumber) {
+        if (!phoneNumber.startsWith("+251")) {
+            return "+251" + phoneNumber;
+        }
+        return phoneNumber;
+    }
 
     @Override
     public void requestOtp(String phoneNumber) {
@@ -32,14 +38,16 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerResponseDTO verifyOtp(String phoneNumber, String otp) {
-        if (!otpService.verifyOtp(phoneNumber, otp)) {
-            throw new RuntimeException("Invalid OTP");
+        String normalizedPhone = normalizePhoneNumber(phoneNumber);
+
+        if (!otpService.verifyOtp(normalizedPhone, otp)) {
+            throw new RuntimeException("Invalid or expired OTP");
         }
 
-        Customer customer = customerRepository.findByPhoneNumber(phoneNumber)
-                .orElseGet(() -> createNewCustomer(phoneNumber));
+        Customer customer = customerRepository.findByPhoneNumber(normalizedPhone)
+                .orElseGet(() -> createNewCustomer(normalizedPhone));
 
-        otpService.clearOtp(phoneNumber);
+        otpService.clearOtp(normalizedPhone);
         return customerMapper.toResponseDTO(customer);
     }
 

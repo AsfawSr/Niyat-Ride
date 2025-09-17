@@ -29,43 +29,54 @@ public class DriverServiceImpl implements DriverService {
     // temporary signup data store before OTP is verified
     private final Map<String, DriverSignupDTO> tempSignupStorage = new ConcurrentHashMap<>();
 
+    private String normalizePhoneNumber(String phoneNumber) {
+        if (!phoneNumber.startsWith("+251")) {
+            return "+251" + phoneNumber;
+        }
+        return phoneNumber;
+    }
+
     @Override
     public void requestOtp(String phoneNumber, DriverSignupDTO signupDTO, boolean isSignup) {
+        String normalizedPhone = normalizePhoneNumber(phoneNumber);
+
         if (isSignup) {
-            driverRepository.findByPhoneNumber(phoneNumber)
+            driverRepository.findByPhoneNumber(normalizedPhone)
                     .ifPresent(d -> {
-                        throw new RuntimeException("Driver with phone " + phoneNumber + " already exists");
+                        throw new RuntimeException("Driver with phone " + normalizedPhone + " already exists");
                     });
             driverRepository.findByLicenseNumber(signupDTO.getLicenseNumber())
                     .ifPresent(d -> {
                         throw new RuntimeException("Driver with license " + d.getLicenseNumber() + " already exists");
                     });
-            tempSignupStorage.put(phoneNumber, signupDTO);
+            tempSignupStorage.put(normalizedPhone, signupDTO);
         } else {
-            driverRepository.findByPhoneNumber(phoneNumber)
-                    .orElseThrow(() -> new RuntimeException("Driver not found with phone " + phoneNumber));
+            driverRepository.findByPhoneNumber(normalizedPhone)
+                    .orElseThrow(() -> new RuntimeException("Driver not found with phone " + normalizedPhone));
         }
-        otpService.sendOtp(phoneNumber);
+        otpService.sendOtp(normalizedPhone);
     }
 
     @Override
     @Transactional
     public DriverResponseDTO verifyOtp(String phoneNumber, String otp, boolean isSignup) {
-        if (!otpService.verifyOtp(phoneNumber, otp)) {
+        String normalizedPhone = normalizePhoneNumber(phoneNumber);
+
+        if (!otpService.verifyOtp(normalizedPhone, otp)) {
             throw new RuntimeException("Invalid OTP");
         }
 
         DriverResponseDTO response;
         if (isSignup) {
-            DriverSignupDTO signupDTO = tempSignupStorage.get(phoneNumber);
+            DriverSignupDTO signupDTO = tempSignupStorage.get(normalizedPhone);
             if (signupDTO == null) {
-                throw new RuntimeException("No signup data found for phone " + phoneNumber);
+                throw new RuntimeException("No signup data found for phone " + normalizedPhone);
             }
 
             Driver driver = driverMapper.toEntity(signupDTO);
             driver.setFirstName(signupDTO.getFirstName());
             driver.setLastName(signupDTO.getLastName());
-            driver.setPhoneNumber(phoneNumber);
+            driver.setPhoneNumber(normalizedPhone);
             driver.setLicenseNumber(signupDTO.getLicenseNumber());
             driver.setRole(Role.DRIVER);
             driver.setStatus(AccountStatus.ACTIVE);
@@ -77,14 +88,14 @@ public class DriverServiceImpl implements DriverService {
             Driver savedDriver = driverRepository.save(driver);
             response = driverMapper.toResponseDTO(savedDriver);
 
-            tempSignupStorage.remove(phoneNumber);
+            tempSignupStorage.remove(normalizedPhone);
         } else {
-            Driver driver = driverRepository.findByPhoneNumber(phoneNumber)
-                    .orElseThrow(() -> new RuntimeException("Driver not found with phone " + phoneNumber));
+            Driver driver = driverRepository.findByPhoneNumber(normalizedPhone)
+                    .orElseThrow(() -> new RuntimeException("Driver not found with phone " + normalizedPhone));
             response = driverMapper.toResponseDTO(driver);
         }
 
-        otpService.clearOtp(phoneNumber);
+        otpService.clearOtp(normalizedPhone);
         return response;
     }
 
