@@ -11,4 +11,9 @@ import lombok.NoArgsConstructor;
 public class RideResponseDTO {
     private Long rideId;
     private String status;
+    private String driverFirstName;
+    private String driverLastName;
+    private Long driverId;
+    private String phoneNUmber;
+
 }

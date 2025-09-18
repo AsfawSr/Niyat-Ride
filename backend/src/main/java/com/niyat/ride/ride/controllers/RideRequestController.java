@@ -5,6 +5,8 @@ import com.niyat.ride.ride.dtos.*;
 import com.niyat.ride.ride.models.RideRequest;
 import com.niyat.ride.ride.repositories.RideRequestRepository;
 import com.niyat.ride.ride.services.RideRequestService;
+import com.niyat.ride.user.models.Driver;
+import com.niyat.ride.user.repositories.DriverRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,43 +18,32 @@ public class RideRequestController {
 
     private final RideRequestService rideService;
     private final RideRequestRepository rideRequestRepository;
+    private final DriverRepository driverRepository;
 
-    // request a ride
+
+    // request a ride → automatically assign nearest driver
     @PostMapping
     public ResponseEntity<RideResponseDTO> requestRide(@RequestBody RideRequestDTO dto,
                                                        @RequestParam Long passengerId) {
         RideRequest ride = rideService.createRideRequest(dto, passengerId);
-        return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
+        Driver driver = driverRepository.getReferenceById(ride.getDriverId());
+        return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name(),driver.getFirstName(),driver.getLastName(),ride.getDriverId(),driver.getPhoneNumber()));
     }
 
-    // driver response (ACCEPT/REJECT)
+    // passenger ride CONFIRM or CANCEL
     @PostMapping("/{rideId}/response")
-    public ResponseEntity<RideResponseDTO> respondToRide(@PathVariable Long rideId,
-                                                         @RequestBody RideActionDTO actionDTO,
-                                                         @RequestParam Long driverId) {
-        RideRequest ride;
-        if ("ACCEPT".equalsIgnoreCase(actionDTO.getAction())) {
-            ride = rideService.acceptRide(rideId, driverId);
-        } else if ("REJECT".equalsIgnoreCase(actionDTO.getAction())) {
-            ride = rideService.rejectRide(rideId);
-        } else {
-            throw new RuntimeException("Invalid action");
-        }
-        return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
-    }
-    // customer ride CONFIRM or CANCEL
-    @PostMapping("/{rideId}/response1")
     public ResponseEntity<RideResponseDTO> confirmRide(@PathVariable Long rideId,
                                                        @RequestBody RideActionDTO confirmDto) {
         RideRequest ride = rideRequestRepository.findById(rideId).orElseThrow();
         if ("CONFIRM".equalsIgnoreCase(confirmDto.getAction())) {
             ride.setStatus(RideStatus.CONFIRMED);
         } else if ("CANCEL".equalsIgnoreCase(confirmDto.getAction())) {
-            ride = rideService.rejectRide(rideId);
+            ride = rideService.cancelTrip(rideId, "Passenger cancelled before starting");
         } else {
             throw new RuntimeException("Invalid action");
         }
-        return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
+        rideRequestRepository.save(ride);
+        return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name(),null,null,null,null));
     }
 
     // trip management (START / CANCEL)
@@ -67,13 +58,13 @@ public class RideRequestController {
         } else {
             throw new RuntimeException("Invalid action");
         }
-        return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
+        return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name(),null,null,null,null));
     }
 
     // complete trip
     @PostMapping("/{rideId}/complete")
     public ResponseEntity<RideResponseDTO> completeTrip(@PathVariable Long rideId) {
         RideRequest ride = rideService.completeTrip(rideId);
-        return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name()));
+        return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name(),null,null,null,null));
     }
 }

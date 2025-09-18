@@ -4,6 +4,7 @@ import com.niyat.ride.ride.dtos.RideRequestDTO;
 import com.niyat.ride.ride.models.RideRequest;
 import com.niyat.ride.enums.RideStatus;
 import com.niyat.ride.ride.repositories.RideRequestRepository;
+import com.niyat.ride.ride.services.DriverLocationService;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -12,19 +13,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class RideRequestServiceImpl implements RideRequestService {
 
     private final RideRequestRepository rideRepository;
+    private final DriverLocationService driverLocationService;
     private final GeometryFactory geometryFactory = new GeometryFactory();
 
     @Override
+    @Transactional
     public RideRequest createRideRequest(RideRequestDTO dto, Long passengerId) {
         RideRequest ride = new RideRequest();
         ride.setPassengerId(passengerId);
-        ride.setVehicleTypeId(dto.getVehicleTypeId());
+//        ride.setVehicleTypeId(dto.getVehicleTypeId());
 
         // Set pickup & dropoff locations
         ride.setPickupLocation(geometryFactory.createPoint(new Coordinate(dto.getPickupLon(), dto.getPickupLat())));
@@ -45,48 +49,28 @@ public class RideRequestServiceImpl implements RideRequestService {
         ride.setDistanceKm(dto.getEstimatedDistanceKm());
         ride.setEstimatedDurationMin(dto.getEstimatedDurationMin());
 
+
         // Initial status
-        ride.setStatus(RideStatus.REQUESTED);
+        ride.setStatus(RideStatus.ACCEPTED);
         ride.setRequestedAt(LocalDateTime.now());
 
-        return rideRepository.save(ride);
-    }
+        // Automatic driver assignment
+        Set<String> nearbyDrivers = driverLocationService.findNearbyDrivers(dto.getPickupLat(), dto.getPickupLon(), 5.0); // 5 km radius
+        if (nearbyDrivers.isEmpty()) {
+            throw new RuntimeException("No nearby drivers available");
+        }
+        Long assignedDriverId = Long.parseLong(nearbyDrivers.iterator().next());
 
-    @Override
-    @Transactional
-    public RideRequest acceptRide(Long rideId, Long driverId) {
-        RideRequest ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
-        if (ride.getStatus() != RideStatus.REQUESTED)
-            throw new RuntimeException("Ride is not REQUESTED");
-
-        ride.setDriverId(driverId);
-        ride.setStatus(RideStatus.ACCEPTED);
-        ride.setAcceptedAt(LocalDateTime.now());
-        return rideRepository.save(ride);
-    }
-
-    @Override
-    @Transactional
-    public RideRequest rejectRide(Long rideId) {
-        RideRequest ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
-        if (ride.getStatus() != RideStatus.REQUESTED)
-            throw new RuntimeException("Ride is not REQUESTED");
-
-        ride.setStatus(RideStatus.CANCELLED);
-        ride.setCancelledAt(LocalDateTime.now());
-        ride.setCancellationReason("Driver rejected the ride");
+        ride.setDriverId(assignedDriverId);
         return rideRepository.save(ride);
     }
 
     @Override
     @Transactional
     public RideRequest startTrip(Long rideId) {
-        RideRequest ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
-        if (ride.getStatus() != RideStatus.ACCEPTED)
-            throw new RuntimeException("Ride is not ACCEPTED");
+        RideRequest ride = rideRepository.findById(rideId).orElseThrow(() -> new RuntimeException("Ride not found"));
+        if (ride.getStatus() != RideStatus.CONFIRMED)
+            throw new RuntimeException("Ride is not CONFIRMED");
 
         ride.setStatus(RideStatus.IN_PROGRESS);
         ride.setStartedAt(LocalDateTime.now());
@@ -96,8 +80,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     @Override
     @Transactional
     public RideRequest completeTrip(Long rideId) {
-        RideRequest ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
+        RideRequest ride = rideRepository.findById(rideId).orElseThrow(() -> new RuntimeException("Ride not found"));
         if (ride.getStatus() != RideStatus.IN_PROGRESS)
             throw new RuntimeException("Ride is not IN_PROGRESS");
 
@@ -109,8 +92,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     @Override
     @Transactional
     public RideRequest cancelTrip(Long rideId, String reason) {
-        RideRequest ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
+        RideRequest ride = rideRepository.findById(rideId).orElseThrow(() -> new RuntimeException("Ride not found"));
         if (ride.getStatus() == RideStatus.COMPLETED || ride.getStatus() == RideStatus.CANCELLED)
             throw new RuntimeException("Cannot cancel completed or cancelled ride");
 

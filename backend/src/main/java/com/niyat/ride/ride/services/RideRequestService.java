@@ -9,9 +9,6 @@ public interface RideRequestService {
 
     RideRequest createRideRequest(RideRequestDTO dto, Long passengerId);
 
-    RideRequest acceptRide(Long rideId, Long driverId);
-
-    RideRequest rejectRide(Long rideId);
 
     RideRequest startTrip(Long rideId);
 
