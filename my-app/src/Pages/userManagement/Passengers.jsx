@@ -78,7 +78,7 @@ const Passengers = () => {
             <UserTable
               users={passengers}
               onDeleteSuccess={handleDeletePassenger}
-              updateSuccess={handleUpdateSuccess}
+              onUpdateSuccess={handleUpdateSuccess}
             />
           )}
           <Pagination

@@ -44,7 +44,7 @@ const editUserSlice = createSlice({
 
 export const editUser = createAsyncThunk(
   "users/editUser",
-  async ({ formData, id, role }, { rejectWithValue }) => {
+  async ({ data, id, role }, { rejectWithValue }) => {
     console.log(role)
     try {
 const endpoint = endpoints[role];
@@ -53,10 +53,10 @@ const endpoint = endpoints[role];
       const url = `/api/admin/${endpoint}/${id}/status`;
 
       const res = await api.patch(url, {
-        status:formData.status
-      }, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+        status:data
+      }, 
+        // headers: { "Content-Type": "multipart/form-data" },
+      );
 
       return res.data;
     } catch (error) {

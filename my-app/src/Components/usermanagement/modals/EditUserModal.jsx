@@ -11,19 +11,14 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
   const dispatch = useDispatch();
   const { loading, error, success } = useSelector((state) => state.editUser);
 
-  if (!user) return null;
-
   const fileInputRef = useRef(null);
   const [localUser, setLocalUser] = useState(user);
   const [previewImage, setPreviewImage] = useState(user.avatar || "");
 
   // Reset Redux state when unmounting
-  useEffect(() => {
-    return () => {
-      dispatch(clearState());
-    };
-  }, [dispatch]);
+  useEffect(() => () => dispatch(clearState()), [dispatch]);
 
+  // Trigger success callback
   useEffect(() => {
     if (success) {
       onUpdateSuccess();
@@ -46,42 +41,33 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
 
   const handleImageClick = () => fileInputRef.current?.click();
 
-  const handleSave = async () => {
-    const roleLower = localUser.role.toLowerCase();
-    if (roleLower === "driver" || roleLower === "customer") {
-    } else {
-      const formData = new FormData();
+  const handleSave = () => {
+    const formData = new FormData();
 
+    if (localUser.role === "admin" || roleLower === "dispatcher") {
       Object.entries(localUser).forEach(([key, value]) => {
-        formData.append(
-          key,
-          value !== undefined && value !== null ? value : ""
-        );
+        formData.append(key, value ?? "");
       });
-
-      // Include avatar safely
-      if (fileInputRef.current && fileInputRef.current.files.length > 0) {
+      if (fileInputRef.current?.files.length > 0) {
         formData.append("avatar", fileInputRef.current.files[0]);
       }
-    }
-
-    try {
-      await dispatch(
+      dispatch(
+        editUser({ data: formData, id: localUser.id, role: localUser.role })
+      );
+    } else {
+      dispatch(
         editUser({
-          formData,
+          data: localUser.status,
           id: localUser.id,
           role: localUser.role,
         })
-      ).unwrap();
-    } catch (err) {
-      console.error("Update failed:", err);
+      );
     }
   };
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm flex justify-center items-center z-50">
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-96 relative shadow-lg dark:shadow-gray-700">
-        {/* Close Button */}
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
           onClick={onCancel}
@@ -134,9 +120,9 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
                 placeholder="Update last name"
               />
               <Input
-                type="number"
-                id="phone"
-                name="phone"
+                type="text"
+                id="phoneNumber"
+                name="phoneNumber"
                 value={localUser.phoneNumber || ""}
                 onChange={handleChange}
                 placeholder="Enter phone number"
@@ -151,17 +137,18 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
           onChange={handleChange}
           className="w-full border p-2 rounded mt-3"
         >
-          <option>Active</option>
-          <option>Inactive</option>
-          <option>Banned</option>
+          <option>ACTIVE</option>
+          <option>DEACTIVATED</option>
+          <option>DELETED</option>
         </select>
 
-        {/* Status Messages */}
         {loading && (
           <p className="text-blue-500 mt-2 text-center">Updating user...</p>
         )}
         {error && (
-          <p className="text-red-500 mt-2 text-center">Failed to update</p>
+          <p className="text-red-500 mt-2 text-center">
+            Failed to update: {JSON.stringify(error)}
+          </p>
         )}
         {success && (
           <p className="text-green-500 mt-2 text-center">
@@ -169,7 +156,6 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
           </p>
         )}
 
-        {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row justify-between mt-4 gap-2">
           <button
             onClick={handleSave}

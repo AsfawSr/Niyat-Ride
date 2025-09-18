@@ -17,6 +17,8 @@ const Admins = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [modal, setModal] = useState(false);
+
   useEffect(() => {
     dispatch(
       fetchAdmins({

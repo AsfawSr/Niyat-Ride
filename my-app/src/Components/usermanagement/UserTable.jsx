@@ -65,6 +65,10 @@ import EditUserModal from "./modals/EditUserModal";
 const UserTable = ({ users, onDeleteSuccess, onUpdateSuccess }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [editUser, setEditUser] = useState(null);
+  const handleUpdate = () => {
+    setEditUser(null);
+    onUpdateSuccess();
+  };
   return (
     <div className="">
       <div className=" overflow-hidden rounded-lg border border-gray-300">
@@ -101,7 +105,7 @@ const UserTable = ({ users, onDeleteSuccess, onUpdateSuccess }) => {
         <EditUserModal
           user={editUser}
           onCancel={() => setEditUser(null)}
-          onUpdateSuccess={onUpdateSuccess} // <-- update table after save
+          onUpdateSuccess={handleUpdate} // <-- update table after save
         />
       )}
     </div>
