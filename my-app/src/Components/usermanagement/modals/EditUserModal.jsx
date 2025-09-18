@@ -16,6 +16,7 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
   const fileInputRef = useRef(null);
   const [localUser, setLocalUser] = useState(user);
   const [previewImage, setPreviewImage] = useState(user.avatar || "");
+
   // Reset Redux state when unmounting
   useEffect(() => {
     return () => {
@@ -42,22 +43,39 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
       reader.readAsDataURL(file);
     }
   };
-  const handleImageClick = () => fileInputRef.current.click();
+
+  const handleImageClick = () => fileInputRef.current?.click();
+
   const handleSave = async () => {
-    const formData = new FormData();
-    Object.entries(localUser).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    if (fileInputRef.current.files[0]) {
-      formData.append("avatar", fileInputRef.current.files[0]);
+    const roleLower = localUser.role.toLowerCase();
+    if (roleLower === "driver" || roleLower === "customer") {
+    } else {
+      const formData = new FormData();
+
+      Object.entries(localUser).forEach(([key, value]) => {
+        formData.append(
+          key,
+          value !== undefined && value !== null ? value : ""
+        );
+      });
+
+      // Include avatar safely
+      if (fileInputRef.current && fileInputRef.current.files.length > 0) {
+        formData.append("avatar", fileInputRef.current.files[0]);
+      }
     }
-    await dispatch(
-      editUser({
-        formData,
-        id: localUser.id,
-        role: localUser.role,
-      })
-    ).unwrap();
+
+    try {
+      await dispatch(
+        editUser({
+          formData,
+          id: localUser.id,
+          role: localUser.role,
+        })
+      ).unwrap();
+    } catch (err) {
+      console.error("Update failed:", err);
+    }
   };
 
   return (
@@ -103,7 +121,7 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
                 id="firstName"
                 type="text"
                 name="firstName"
-                value={localUser.firstName}
+                value={localUser.firstName || ""}
                 onChange={handleChange}
                 placeholder="Update first name"
               />
@@ -111,7 +129,7 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
                 id="lastName"
                 type="text"
                 name="lastName"
-                value={localUser.lastName}
+                value={localUser.lastName || ""}
                 onChange={handleChange}
                 placeholder="Update last name"
               />
@@ -119,16 +137,17 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
                 type="number"
                 id="phone"
                 name="phone"
-                value={localUser.phoneNumber}
+                value={localUser.phoneNumber || ""}
                 onChange={handleChange}
                 placeholder="Enter phone number"
               />
             </div>
           </>
         )}
+
         <select
           name="status"
-          value={localUser.status}
+          value={localUser.status || ""}
           onChange={handleChange}
           className="w-full border p-2 rounded mt-3"
         >
@@ -142,7 +161,7 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
           <p className="text-blue-500 mt-2 text-center">Updating user...</p>
         )}
         {error && (
-          <p className="text-red-500 mt-2 text-center">failed to update</p>
+          <p className="text-red-500 mt-2 text-center">Failed to update</p>
         )}
         {success && (
           <p className="text-green-500 mt-2 text-center">

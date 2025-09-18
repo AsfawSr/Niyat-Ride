@@ -1,16 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/api";
+
 const endpoints = {
-  admin: "admins/updateAdmin/",
-  dispatcher: "dispatchers/updateDispatchers/",
-  driver: "drivers/updateDriver/",
-  passenger: "passengers/updatePassenger/",
+  admin: "admins",
+  dispatcher: "dispatchers",
+  DRIVER: "drivers",
+  CUSTOMER: "customers",
 };
+
 const initialState = {
   loading: false,
   error: null,
   success: false,
 };
+
 const editUserSlice = createSlice({
   name: "editUser",
   initialState,
@@ -26,7 +29,7 @@ const editUserSlice = createSlice({
         state.error = null;
         state.success = false;
       })
-      .addCase(editUser.fulfilled, (state, action) => {
+      .addCase(editUser.fulfilled, (state) => {
         state.loading = false;
         state.success = true;
         state.error = null;
@@ -38,20 +41,29 @@ const editUserSlice = createSlice({
       });
   },
 });
+
 export const editUser = createAsyncThunk(
   "users/editUser",
-  async ({ formdata, id, role }, { rejectWithValue }) => {
+  async ({ formData, id, role }, { rejectWithValue }) => {
+    console.log(role)
     try {
-      const url = endpoints[role] || "";
-      const res = await api.put(`api/${url}${id}`, formdata, {
+const endpoint = endpoints[role];
+      if (!endpoint) throw new Error(`Invalid role: ${role}`);
+
+      const url = `/api/admin/${endpoint}/${id}/status`;
+
+      const res = await api.patch(url, {
+        status:formData.status
+      }, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+
       return res.data;
     } catch (error) {
-      return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
-export const { clearState } = editUserSlice.actions;
 
+export const { clearState } = editUserSlice.actions;
 export default editUserSlice.reducer;

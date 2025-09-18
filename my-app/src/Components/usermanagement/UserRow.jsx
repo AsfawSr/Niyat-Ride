@@ -24,13 +24,13 @@ const UserRow = ({ user, onEdit, onView, onDeleteSuccess }) => {
       <td class="user-row-cell">
         <img
           src={user.profile || "/default-avatar.png"}
-          alt={user.name}
+          alt={user.firstName}
           class="user-avatar"
         />
       </td>
       <td class="user-row-cell">{user.id}</td>
-      <td class="user-row-cell">{user.name}</td>
-      <td class="user-row-cell">{user.phone}</td>
+      <td class="user-row-cell">{user.firstName}</td>
+      <td class="user-row-cell">{user.phoneNumber}</td>
       <td class="user-row-cell">{user.role}</td>
       <td class="user-row-cell">{user.status}</td>
       <td class="user-row-cell user-row-actions">
