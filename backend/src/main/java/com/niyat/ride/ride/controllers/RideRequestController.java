@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api/rides")
 @RequiredArgsConstructor
@@ -67,4 +69,17 @@ public class RideRequestController {
         RideRequest ride = rideService.completeTrip(rideId);
         return ResponseEntity.ok(new RideResponseDTO(ride.getId(), ride.getStatus().name(),null,null,null,null));
     }
+    // Fetch final cost for a ride
+    @GetMapping("/{rideId}/fare")
+    public ResponseEntity<BigDecimal> getFinalFare(@PathVariable Long rideId) {
+        RideRequest ride = rideRequestRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found"));
+
+        if (ride.getStatus() != RideStatus.COMPLETED) {
+            throw new RuntimeException("Ride is not completed yet");
+        }
+
+        return ResponseEntity.ok(ride.getFinalCost());
+    }
+
 }
