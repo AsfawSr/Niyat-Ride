@@ -26,8 +26,7 @@ public class DispatcherRideRequestDTO {
     
     private Long vehicleTypePreference; // Optional vehicle type preference
     
-    @Positive(message = "Estimated distance must be positive")
-    private Double estimatedDistance; // in km
+    private Double estimatedDistance; // in km - optional, will be calculated if not provided
     
     @Positive(message = "Estimated duration must be positive")
     private Integer estimatedDuration; // in minutes
