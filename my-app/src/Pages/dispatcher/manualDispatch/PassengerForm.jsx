@@ -119,7 +119,7 @@ export default function PassengerForm({
           </ul>
         )}
       </div>
-      {/* Vehicle Type */}
+      {/* Vehicle Type
       <div className="mb-3">
         <label className="block text-sm  mb-1">Vehicle Type</label>
         <select
@@ -135,7 +135,7 @@ export default function PassengerForm({
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
       {/* Passenger Notes */}
       <div className="mb-4">
         <label className="block text-sm  mb-1">Passenger Notes</label>

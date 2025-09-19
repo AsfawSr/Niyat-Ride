@@ -51,7 +51,7 @@ export function TopBar({ count, onSearch }) {
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
       <div>
-        <h1 className="text-2xl md:text-3xl text-gray-900 font-bold dark:text-white">
+        <h1 className="text-2xl md:text-3xl text-gray-200 font-bold dark:text-white">
           Ride Status Tracking
         </h1>
         <p className=" text-black dark:text-gray-300 text-sm">
@@ -82,12 +82,12 @@ export function ActionsMenu({ trip, onReassign, onCancel, onEmergency }) {
       >
         Reassign
       </button>
-      <button
+      {/* <button
         onClick={() => onCancel(trip)}
         className="rounded-xl bg-gray-700 hover:bg-gray-600 text-gray-100 px-3 py-1.5 text-sm shadow-sm"
       >
         Cancel
-      </button>
+      </button> */}
       <button
         onClick={() => onEmergency(trip)}
         className="rounded-xl bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 text-sm shadow-sm"

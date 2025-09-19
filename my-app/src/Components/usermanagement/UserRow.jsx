@@ -36,10 +36,10 @@ const UserRow = ({ user, onEdit, onView, onDeleteSuccess }) => {
       <td class="user-row-cell user-row-actions">
         <FaEye class="user-action view" onClick={() => onView(user)} />
         <FaEdit class="user-action edit" onClick={() => onEdit(user)} />
-        <FaTrash
+        {/* <FaTrash
           class={`user-action delete ${loading ? "user-action-loading" : ""}`}
           onClick={handleDelete}
-        />
+        /> */}
       </td>
     </tr>
   );
