@@ -35,8 +35,6 @@ async function parseJsonOrThrow(res) {
 
 /** Helper: map backend ride DTO -> normalized ride used by UI */
 function normalizeRide(dto = {}) {
-  // Backend fields: passengerName, driverName, requestedAt, completedAt, cancelledAt, finalCost, estimatedCost
-  // Old dummy fields: passenger, driver, date, fare, pickup, dropoff
   const id = dto.id || dto.rideId || dto._id || dto.uuid;
 
   const rawStatus = (
@@ -64,7 +62,6 @@ function normalizeRide(dto = {}) {
   const completedAt = dto.completedAt || dto.completed_at;
   const cancelledAt = dto.cancelledAt || dto.cancelled_at;
 
-  // Nice friendly date field (keeps old UI keys)
   const date =
     (requestedAt && requestedAt.split
       ? requestedAt.split("T")[0]
@@ -78,7 +75,6 @@ function normalizeRide(dto = {}) {
   const finalCost = dto.finalCost ?? dto.final_cost ?? dto.total ?? null;
   const estimatedCost = dto.estimatedCost ?? dto.estimated_cost ?? null;
 
-  // preserve old 'fare' presentation (string with $) so older components don't break
   const fare =
     typeof dto.fare === "string"
       ? dto.fare
@@ -97,9 +93,7 @@ function normalizeRide(dto = {}) {
   const driverName = dto.driverName || dto.driver || dto.driver_fullname || "";
 
   return {
-    // raw DTO for advanced use
     _raw: dto,
-    // canonical fields used by backend-aware components
     id,
     passengerName,
     driverName,
@@ -110,7 +104,6 @@ function normalizeRide(dto = {}) {
     cancelledAt,
     finalCost,
     estimatedCost,
-    // legacy-friendly fields (used by many of your existing components)
     passenger: passengerName,
     driver: driverName,
     date,
@@ -140,7 +133,6 @@ export const fetchRides = createAsyncThunk(
       const res = await fetch(url, { credentials: "include" });
 
       if (!res.ok) {
-        // parse response for helpful error if possible
         const text = await res.text();
         throw new Error(
           `Fetch failed: ${res.status} ${res.statusText} - ${text.slice(
@@ -152,20 +144,17 @@ export const fetchRides = createAsyncThunk(
 
       const payload = await parseJsonOrThrow(res);
 
-      // payload may be paginated object { content: [...], totalElements, ... } or an array
       if (payload && Array.isArray(payload)) {
         return payload.map(normalizeRide);
       }
 
       if (payload && Array.isArray(payload.content)) {
-        // return same shape but with normalized content and pass through pagination meta
         return {
           ...payload,
           content: payload.content.map(normalizeRide),
         };
       }
 
-      // If payload is an object but not array/content, try to find rides field or return normalized single
       if (payload && payload.rides && Array.isArray(payload.rides)) {
         return {
           ...payload,
@@ -173,7 +162,6 @@ export const fetchRides = createAsyncThunk(
         };
       }
 
-      // unexpected shape: return normalized single ride (or empty)
       if (payload) return [normalizeRide(payload)];
 
       return [];
@@ -208,16 +196,17 @@ export const fetchRideById = createAsyncThunk(
   }
 );
 
+// ✅ updated to use /status endpoint and only send {status}
 export const updateRide = createAsyncThunk(
   "rides/updateRide",
-  async (ride, thunkAPI) => {
+  async ({ id, status }, thunkAPI) => {
     try {
-      const url = `${baseUrl}/api/admin/rides/${ride.id}`;
+      const url = `${baseUrl}/api/admin/rides/${id}/status`;
       const res = await fetch(url, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(ride),
+        body: JSON.stringify({ status }),
       });
 
       if (!res.ok) {
@@ -248,7 +237,6 @@ export const deleteRide = createAsyncThunk(
         credentials: "include",
       });
 
-      // some backends return 204 No Content, some return 200 with a body
       if (res.status === 204 || res.ok) {
         return id;
       }
@@ -269,23 +257,20 @@ export const deleteRide = createAsyncThunk(
 const ridesSlice = createSlice({
   name: "rides",
   initialState: {
-    rides: [], // array of normalized rides OR if fetchRides returns paginated object, may set content below
+    rides: [],
     loading: false,
     error: null,
-    // optional pagination/meta fields:
     totalElements: null,
     page: 0,
     size: 50,
   },
   reducers: {
-    // local setter if you need to set state from components (keeps backward compatibility)
     setRides(state, action) {
       state.rides = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      // fetchRides
       .addCase(fetchRides.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -293,8 +278,6 @@ const ridesSlice = createSlice({
       .addCase(fetchRides.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload;
-
-        // If paginated object (we returned { content: [...], totalElements, ... })
         if (payload && payload.content && Array.isArray(payload.content)) {
           state.rides = payload.content;
           state.totalElements = payload.totalElements ?? state.totalElements;
@@ -305,7 +288,6 @@ const ridesSlice = createSlice({
         } else if (payload && payload.rides && Array.isArray(payload.rides)) {
           state.rides = payload.rides;
         } else {
-          // fallback: if payload is single normalized ride or unknown shape
           state.rides = Array.isArray(payload)
             ? payload
             : [payload].filter(Boolean);
@@ -315,8 +297,6 @@ const ridesSlice = createSlice({
         state.loading = false;
         state.error = action.payload || action.error.message;
       })
-
-      // fetchRideById - upsert single
       .addCase(fetchRideById.fulfilled, (state, action) => {
         const ride = action.payload;
         const idx = state.rides.findIndex((r) => r.id === ride.id);
@@ -326,8 +306,6 @@ const ridesSlice = createSlice({
       .addCase(fetchRideById.rejected, (state, action) => {
         state.error = action.payload || action.error.message;
       })
-
-      // updateRide
       .addCase(updateRide.fulfilled, (state, action) => {
         const updated = action.payload;
         const idx = state.rides.findIndex((r) => r.id === updated.id);
@@ -337,8 +315,6 @@ const ridesSlice = createSlice({
       .addCase(updateRide.rejected, (state, action) => {
         state.error = action.payload || action.error.message;
       })
-
-      // deleteRide
       .addCase(deleteRide.fulfilled, (state, action) => {
         state.rides = state.rides.filter((r) => r.id !== action.payload);
       })

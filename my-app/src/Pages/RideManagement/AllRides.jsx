@@ -1,3 +1,4 @@
+// src/Pages/RideManagement/AllRides.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -26,10 +27,10 @@ import {
   TableContainer,
   Paper,
 } from "@mui/material";
-import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import { FaEye, FaEdit } from "react-icons/fa";
 import Sidebar from "../../Components/Sidebar";
 import Topbar from "../../Components/Topbar";
-import { fetchRides, updateRide, deleteRide } from "../../store/ridesSlice";
+import { fetchRides, updateRide } from "../../store/ridesSlice";
 
 export default function AllRides() {
   const dispatch = useDispatch();
@@ -44,7 +45,6 @@ export default function AllRides() {
   // modals
   const [viewRide, setViewRide] = useState(null);
   const [editRide, setEditRide] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null);
 
   // fetch rides on mount
   useEffect(() => {
@@ -76,26 +76,22 @@ export default function AllRides() {
   };
 
   // edit handlers
-  const handleEditOpen = (ride) => setEditRide({ ...ride });
-  const handleEditChange = (field, value) =>
-    setEditRide((prev) => ({ ...prev, [field]: value }));
-  const handleEditSave = () => {
-    dispatch(updateRide(editRide));
-    setEditRide(null);
-  };
+  const handleEditOpen = (ride) =>
+    setEditRide({ id: ride.id, status: ride.status });
 
-  // delete handlers
-  const handleDeleteConfirm = () => {
-    if (!deleteTarget) return;
-    dispatch(deleteRide(deleteTarget.id));
-    setDeleteTarget(null);
+  const handleEditSave = async () => {
+    if (editRide) {
+      await dispatch(updateRide({ id: editRide.id, status: editRide.status }));
+      // immediately refresh the rides list so UI is up to date
+      dispatch(fetchRides({ page: 0, size: 100 }));
+    }
+    setEditRide(null);
   };
 
   return (
     <Box sx={{ display: "flex", bgcolor: "#f6f7fb", minHeight: "100vh" }}>
       <Sidebar />
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        
         <Box component="main" sx={{ p: 3, flex: 1 }}>
           {/* Filters */}
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 2 }}>
@@ -151,51 +147,51 @@ export default function AllRides() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {pageRows.map((ride) => (
-                      <TableRow key={ride.id} hover>
-                        <TableCell>{ride.id}</TableCell>
-                        <TableCell>{ride.passengerName}</TableCell>
-                        <TableCell>{ride.driverName}</TableCell>
-                        <TableCell>{ride.status}</TableCell>
-                        <TableCell>
-                          {ride.requestedAt?.split("T")[0] ||
-                            ride.completedAt?.split("T")[0]}
-                        </TableCell>
-                        <TableCell>
-                          {ride.finalCost
-                            ? `$${ride.finalCost}`
-                            : ride.estimatedCost
-                            ? `$${ride.estimatedCost}`
-                            : "-"}
-                        </TableCell>
-                        <TableCell>
-                          <Tooltip title="View">
-                            <IconButton
-                              color="primary"
-                              onClick={() => setViewRide(ride)}
-                            >
-                              <FaEye />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Edit">
-                            <IconButton
-                              color="success"
-                              onClick={() => handleEditOpen(ride)}
-                            >
-                              <FaEdit />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Delete">
-                            <IconButton
-                              color="error"
-                              onClick={() => setDeleteTarget(ride)}
-                            >
-                              <FaTrash />
-                            </IconButton>
-                          </Tooltip>
+                    {pageRows.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} align="center">
+                          No rides available.
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      pageRows.map((ride) => (
+                        <TableRow key={ride.id} hover>
+                          <TableCell>{ride.id}</TableCell>
+                          <TableCell>{ride.passengerName}</TableCell>
+                          <TableCell>{ride.driverName}</TableCell>
+                          <TableCell>{ride.statusLabel}</TableCell>
+                          <TableCell>
+                            {ride.requestedAt?.split("T")[0] ||
+                              ride.completedAt?.split("T")[0]}
+                          </TableCell>
+                          <TableCell>
+                            {ride.finalCost
+                              ? `$${ride.finalCost}`
+                              : ride.estimatedCost
+                              ? `$${ride.estimatedCost}`
+                              : "-"}
+                          </TableCell>
+                          <TableCell>
+                            <Tooltip title="View">
+                              <IconButton
+                                color="primary"
+                                onClick={() => setViewRide(ride)}
+                              >
+                                <FaEye />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Edit Status">
+                              <IconButton
+                                color="success"
+                                onClick={() => handleEditOpen(ride)}
+                              >
+                                <FaEdit />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -238,7 +234,7 @@ export default function AllRides() {
                 <b>Driver:</b> {viewRide.driverName}
               </Typography>
               <Typography>
-                <b>Status:</b> {viewRide.status}
+                <b>Status:</b> {viewRide.statusLabel}
               </Typography>
               <Typography>
                 <b>Fare:</b>{" "}
@@ -247,10 +243,10 @@ export default function AllRides() {
                   : `$${viewRide.estimatedCost || 0}`}
               </Typography>
               <Typography>
-                <b>Pickup:</b> {viewRide.pickupAddress}
+                <b>Pickup:</b> {viewRide.pickup}
               </Typography>
               <Typography>
-                <b>Drop-off:</b> {viewRide.dropoffAddress}
+                <b>Drop-off:</b> {viewRide.dropoff}
               </Typography>
             </>
           )}
@@ -260,69 +256,36 @@ export default function AllRides() {
         </DialogActions>
       </Dialog>
 
-      {/* ----- Edit Modal ----- */}
+      {/* ----- Edit Modal (Status only) ----- */}
       <Dialog
         open={!!editRide}
         onClose={() => setEditRide(null)}
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Edit Ride</DialogTitle>
+        <DialogTitle>Edit Ride Status</DialogTitle>
         <DialogContent dividers>
           {editRide && (
-            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, mt: 1 }}>
-              <TextField
-                label="Passenger"
-                value={editRide.passengerName || ""}
-                onChange={(e) => handleEditChange("passengerName", e.target.value)}
-              />
-              <TextField
-                label="Driver"
-                value={editRide.driverName || ""}
-                onChange={(e) => handleEditChange("driverName", e.target.value)}
-              />
-              <FormControl>
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={editRide.status || ""}
-                  onChange={(e) => handleEditChange("status", e.target.value)}
-                >
-                  <MenuItem value="COMPLETED">Completed</MenuItem>
-                  <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
-                  <MenuItem value="REQUESTED">Requested</MenuItem>
-                  <MenuItem value="CANCELLED">Cancelled</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={editRide.status || ""}
+                onChange={(e) =>
+                  setEditRide((prev) => ({ ...prev, status: e.target.value }))
+                }
+              >
+                <MenuItem value="COMPLETED">Completed</MenuItem>
+                <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+                <MenuItem value="REQUESTED">Requested</MenuItem>
+                <MenuItem value="CANCELLED">Cancelled</MenuItem>
+              </Select>
+            </FormControl>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditRide(null)}>Cancel</Button>
           <Button variant="contained" onClick={handleEditSave}>
             Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* ----- Delete Confirm ----- */}
-      <Dialog
-        open={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Delete Ride</DialogTitle>
-        <DialogContent dividers>
-          {deleteTarget && (
-            <Typography>
-              Are you sure you want to delete ride <b>{deleteTarget.id}</b>?
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
-          <Button variant="contained" color="error" onClick={handleDeleteConfirm}>
-            Delete
           </Button>
         </DialogActions>
       </Dialog>
