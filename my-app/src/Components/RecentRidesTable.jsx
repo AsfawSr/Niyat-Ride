@@ -1,3 +1,4 @@
+// src/Components/RecentRidesTable.jsx
 import React from "react";
 import {
   Card,
@@ -9,7 +10,10 @@ import {
   TableCell,
   TableBody,
 } from "@mui/material";
+
 export default function RecentRidesTable({ rows }) {
+  const tableData = rows && rows.length > 0 ? rows : [];
+
   return (
     <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
       <CardContent>
@@ -27,13 +31,18 @@ export default function RecentRidesTable({ rows }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((r) => (
+            {tableData.map((r) => (
               <TableRow key={r.id}>
-                <TableCell>{r.id}</TableCell>
-                <TableCell>{r.passenger}</TableCell>
-                <TableCell>{r.driver}</TableCell>
+                <TableCell>{r.id || r.rideId}</TableCell>
+                <TableCell>{r.passengerName || r.customerName || r.customerId}</TableCell>
+                <TableCell>{r.driverName || r.driverId}</TableCell>
                 <TableCell>{r.status}</TableCell>
-                <TableCell>{r.date}</TableCell>
+                <TableCell>
+                  {r.requestedAt?.split("T")[0] ||
+                    r.startedAt?.split("T")[0] ||
+                    r.completedAt?.split("T")[0] ||
+                    "-"}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
