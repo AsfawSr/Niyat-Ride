@@ -275,14 +275,14 @@ export default function Sidebar() {
 </Collapse>
 
               {/* Reports */}
-              <NavLink to="/admin/reports" style={linkStyle}>
+              {/* <NavLink to="/admin/reports" style={linkStyle}>
                 <ListItemButton sx={listItemSx}>
                   <MdAssessment style={{ fontSize: 20 }} />
                   {openSidebar && (
                     <ListItemText primary="Reports & Analytics" />
                   )}
                 </ListItemButton>
-              </NavLink>
+              </NavLink> */}
             </>
           )}
 

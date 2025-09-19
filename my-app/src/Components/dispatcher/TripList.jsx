@@ -82,12 +82,12 @@ export function ActionsMenu({ trip, onReassign, onCancel, onEmergency }) {
       >
         Reassign
       </button>
-      <button
+      {/* <button
         onClick={() => onCancel(trip)}
         className="rounded-xl bg-gray-700 hover:bg-gray-600 text-gray-100 px-3 py-1.5 text-sm shadow-sm"
       >
         Cancel
-      </button>
+      </button> */}
       <button
         onClick={() => onEmergency(trip)}
         className="rounded-xl bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 text-sm shadow-sm"

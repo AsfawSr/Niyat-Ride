@@ -44,7 +44,7 @@ const EditUserModal = ({ user, onCancel, onUpdateSuccess }) => {
   const handleSave = () => {
     const formData = new FormData();
 
-    if (localUser.role === "admin" || roleLower === "dispatcher") {
+    if (localUser.role === "admin" || localUser.role === "dispatcher") {
       Object.entries(localUser).forEach(([key, value]) => {
         formData.append(key, value ?? "");
       });
