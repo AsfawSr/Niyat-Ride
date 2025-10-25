@@ -1,0 +1,80 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "../../api/api";
+
+// Async thunk to fetch drivers (list with pagination & search, or single detail)
+export const fetchDrivers = createAsyncThunk(
+  "drivers/fetchDrivers",
+  async (payload = {}, thunkAPI) => {
+    try {
+      // Fetch single driver by ID
+      if (payload.id) {
+        const response = await api.get(`/drivers/${payload.id}`);
+        return { type: "detail", data: response.data.data };
+      }
+
+      // Fetch list with optional search and pagination
+      const params = {
+        search: payload.search || "",
+        page: payload.page || 1,
+        limit: payload.limit || 10
+      };
+
+      const response = await api.get("/drivers", { params });
+
+      return {
+        type: "list",
+        data: response.data.data.drivers || [],
+        totalPages: response.data.data.totalPages || 1
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+// Initial state
+const initialState = {
+  drivers: [],
+  selectedDriver: null,
+  totalPages: 1,
+  status: "idle", // "idle" | "loading" | "succeeded" | "failed"
+  error: null,
+};
+
+// Slice
+const driversSlice = createSlice({
+  name: "drivers",
+  initialState,
+  reducers: {
+    removeDriver(state, action) {
+      const { id } = action.payload;
+      state.drivers = state.drivers.filter((d) => d.id !== id);
+    },
+    clearSelectedDriver(state) {
+      state.selectedDriver = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchDrivers.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(fetchDrivers.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        if (action.payload.type === "list") {
+          state.drivers = action.payload.data;
+          state.totalPages = action.payload.totalPages;
+        }
+        if (action.payload.type === "detail") {
+          state.selectedDriver = action.payload.data;
+        }
+      })
+      .addCase(fetchDrivers.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || "Failed to fetch drivers";
+      });
+  },
+});
+export const driversActions = driversSlice.actions;
+export default driversSlice.reducer;
