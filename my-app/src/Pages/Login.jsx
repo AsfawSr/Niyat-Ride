@@ -71,7 +71,6 @@ const Login = () => {
         />
         Login Page
       </h2>
-      {/* Status Messages */}
       <div className="text-center pt-2">
         {status === "loading" && <Loading />}
         {status === "failed" && <p className="text-red-500">{error}</p>}
