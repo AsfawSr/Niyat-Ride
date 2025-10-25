@@ -69,6 +69,7 @@ const Login = () => {
           height={90}
           className="dark:invert"
         />
+        {/* login page */}
         Login Page
       </h2>
       <div className="text-center pt-2">
